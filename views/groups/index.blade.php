@@ -58,10 +58,10 @@
                                 <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-translate-y transition-all">
                                     <div class="position-relative" style="height: 100px; background: linear-gradient(135deg, #615dfa 0%, #23d2e2 100%);">
                                         @if($group->cover)
-                                            <img src="{{ asset($group->cover) }}" class="w-100 h-100 object-fit-cover opacity-50">
+                                            <img src="{{ $group->coverUrl() }}" class="w-100 h-100 object-fit-cover opacity-50">
                                         @endif
                                         <div class="position-absolute top-100 start-50 translate-middle">
-                                            <img src="{{ asset($group->avatar) }}" class="rounded-circle border border-4 border-white shadow-sm" width="64" height="64">
+                                            <img src="{{ $group->avatarUrl() }}" class="rounded-circle border border-4 border-white shadow-sm" width="64" height="64">
                                         </div>
                                     </div>
                                     <div class="card-body pt-5 text-center">
@@ -95,7 +95,7 @@
                     <div class="col-md-6">
                         <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-translate-y transition-all">
                             <div class="p-3 d-flex align-items-center gap-3">
-                                <img src="{{ asset($group->avatar) }}" class="rounded-circle shadow-sm" width="50" height="50">
+                                <img src="{{ $group->avatarUrl() }}" class="rounded-circle shadow-sm" width="50" height="50">
                                 <div class="overflow-hidden">
                                     <h6 class="fw-bold mb-0 text-truncate"><a href="{{ route('groups.show', $group) }}" class="text-dark text-decoration-none">{{ $group->name }}</a></h6>
                                     <span class="smaller text-muted">

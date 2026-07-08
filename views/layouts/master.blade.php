@@ -378,6 +378,9 @@
     <!-- Bootstrap 5.3.3 Bundle JS -->
     <script src="{{ theme_asset('js/bootstrap5.bundle.min.js') }}"></script>
     
+    <!-- SVG Loader -->
+    <script src="{{ theme_asset('js/svg-loader.js') }}" defer></script>
+
     <!-- Platform Essential Scripts -->
     <script src="{{ theme_asset('js/app.js') }}"></script>
     

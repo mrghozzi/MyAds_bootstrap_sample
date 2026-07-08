@@ -40,9 +40,17 @@
 
                         <div class="mb-5 mt-3">
                             <div class="bg-primary bg-opacity-10 text-primary rounded-circle mx-auto d-flex align-items-center justify-content-center transition-all hover-scale shadow-sm border border-primary border-opacity-10" style="width: 100px; height: 100px;">
-                                <svg class="w-50 h-50" fill="currentColor">
-                                    <use xlink:href="#{{ $quest['model']->icon ?: 'svg-quests' }}"></use>
-                                </svg>
+                                @if($quest['model']->icon && str_contains($quest['model']->icon, ' '))
+                                    <i class="{{ $quest['model']->icon }} fa-3x"></i>
+                                @elseif($quest['model']->icon && str_starts_with($quest['model']->icon, 'fa-'))
+                                    <i class="fa {{ $quest['model']->icon }} fa-3x"></i>
+                                @elseif($quest['model']->icon && str_starts_with($quest['model']->icon, 'svg-'))
+                                    <svg class="w-50 h-50" fill="currentColor">
+                                        <use xlink:href="#{{ $quest['model']->icon }}"></use>
+                                    </svg>
+                                @else
+                                    <i class="fa fa-trophy fa-3x"></i>
+                                @endif
                             </div>
                         </div>
 

@@ -24,13 +24,21 @@
     <link rel="apple-touch-icon" href="{{ asset('upload/fav.png') }}">
 
     <!-- Bootstrap 5.3.3 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    @if($pageDirection === 'rtl')
+        <link href="{{ theme_asset('css/bootstrap5.rtl.min.css') }}" rel="stylesheet">
+    @else
+        <link href="{{ theme_asset('css/bootstrap5.min.css') }}" rel="stylesheet">
+    @endif
     
     <!-- Theme Compatibility CSS -->
     <link href="{{ theme_asset('css/style.css') }}" rel="stylesheet">
+    <link href="{{ theme_asset('css/styles.min.css') }}" rel="stylesheet">
+    @if($pageDirection === 'rtl')
+        <link href="{{ theme_asset('css/rtl.css') }}" rel="stylesheet">
+    @endif
     
     <!-- FontAwesome 6 -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="{{ theme_asset('css/fontawesome6.min.css') }}" rel="stylesheet">
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -368,7 +376,7 @@
     </footer>
 
     <!-- Bootstrap 5.3.3 Bundle JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ theme_asset('js/bootstrap5.bundle.min.js') }}"></script>
     
     <!-- Platform Essential Scripts -->
     <script src="{{ theme_asset('js/app.js') }}"></script>

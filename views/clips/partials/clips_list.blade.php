@@ -1,12 +1,47 @@
-﻿@foreach($activities as $activity)
+@foreach($activities as $activity)
     @php
         $mediaUrl = null;
         if (isset($activity->related_content->attachments) && $activity->related_content->attachments->count() > 0) {
             $mediaUrl = asset($activity->related_content->attachments->first()->file_path);
         }
+        $clipUser = $activity->user;
+        $clipCaption = $activity->related_content->txt ?? '';
+        $clipCaptionPlain = strip_tags(\App\Support\ContentFormatter::format($clipCaption));
     @endphp
     @if($mediaUrl)
-        <div class="reel-item" data-id="{{ $activity->id }}">
+        <!-- SEO Structured Data for Short Video Clip -->
+        <script type="application/ld+json">
+        {
+            "@@context": "https://schema.org",
+            "@@type": "VideoObject",
+            "name": "{{ $clipCaptionPlain ? \Illuminate\Support\Str::limit(trim(preg_replace('/\s+/', ' ', $clipCaptionPlain)), 100) : 'Clip by ' . ($clipUser->username ?? 'User') }}",
+            "description": "{{ $clipCaptionPlain ? trim(preg_replace('/\s+/', ' ', $clipCaptionPlain)) : 'Short video clip on MYADS' }}",
+            "thumbnailUrl": [
+                "{{ asset('upload/'.$clipUser->avatar) }}"
+            ],
+            "uploadDate": "{{ $activity->created_at?->toIso8601String() ?? now()->toIso8601String() }}",
+            "contentUrl": "{{ $mediaUrl }}",
+            "url": "{{ url('/clips#' . $activity->id) }}",
+            "author": {
+                "@@type": "Person",
+                "name": "{{ $clipUser->username ?? 'Unknown' }}",
+                "url": "{{ $clipUser ? route('profile.show', $clipUser->username) : url('/') }}"
+            },
+            "interactionStatistic": [
+                {
+                    "@@type": "InteractionCounter",
+                    "interactionType": "https://schema.org/LikeAction",
+                    "userInteractionCount": {{ $activity->reactions_count ?? 0 }}
+                },
+                {
+                    "@@type": "InteractionCounter",
+                    "interactionType": "https://schema.org/CommentAction",
+                    "userInteractionCount": {{ $activity->comments_count ?? 0 }}
+                }
+            ]
+        }
+        </script>
+        <div class="reel-item" data-id="{{ $activity->id }}" data-tp-id="{{ $activity->tp_id }}" data-s-type="{{ $activity->s_type }}" data-related-id="{{ $activity->related_content->id ?? '' }}">
             <video class="reel-video" loop muted playsinline src="{{ $mediaUrl }}" preload="auto"></video>
             
             <div class="reel-overlay">
@@ -60,7 +95,7 @@
 
                     <!-- Comment -->
                     <div class="reel-action-wrapper">
-                        <button class="reel-action-btn open-comments" data-id="{{ $activity->id }}">
+                        <button class="reel-action-btn open-comments" data-id="{{ $activity->id }}" data-tp-id="{{ $activity->tp_id }}">
                             <svg class="icon" viewBox="0 0 24 24"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
                         </button>
                         <span class="reel-action-label">{{ $activity->comments_count }}</span>
@@ -83,7 +118,7 @@
 
                     <!-- Share -->
                     <div class="reel-action-wrapper">
-                        <button class="reel-action-btn share-reel" data-url="{{ url('/status/'.$activity->id) }}">
+                        <button class="reel-action-btn share-reel" data-url="{{ url('/clips#'.$activity->id) }}">
                             <svg class="icon" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
                         </button>
                         <span class="reel-action-label text-uppercase smallest">{{ __('messages.share') ?? 'Share' }}</span>
@@ -98,4 +133,3 @@
         </div>
     @endif
 @endforeach
-

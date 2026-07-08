@@ -1,4 +1,4 @@
-﻿@extends('theme::layouts.master')
+@extends('theme::layouts.master')
 
 @section('content')
 <style>
@@ -190,7 +190,7 @@
 </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
 @if($activities->isNotEmpty())
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -250,5 +250,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endif
-@endsection
+@endpush
 

@@ -1,16 +1,30 @@
-﻿@extends('theme::layouts.master')
+@extends('theme::layouts.master')
 
 @section('content')
 <style>
+    /* Layout Container for Sidebar */
+    .clips-layout-container {
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        gap: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+        height: calc(100vh - 100px);
+        position: relative;
+        width: 100%;
+    }
+
     /* Full Clips TikTok-style Container */
     .clips-wrapper {
-        height: calc(100vh - 100px);
+        height: 100%;
         background-color: #050505 !important;
         border-radius: 20px;
         overflow: hidden;
         position: relative;
+        width: 100%;
         max-width: 450px;
-        margin: 0 auto;
+        flex-shrink: 0;
         box-shadow: 0 15px 35px rgba(0,0,0,0.6);
         border: 1px solid rgba(255,255,255,0.05);
     }
@@ -217,15 +231,19 @@
         100% { transform: scale(1); }
     }
     
-    /* Floating Saved Clips Button */
+    /* Floating Header Actions */
     .clips-header-actions {
         position: absolute;
         top: 20px;
         right: 20px;
         z-index: 20;
+        display: flex;
+        gap: 8px;
+        align-items: center;
     }
     
-    .btn-saved-clips {
+    .btn-saved-clips,
+    .btn-report-clip {
         background: rgba(0,0,0,0.5);
         backdrop-filter: blur(8px);
         color: #fff;
@@ -241,17 +259,20 @@
         transition: all 0.2s;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         letter-spacing: 0.5px;
-        text-uppercase: uppercase;
+        text-transform: uppercase;
+        cursor: pointer;
     }
     
-    .btn-saved-clips:hover {
+    .btn-saved-clips:hover,
+    .btn-report-clip:hover {
         background: #fff;
         color: #000;
         border-color: #fff;
         transform: translateY(-2px);
     }
     
-    .btn-saved-clips svg {
+    .btn-saved-clips svg,
+    .btn-report-clip svg {
         width: 14px;
         height: 14px;
         fill: currentColor;
@@ -274,11 +295,16 @@
         backdrop-filter: blur(8px);
         border: 1px solid rgba(255,255,255,0.15);
         transition: all 0.2s;
+        pointer-events: auto;
     }
     
     .reel-mute-toggle:hover {
         background: rgba(0,0,0,0.7);
         transform: scale(1.05);
+    }
+    
+    .reel-mute-toggle svg {
+        pointer-events: none;
     }
     
     .reel-progress {
@@ -297,33 +323,144 @@
         background: linear-gradient(to right, #23d2e2, #23d2e2);
         transition: width 0.1s linear;
     }
+
+    /* Comments Sidebar Layout */
+    .clips-comments-sidebar {
+        width: 420px;
+        background: var(--bs-body-bg, #fff);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        display: none;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+        border: 1px solid rgba(0,0,0,0.08);
+        z-index: 30;
+    }
+
+    [data-theme="css_d"] .clips-comments-sidebar {
+        background: #111;
+        border-color: rgba(255,255,255,0.1);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    }
+
+    .clips-comments-sidebar.active {
+        display: flex;
+    }
+
+    .sidebar-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    [data-theme="css_d"] .sidebar-header {
+        border-bottom-color: rgba(255,255,255,0.1);
+    }
+
+    .sidebar-header h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--bs-body-color);
+    }
+
+    .close-sidebar-btn {
+        background: transparent;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        line-height: 1;
+        color: var(--bs-secondary);
+        padding: 0;
+        transition: color 0.2s;
+    }
+
+    .close-sidebar-btn:hover {
+        color: var(--bs-body-color);
+    }
+
+    .sidebar-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px 15px 20px 15px;
+    }
+
+    @media (max-width: 991px) {
+        .clips-layout-container {
+            flex-direction: column;
+            align-items: center;
+            height: calc(100vh - 70px);
+        }
+
+        .clips-comments-sidebar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 60%;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
+            z-index: 100;
+        }
+    }
 </style>
 
 <div class="container py-4">
-    <div class="clips-wrapper">
-        <!-- Floating Actions -->
-        <div class="clips-header-actions">
-            <a href="{{ route('clips.saved') }}" class="btn-saved-clips">
-                <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
-                {{ __('messages.saved') ?? 'Saved' }}
-            </a>
+    <div class="clips-layout-container">
+        <div class="clips-wrapper">
+            <!-- Floating Actions -->
+            <div class="clips-header-actions">
+                @auth
+                <button class="btn-report-clip" id="btn-report-clip" title="{{ __('messages.report') ?? 'Report' }}">
+                    <svg viewBox="0 0 24 24"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+                    <span class="d-none d-md-inline">{{ __('messages.report') ?? 'Report' }}</span>
+                </button>
+                @endauth
+                <a href="{{ route('clips.saved') }}" class="btn-saved-clips">
+                    <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                    <span class="d-none d-md-inline">{{ __('messages.saved') ?? 'Saved' }}</span>
+                </a>
+            </div>
+            
+            <!-- Video Container -->
+            <div class="clips-container" id="clips-container">
+                @include('theme::clips.partials.clips_list', ['activities' => $activities])
+            </div>
+            
+            <!-- Loading Indicator for Infinite Scroll -->
+            <div id="clips-loading" style="display: none; position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); text-align: center; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); z-index: 200;">
+                <div class="spinner-border spinner-border-sm text-light me-2" role="status"></div>
+                <span class="small fw-bold">{{ __('messages.loading') ?? 'Loading...' }}</span>
+            </div>
+        </div>
+
+        <!-- Comments Sidebar -->
+        <div class="clips-comments-sidebar" id="clips-comments-sidebar">
+            <div class="sidebar-header">
+                <h3>{{ __('messages.comments') ?? 'Comments' }}</h3>
+                <button class="close-sidebar-btn" id="close-comments-sidebar">&times;</button>
+            </div>
+            <div class="sidebar-content">
+                <div id="clips-comments-placeholder" class="post-comment-list-placeholder">
+                    <div class="no-comments-selected" style="text-align: center; padding: 40px 20px; color: var(--bs-secondary);">
+                        <i class="fa-regular fa-comments" style="font-size: 48px; margin-bottom: 15px; display: block; opacity: 0.5;"></i>
+                        {{ __('messages.click_to_view_comments') ?? 'Click the comment icon on a clip to view comments.' }}
+                    </div>
+                </div>
+            </div>
         </div>
         
-        <!-- Video Container -->
-        <div class="clips-container" id="clips-container">
-            @include('theme::clips.partials.clips_list', ['activities' => $activities])
-        </div>
-        
-        <!-- Loading Indicator for Infinite Scroll -->
-        <div id="clips-loading" style="display: none; position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); text-align: center; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); z-index: 200;">
-            <div class="spinner-border spinner-border-sm text-light me-2" role="status"></div>
-            <span class="small fw-bold">{{ __('messages.loading') ?? 'Loading...' }}</span>
-        </div>
+        <!-- Centralized container for the report modal -->
+        <div id="reportclips-modal-container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1050; width: 90%; max-width: 400px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"></div>
     </div>
 </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const container = document.getElementById('clips-container');
@@ -353,6 +490,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     item.classList.add('is-paused');
                     console.log('Autoplay prevented:', e);
                 });
+
+                // Track active reel details!
+                const activeTpId = item.dataset.tpId;
+                container.dataset.activeTpId = activeTpId;
+                container.dataset.activeStatusId = item.dataset.id;
+                
+                // Update URL hash to reflect the active clip
+                const clipId = item.dataset.id;
+                if (clipId && window.location.hash !== '#' + clipId) {
+                    history.replaceState(null, '', '/clips#' + clipId);
+                }
+
+                // If comments sidebar is active, dynamically load comments for the newly active clip!
+                const sidebar = document.getElementById('clips-comments-sidebar');
+                if (sidebar && sidebar.classList.contains('active')) {
+                    loadClipsComments(activeTpId);
+                }
             } else {
                 video.pause();
                 item.classList.add('is-paused');
@@ -422,6 +576,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     observeVideos();
 
+    // Scroll to specific clip if URL has a hash (e.g. /clips#55)
+    function scrollToHashClip() {
+        const hash = window.location.hash;
+        if (hash && hash.length > 1) {
+            const clipId = hash.substring(1);
+            const targetItem = document.querySelector('.reel-item[data-id="' + clipId + '"]');
+            if (targetItem) {
+                // Temporarily disable smooth scroll for instant jump
+                container.style.scrollBehavior = 'auto';
+                targetItem.scrollIntoView({ block: 'start' });
+                // Restore smooth scroll after a brief delay
+                setTimeout(() => {
+                    container.style.scrollBehavior = 'smooth';
+                }, 100);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Try to scroll to hash clip on initial load
+    scrollToHashClip();
+
     // Infinite Scroll Observer
     const sentinelObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -463,6 +640,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 nextPageUrl = data.next_page_url;
                 observeVideos();
                 observeSentinel();
+
+                // After loading more clips, check if we need to scroll to hash target
+                scrollToHashClip();
             } else {
                 nextPageUrl = null;
             }
@@ -481,7 +661,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const sid = btn.dataset.id;
         const type = btn.dataset.type;
-        const countSpan = btn.querySelector('.reaction-count');
+        const countSpan = btn.closest('.reel-action-wrapper').querySelector('.reaction-count');
         let currentCount = parseInt(countSpan.textContent) || 0;
         
         const isActive = btn.classList.contains('active');
@@ -514,7 +694,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!btn) return;
         
         const sid = btn.dataset.id;
-        const countSpan = btn.querySelector('.save-count');
+        const countSpan = btn.closest('.reel-action-wrapper').querySelector('.save-count');
         let currentCount = parseInt(countSpan.textContent) || 0;
         
         const isActive = btn.classList.contains('active');
@@ -527,7 +707,7 @@ document.addEventListener('DOMContentLoaded', function() {
             countSpan.textContent = currentCount + 1;
         }
 
-        fetch('{{ url('/api/clips/save') }}', {
+        fetch('{{ route('clips.save.toggle') }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -557,27 +737,84 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    // Report Button (top header)
+    const reportBtn = document.getElementById('btn-report-clip');
+    if (reportBtn) {
+        reportBtn.addEventListener('click', function() {
+            const activeItem = document.querySelector('.reel-item[data-id="' + container.dataset.activeStatusId + '"]');
+            if (activeItem) {
+                const tpId = activeItem.dataset.tpId;
+                const sType = activeItem.dataset.sType;
+                if (typeof reportPost === 'function') {
+                    reportPost(tpId, sType, 'reportclips-modal-container');
+                }
+            }
+        });
+    }
+
+    // Load comments helper
+    function loadClipsComments(tpId) {
+        const placeholder = document.getElementById('clips-comments-placeholder');
+        if (!placeholder) return;
+        
+        placeholder.className = 'post-comment-list-placeholder post-comment-list-' + tpId;
+        placeholder.innerHTML = '<div style="text-align: center; padding: 40px 20px; color: var(--bs-secondary);"><div class="spinner-border text-primary" role="status"></div><div class="mt-2">{{ __('messages.loading') ?? 'Loading comments...' }}</div></div>';
+        
+        if (typeof window.loadComments === 'function') {
+            window.loadComments(tpId, 'forum');
+        }
+    }
+
+    // Toggle comments sidebar
+    const sidebar = document.getElementById('clips-comments-sidebar');
+    const closeBtn = document.getElementById('close-comments-sidebar');
     
-    // Comments Action (redirect to post page)
+    if (closeBtn && sidebar) {
+        closeBtn.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+    }
+
+    // Comments click delegation
     container.addEventListener('click', function(e) {
         const btn = e.target.closest('.open-comments');
         if (!btn) return;
         
-        const sid = btn.dataset.id;
-        window.location.href = '{{ url('/status') }}/' + sid;
+        e.preventDefault();
+        if (!sidebar) return;
+
+        const tpId = btn.dataset.tpId;
+        const isActive = sidebar.classList.contains('active');
+        
+        if (isActive && container.dataset.activeTpId == tpId) {
+            sidebar.classList.remove('active');
+        } else {
+            sidebar.classList.add('active');
+            container.dataset.activeTpId = tpId;
+            loadClipsComments(tpId);
+        }
     });
 
-    // Hash Scroll Handler (if page loaded with target hash)
-    if (window.location.hash) {
-        const targetId = window.location.hash.substring(1);
-        const targetElement = document.querySelector(`.reel-item[data-id="${targetId}"]`);
-        if (targetElement) {
-            setTimeout(() => {
-                targetElement.scrollIntoView({ behavior: 'auto' });
-            }, 100);
+    // Observe comment list changes to update the count badge
+    const commentCountObserver = new MutationObserver(() => {
+        const activeTpId = container.dataset.activeTpId;
+        if (!activeTpId) return;
+        const item = document.querySelector(`.reel-item[data-tp-id="${activeTpId}"]`);
+        if (!item) return;
+        const placeholder = document.getElementById('clips-comments-placeholder');
+        if (!placeholder) return;
+        const commentElements = placeholder.querySelectorAll('[class*="coment"]');
+        const countSpan = item.querySelector('.open-comments').nextElementSibling;
+        if (countSpan) {
+            countSpan.textContent = commentElements.length;
         }
+    });
+
+    const commentsPlaceholder = document.getElementById('clips-comments-placeholder');
+    if (commentsPlaceholder) {
+        commentCountObserver.observe(commentsPlaceholder, { childList: true, subtree: true });
     }
 });
 </script>
-@endsection
-
+@endpush

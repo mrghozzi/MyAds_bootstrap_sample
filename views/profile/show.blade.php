@@ -150,7 +150,15 @@
                                 @if($badge)
                                     <div class="col-4">
                                         <div class="text-center p-3 rounded-4 bg-light border border-light transition-all hover-translate-y h-100 d-flex align-items-center justify-content-center flex-column shadow-sm" title="{{ __('messages.' . $badge->name_key) }}">
-                                            <i class="{{ $badge->icon ?: 'fa fa-trophy' }} text-primary fs-3 mb-1"></i>
+                                            @if($badge->icon && str_contains($badge->icon, ' '))
+                                                <i class="{{ $badge->icon }} text-primary fs-3 mb-1" aria-hidden="true"></i>
+                                            @elseif($badge->icon && str_starts_with($badge->icon, 'fa-'))
+                                                <i class="fa {{ $badge->icon }} text-primary fs-3 mb-1" aria-hidden="true"></i>
+                                            @elseif($badge->icon && str_starts_with($badge->icon, 'svg-'))
+                                                <svg class="icon {{ $badge->icon }} text-primary fs-3 mb-1"><use xlink:href="#{{ $badge->icon }}"></use></svg>
+                                            @else
+                                                <i class="fa fa-trophy text-primary fs-3 mb-1" aria-hidden="true"></i>
+                                            @endif
                                             <small class="smallest fw-black text-muted text-truncate w-100 d-block">{{ __('messages.' . $badge->name_key) }}</small>
                                         </div>
                                     </div>

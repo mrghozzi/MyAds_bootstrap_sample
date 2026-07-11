@@ -564,10 +564,10 @@
   }
 
   .messages-compose-attach {
-    width: 46px;
-    height: 46px;
+    width: 40px;
+    height: 40px;
     border: 1px solid var(--msg-border);
-    border-radius: 12px;
+    border-radius: 8px;
     background: var(--msg-soft);
     color: var(--msg-muted);
     display: inline-flex;
@@ -585,17 +585,21 @@
 
   .messages-compose-input textarea {
     width: 100%;
-    min-height: 46px;
+    min-height: 40px;
     max-height: 124px;
     resize: none;
     border: 1px solid var(--msg-border);
-    border-radius: 12px;
+    border-radius: 8px;
     background: var(--msg-bg);
     color: var(--msg-text);
-    padding: 12px 46px 12px 14px;
+    padding: 9px 40px 9px 12px;
     font-size: .9rem;
     font-weight: 600;
     line-height: 1.3rem;
+  }
+
+  [dir="rtl"] .messages-compose-input textarea {
+    padding: 9px 12px 9px 40px;
   }
 
   .messages-compose-input textarea:focus {
@@ -605,7 +609,7 @@
   .messages-compose-emoji-btn {
     position: absolute;
     right: 10px;
-    top: 10px;
+    top: 7px;
     width: 26px;
     height: 26px;
     border: none;
@@ -616,9 +620,13 @@
     line-height: 1;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     cursor: pointer;
     z-index: 5;
+  }
+
+  [dir="rtl"] .messages-compose-emoji-btn {
+    right: auto;
+    left: 10px;
   }
 
   .messages-compose-emoji-btn:hover,
@@ -776,13 +784,13 @@
   }
 
   .messages-compose-send {
-    width: 56px;
-    height: 46px;
-    border-radius: 12px;
+    width: 44px;
+    height: 40px;
+    border-radius: 8px;
     border: none;
     background: var(--msg-accent);
     color: #fff;
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     cursor: pointer;
     flex-shrink: 0;
   }

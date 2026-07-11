@@ -7,6 +7,8 @@
     $ownerAvatar = $owner ? $owner->avatarUrl() : asset('upload/_avatar.png');
     $pendingCounts = $pendingCounts ?? collect();
     $articleAuthors = $articleAuthors ?? collect();
+    $kbCategories = $kbCategories ?? collect();
+    $selectedCategory = $selectedCategory ?? null;
     $currentArticle = $article ?? null;
     $currentTopicPendingCount = $currentArticle
         ? \App\Models\Option::where('o_type', 'knowledgebase')->where('o_mode', $product->name)->where('name', $currentArticle->name)->where('o_order', 1)->count()
@@ -130,10 +132,32 @@
             </div>
         </div>
 
-        @if($articles->isEmpty())
-            <div class="kb-empty-state">{{ __('messages.no_post') }}</div>
+        @if($articles->isEmpty() && !$selectedCategory)
+            <div class="kb-empty-state text-center p-5 text-muted fw-bold">
+                <i class="fa fa-folder-open-o fa-4x mb-3 opacity-50"></i>
+                <p>{{ __('messages.no_post') }}</p>
+            </div>
         @else
-            <div class="kb-topic-grid">
+            @if($kbCategories->isNotEmpty())
+                <div class="card border-0 shadow-sm rounded-4 kb-helper-card mb-4 p-3">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <span class="fw-bold text-muted small text-uppercase me-2"><i class="fa fa-filter me-1"></i> {{ __('messages.kb_filter_by_category') ?? 'Filter:' }}</span>
+                        <a class="btn btn-sm rounded-pill fw-bold {{ !$selectedCategory ? 'btn-primary' : 'btn-light border text-muted' }}" href="{{ route('kb.index', $product->name) }}">{{ __('messages.kb_all_categories') ?? 'All' }}</a>
+                        @foreach($kbCategories as $cat)
+                            <a class="btn btn-sm rounded-pill fw-bold {{ $selectedCategory == $cat->id ? 'btn-primary' : 'btn-light border text-muted' }}" href="{{ route('kb.index', $product->name) }}?category={{ $cat->id }}">{{ $cat->name }}</a>
+                        @endforeach
+                        <a class="btn btn-sm rounded-pill fw-bold {{ $selectedCategory === 'uncategorized' ? 'btn-primary' : 'btn-light border text-muted' }}" href="{{ route('kb.index', $product->name) }}?category=uncategorized">{{ __('messages.kb_no_category') ?? 'Uncategorized' }}</a>
+                    </div>
+                </div>
+            @endif
+
+            @if($articles->isEmpty())
+                <div class="kb-empty-state text-center p-5 text-muted fw-bold">
+                    <i class="fa fa-search fa-4x mb-3 opacity-50"></i>
+                    <p>{{ __('messages.no_post') }}</p>
+                </div>
+            @else
+            <div class="kb-topic-grid row g-4">
                 @foreach($articles as $item)
                     @php
                         $pending = $pendingCounts[$item->name] ?? 0;
@@ -162,9 +186,15 @@
                             </div>
                         </div>
                         <p class="kb-topic-card__summary">{{ \Illuminate\Support\Str::limit(strip_tags($item->o_valuer), 180) }}</p>
-                        <div class="kb-topic-card__meta">
-                            <span class="kb-pill">{{ __('messages.author') }}: {{ $cardAuthor ? $cardAuthor->username : __('messages.guest') }}</span>
-                            <span class="kb-pill">{{ __('messages.pending') }}: <strong>{{ $pending }}</strong></span>
+                        <div class="kb-topic-card__meta mb-3">
+                            <span class="badge bg-light text-muted border rounded-pill px-3 py-2 fw-bold mb-1">{{ __('messages.author') }}: {{ $cardAuthor ? $cardAuthor->username : __('messages.guest') }}</span>
+                            <span class="badge bg-warning text-dark bg-opacity-10 border border-warning rounded-pill px-3 py-2 fw-bold mb-1">{{ __('messages.pending') }}: <strong>{{ $pending }}</strong></span>
+                            @if($item->kbCategory)
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 fw-bold mb-1"><i class="fa fa-folder-o me-1"></i>{{ $item->kbCategory->name }}</span>
+                            @endif
+                            @if($item->updated_at)
+                                <span class="badge bg-light text-muted border rounded-pill px-3 py-2 fw-bold mb-1"><i class="fa fa-clock-o me-1"></i>{{ __('messages.kb_last_modified') ?? 'Last Modified' }}: {{ \Carbon\Carbon::parse($item->updated_at)->diffForHumans() }}</span>
+                            @endif
                         </div>
                         <div id="report{{ $reportKey }}" class="store-inline-report"></div>
                         <div class="kb-topic-card__footer">
@@ -173,8 +203,14 @@
                     </article>
                 @endforeach
             </div>
+            @if(isset($articles) && $articles instanceof \Illuminate\Pagination\LengthAwarePaginator && $articles->hasPages())
+                <div class="d-flex justify-content-center mt-4">
+                    {{ $articles->links('pagination::bootstrap-5') }}
+                </div>
+            @endif
         @endif
     @endif
+@endif
 
     @if($mode === 'create' || $mode === 'edit')
         <div class="kb-editor-layout">
@@ -197,6 +233,17 @@
                             <div class="mb-4">
                                 <label class="form-label small fw-bold">{{ __('messages.name') }}</label>
                                 <input type="text" class="form-control form-control-lg bg-light border-0" value="{{ $articleName }}" readonly>
+                            </div>
+                        @endif
+                        @if(isset($kbCategories) && $kbCategories->isNotEmpty())
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold">{{ __('messages.kb_category') ?? 'Category' }} <small class="text-muted fw-normal">({{ __('messages.optional') ?? 'Optional' }})</small></label>
+                                <select name="kb_category_id" class="form-select form-select-lg bg-light border-0">
+                                    <option value="">{{ __('messages.kb_no_category') ?? 'No Category' }}</option>
+                                    @foreach($kbCategories as $cat)
+                                        <option value="{{ $cat->id }}" {{ old('kb_category_id', ($article->kb_category_id ?? null)) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         @endif
                         <div class="mb-4">

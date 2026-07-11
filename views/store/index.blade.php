@@ -19,9 +19,14 @@
                 </div>
             </div>
             @auth
-                <a href="{{ route('store.create') }}" class="btn btn-primary btn-lg fw-black shadow px-4 rounded-pill mt-3 mt-md-0">
-                    <i class="fa fa-plus me-2"></i> {{ __('messages.add_product') }}
-                </a>
+                <div class="d-flex gap-2 mt-3 mt-md-0">
+                    <a href="{{ route('store.discounts.index') }}" class="btn btn-outline-light btn-lg fw-black shadow-sm px-4 rounded-pill">
+                        <i class="fa fa-ticket me-2"></i> {{ __('messages.discount_codes') ?? 'Discount Codes' }}
+                    </a>
+                    <a href="{{ route('store.create') }}" class="btn btn-primary btn-lg fw-black shadow px-4 rounded-pill">
+                        <i class="fa fa-plus me-2"></i> {{ __('messages.add_product') }}
+                    </a>
+                </div>
             @endauth
         </div>
         <div class="position-absolute top-0 end-0 p-5 opacity-10 d-none d-lg-block">
@@ -95,7 +100,14 @@
                         <img src="{{ $productImage }}" class="card-img-top h-100 w-100 object-fit-cover transition-all" alt="{{ $product->name }}">
                         <div class="position-absolute top-0 end-0 p-3">
                             @if($product->o_order > 0)
-                                <span class="badge bg-primary fw-black rounded-pill px-3 py-2 shadow-sm">{{ number_format($product->o_order) }} PTS</span>
+                                @if($product->sale && $product->sale->is_active)
+                                    <span class="badge bg-danger fw-black rounded-pill px-3 py-2 shadow-sm">
+                                        <span class="text-decoration-line-through opacity-75 me-1">{{ number_format($product->o_order) }}</span>
+                                        {{ number_format($product->sale->sale_price) }} PTS
+                                    </span>
+                                @else
+                                    <span class="badge bg-primary fw-black rounded-pill px-3 py-2 shadow-sm">{{ number_format($product->o_order) }} PTS</span>
+                                @endif
                             @else
                                 <span class="badge bg-success fw-black rounded-pill px-3 py-2 shadow-sm">{{ __('messages.free') }}</span>
                             @endif

@@ -180,16 +180,17 @@
                         <form action="{{ route('messages.store', $partnerConversationRouteKey) }}" method="POST" enctype="multipart/form-data" id="chat-form">
                             @csrf
                             <div class="chat-input-wrapper bg-light rounded-4 p-2 border border-light shadow-sm">
-                                <div class="d-flex align-items-end gap-2">
-                                    <label class="btn btn-white border-0 rounded-pill p-2 flex-shrink-0 transition-all hover-translate-y shadow-sm" title="{{ __('messages.attach_file') ?? 'Attach' }}">
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="btn btn-white border-0 rounded-pill p-2 flex-shrink-0 transition-all hover-translate-y shadow-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="{{ __('messages.attach_file') ?? 'Attach' }}">
                                         <i class="fa fa-paperclip text-muted"></i>
                                         <input type="file" name="attachment" class="d-none" id="chat-file-input">
                                     </label>
-                                    <div class="flex-grow-1">
-                                        <textarea name="message" class="form-control border-0 bg-transparent py-2 fs-6 shadow-none" rows="1" placeholder="{{ __('messages.type_a_message') }}..." required style="resize: none;"></textarea>
+                                    <div class="flex-grow-1" style="min-width: 0;">
+                                        <textarea name="message" class="form-control border-0 bg-transparent py-2 fs-6 shadow-none w-100" rows="1" placeholder="{{ __('messages.type_a_message') }}..." required style="resize: none; min-height: 36px; max-height: 120px; outline: none;"></textarea>
                                     </div>
-                                    <button type="submit" class="btn btn-primary rounded-pill p-2 px-3 flex-shrink-0 shadow-sm transition-all hover-translate-y">
-                                        <i class="fa fa-paper-plane me-1"></i> <span class="smaller fw-black d-none d-sm-inline-block">{{ __('messages.send') }}</span>
+                                    <button type="submit" class="btn btn-primary rounded-pill py-2 px-3 btn-sm flex-shrink-0 shadow-sm transition-all hover-translate-y d-flex align-items-center gap-1" style="height: 36px;">
+                                        <i class="fa fa-paper-plane"></i>
+                                        <span class="smallest fw-bold d-none d-sm-inline-block">{{ __('messages.send') }}</span>
                                     </button>
                                 </div>
                                 <div id="file-preview" class="mt-2 px-3 py-2 bg-white rounded-pill border border-light d-none align-items-center justify-content-between">

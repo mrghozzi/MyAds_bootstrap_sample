@@ -159,7 +159,7 @@
                             <h4 class="fw-bold mb-2">{{ __('messages.exvisit') }}</h4>
                             <p class="text-white-50 mb-4">{{ __('messages.visit_exchange_pitch') ?? 'Earn points by visiting other websites or drive traffic to your own listings.' }}</p>
                             <div class="d-flex gap-2">
-                                <button class="btn btn-white rounded-pill fw-bold px-4 shadow-sm" onclick="window.open('{{ url('/visits?id=' . $user->id) }}');"><i class="fa fa-play me-2 text-primary"></i> {{ __('messages.start_surfing') }}</button>
+                                <button class="btn bg-white rounded-pill fw-bold px-4 shadow-sm" onclick="window.open('{{ url('/visits?id=' . $user->id) }}');"><i class="fa fa-play me-2 text-primary"></i> {{ __('messages.start_surfing') }}</button>
                                 <a href="{{ url('/v_list') }}" class="btn btn-outline-light rounded-pill px-4">{{ __('messages.my_sites') }}</a>
                             </div>
                         </div>
@@ -178,7 +178,7 @@
                             <h4 class="fw-bold mb-2">{{ __('messages.yt_exchange_title') ?? 'YouTube Views Exchange' }}</h4>
                             <p class="text-white-50 mb-4">{{ __('messages.yt_exchange_desc') ?? 'Watch YouTube videos to earn points, or promote your own videos.' }}</p>
                             <div class="d-flex gap-2">
-                                <a href="{{ route('youtube.exchange.index') }}" class="btn btn-white text-danger rounded-pill fw-bold px-4 shadow-sm"><i class="fa-brands fa-youtube me-2"></i> {{ __('messages.watch_videos') ?? 'Watch Videos' }}</a>
+                                <a href="{{ route('youtube.exchange.index') }}" class="btn bg-white text-danger rounded-pill fw-bold px-4 shadow-sm"><i class="fa-brands fa-youtube me-2"></i> {{ __('messages.watch_videos') ?? 'Watch Videos' }}</a>
                                 <a href="{{ route('youtube.advertiser.index') }}" class="btn btn-outline-light rounded-pill px-4">{{ __('messages.yt_campaigns') }}</a>
                             </div>
                         </div>
@@ -204,6 +204,147 @@
                         </div>
                         <div class="col-md-4 d-none d-md-block text-center">
                             <i class="fa-solid fa-bullseye fa-5x opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO Checker -->
+            <div class="card border-0 shadow-sm rounded-4 text-white mt-4 bg-gradient" style="background: linear-gradient(135deg, rgba(6,78,59,0.98) 0%, rgba(5,150,105,0.96) 52%, rgba(16,185,129,0.92) 100%);">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-7">
+                            <span class="badge bg-white bg-opacity-25 text-white mb-2 text-uppercase fw-bold"><i class="fa-solid fa-chart-line me-1"></i> {{ __('messages.seo_checker') }}</span>
+                            <h4 class="fw-bold mb-2">{{ __('messages.seo_checker') }}</h4>
+                            <p class="text-white-50 small mb-0">{{ __('messages.seo_checker_desc') }}</p>
+                        </div>
+                        <div class="col-md-5 mt-3 mt-md-0">
+                            <form action="{{ route('seo_checker.analyze') }}" method="POST" class="d-flex gap-2">
+                                @csrf
+                                <input type="url" name="url" placeholder="https://example.com" required class="form-control rounded-pill border-0 bg-white shadow-sm px-3" style="font-size: 0.9rem;">
+                                <button type="submit" class="btn btn-light rounded-pill fw-bold text-success shadow-sm px-3 flex-shrink-0">
+                                    {{ __('messages.seo_analyze_now') ?? 'Analyze' }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Points Operations (Transfer, Vouchers) -->
+            <div class="card border-0 shadow-sm rounded-4 mt-4">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0"><i class="fa fa-coins text-warning me-2"></i> {{ __('messages.points_services') ?? 'Points Services' }}</h5>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Nav Tabs -->
+                    <ul class="nav nav-pills nav-fill bg-light p-1 rounded-pill mb-4" id="ptsToolsTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active rounded-pill fw-bold" id="transfer-tab-btn" data-bs-toggle="tab" data-bs-target="#transfer-tab-pane" type="button" role="tab">{{ __('messages.transfer_pts') }}</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-pill fw-bold" id="generate-tab-btn" data-bs-toggle="tab" data-bs-target="#generate-tab-pane" type="button" role="tab">{{ __('messages.generate_voucher') }}</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-pill fw-bold" id="claim-tab-btn" data-bs-toggle="tab" data-bs-target="#claim-tab-pane" type="button" role="tab">{{ __('messages.claim_voucher') }}</button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="ptsToolsTabsContent">
+                        <!-- Transfer Tab -->
+                        <div class="tab-pane fade show active" id="transfer-tab-pane" role="tabpanel">
+                            <form action="{{ route('dashboard.pts.transfer') }}" method="POST">
+                                @csrf
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="transfer_username" class="form-label fw-bold small text-muted">{{ __('messages.username') }}</label>
+                                        <input type="text" id="transfer_username" name="username" class="form-control bg-light border-0 rounded-3" required placeholder="username">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="transfer_amount" class="form-label fw-bold small text-muted">{{ __('messages.Points') }}</label>
+                                        <div class="input-group">
+                                            <input type="number" id="transfer_amount" name="amount" min="1" step="0.01" class="form-control bg-light border-0 rounded-start-3" required placeholder="0.00">
+                                            <span class="input-group-text bg-light border-0 rounded-end-3 fw-bold">PTS</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mt-3">
+                                        <button type="submit" class="btn btn-primary rounded-pill fw-bold px-4 py-2 shadow-sm">
+                                            <i class="fa fa-paper-plane me-2"></i> {{ __('messages.send') }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Generate Voucher Tab -->
+                        <div class="tab-pane fade" id="generate-tab-pane" role="tabpanel">
+                            <form action="{{ route('dashboard.pts.voucher.generate') }}" method="POST">
+                                @csrf
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-8">
+                                        <label for="voucher_amount" class="form-label fw-bold small text-muted">{{ __('messages.Points') }}</label>
+                                        <div class="input-group">
+                                            <input type="number" id="voucher_amount" name="amount" min="1" step="0.01" class="form-control bg-light border-0 rounded-start-3" required placeholder="0.00">
+                                            <span class="input-group-text bg-light border-0 rounded-end-3 fw-bold">PTS</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-secondary w-100 rounded-pill fw-bold py-2 shadow-sm">
+                                            <i class="fa fa-magic me-2"></i> {{ __('messages.generate') }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            @if(isset($vouchers) && $vouchers->count() > 0)
+                                <div class="table-responsive mt-4 rounded-3 border">
+                                    <table class="table table-hover align-middle mb-0 text-center">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="small fw-bold text-muted">{{ __('messages.code') }}</th>
+                                                <th class="small fw-bold text-muted">{{ __('messages.amount') }}</th>
+                                                <th class="small fw-bold text-muted">{{ __('messages.status') }}</th>
+                                                <th class="small fw-bold text-muted">{{ __('messages.date') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($vouchers as $voucher)
+                                                <tr>
+                                                    <td><code class="bg-light px-2 py-1 rounded text-primary">{{ $voucher->code }}</code></td>
+                                                    <td class="fw-bold">{{ number_format($voucher->amount, 2) }} PTS</td>
+                                                    <td>
+                                                        @if($voucher->is_used)
+                                                            <span class="badge bg-danger-subtle text-danger rounded-pill px-3">{{ __('messages.used') }} <small>({{ $voucher->claimer->username ?? '?' }})</small></span>
+                                                        @else
+                                                            <span class="badge bg-success-subtle text-success rounded-pill px-3">{{ __('messages.unused') }}</span>
+                                                        @endif
+                                                    </td>
+                                                    <td class="small text-muted">{{ $voucher->created_at->format('Y-m-d') }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Claim Voucher Tab -->
+                        <div class="tab-pane fade" id="claim-tab-pane" role="tabpanel">
+                            <form action="{{ route('dashboard.pts.voucher.claim') }}" method="POST">
+                                @csrf
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-8">
+                                        <label for="claim_code" class="form-label fw-bold small text-muted">{{ __('messages.code') }}</label>
+                                        <input type="text" id="claim_code" name="code" class="form-control bg-light border-0 rounded-3" required placeholder="XXXX-XXXX-XXXX">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-success w-100 rounded-pill fw-bold py-2 shadow-sm">
+                                            <i class="fa fa-gift me-2"></i> {{ __('messages.claim') }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

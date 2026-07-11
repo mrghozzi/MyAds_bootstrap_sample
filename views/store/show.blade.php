@@ -53,7 +53,21 @@
                     <div class="col-md-7">
                         <div class="card-body p-4 p-md-5 h-100 d-flex flex-column">
                             <div class="d-flex justify-content-between align-items-start mb-3">
-                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill px-3 py-2 fw-bold smaller">{{ $categoryLabel }}</span>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill px-3 py-2 fw-bold smaller">{{ $categoryLabel }}</span>
+                                    @if($product->o_order > 0)
+                                        @if($product->sale && $product->sale->is_active)
+                                            <span class="badge bg-danger fw-black rounded-pill px-3 py-2 shadow-sm">
+                                                <span class="text-decoration-line-through opacity-75 me-1">{{ number_format($product->o_order) }}</span>
+                                                {{ number_format($product->sale->sale_price) }} PTS
+                                            </span>
+                                        @else
+                                            <span class="badge bg-primary fw-black rounded-pill px-3 py-2 shadow-sm">{{ number_format($product->o_order) }} PTS</span>
+                                        @endif
+                                    @else
+                                        <span class="badge bg-success fw-black rounded-pill px-3 py-2 shadow-sm">{{ __('messages.free') }}</span>
+                                    @endif
+                                </div>
                                 <div class="dropdown">
                                     <button class="btn btn-light btn-sm rounded-circle shadow-sm" data-bs-toggle="dropdown" style="width: 32px; height: 32px; padding: 0;"><i class="fa fa-ellipsis-v"></i></button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
@@ -200,14 +214,19 @@
                         <div class="tab-pane fade show active" id="desc-tab">
                             @if($canManageProduct)
                                 <div class="mb-4 d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-primary rounded-pill px-4 fw-bold" id="store-edit-details-btn"><i class="fa fa-edit me-2"></i> {{ __('messages.edit') }}</button>
-                                    <button class="btn btn-sm btn-primary rounded-pill px-4 fw-bold d-none" id="store-save-details-btn"><i class="fa fa-save me-2"></i> {{ __('messages.save') }}</button>
-                                    <button class="btn btn-sm btn-light border rounded-pill px-4 fw-bold d-none" id="store-cancel-details-btn">{{ __('messages.cancel') }}</button>
+                                    <button class="btn btn-sm btn-outline-primary rounded-pill px-4 fw-bold" id="store-details-edit-btn"><i class="fa fa-edit me-2"></i> {{ __('messages.edit') }}</button>
+                                    <button class="btn btn-sm btn-primary rounded-pill px-4 fw-bold d-none" id="store-details-save-btn"><i class="fa fa-save me-2"></i> {{ __('messages.save') }}</button>
+                                    <button class="btn btn-sm btn-light border rounded-pill px-4 fw-bold d-none" id="store-details-cancel-btn">{{ __('messages.cancel') }}</button>
                                 </div>
                             @endif
                             <div id="store-details-display" class="markdown-content lh-lg fs-5 text-dark">{!! $product->o_valuer !!}</div>
                             @if($canManageProduct)
                                 <div id="store-details-editor" class="d-none">
+                                    <div class="mb-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 open-stackedit-details">
+                                            <i class="fa fa-pencil-square me-2"></i> {{ \Illuminate\Support\Facades\Lang::has('messages.edit_with_stackedit') ? __('messages.edit_with_stackedit') : 'Edit with StackEdit' }}
+                                        </button>
+                                    </div>
                                     <textarea id="store-details-textarea" class="form-control bg-light rounded-4 mb-3 border p-3" rows="15">{{ $product->o_valuer }}</textarea>
                                 </div>
                             @endif
@@ -218,14 +237,19 @@
                             <div class="tab-pane fade" id="topic-tab">
                                 @if($canManageProduct)
                                     <div class="mb-4 d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-primary rounded-pill px-4 fw-bold" id="store-edit-topic-btn"><i class="fa fa-edit me-2"></i> {{ __('messages.edit') }}</button>
-                                        <button class="btn btn-sm btn-primary rounded-pill px-4 fw-bold d-none" id="store-save-topic-btn"><i class="fa fa-save me-2"></i> {{ __('messages.save') }}</button>
-                                        <button class="btn btn-sm btn-light border rounded-pill px-4 fw-bold d-none" id="store-cancel-topic-btn">{{ __('messages.cancel') }}</button>
+                                        <button class="btn btn-sm btn-outline-primary rounded-pill px-4 fw-bold" id="store-topic-edit-btn"><i class="fa fa-edit me-2"></i> {{ __('messages.edit') }}</button>
+                                        <button class="btn btn-sm btn-primary rounded-pill px-4 fw-bold d-none" id="store-topic-save-btn"><i class="fa fa-save me-2"></i> {{ __('messages.save') }}</button>
+                                        <button class="btn btn-sm btn-light border rounded-pill px-4 fw-bold d-none" id="store-topic-cancel-btn">{{ __('messages.cancel') }}</button>
                                     </div>
                                 @endif
                                 <div id="store-topic-display" class="markdown-content lh-lg fs-5 text-dark">{!! $topic->txt !!}</div>
                                 @if($canManageProduct)
                                     <div id="store-topic-editor" class="d-none">
+                                        <div class="mb-2">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 open-stackedit-topic">
+                                                <i class="fa fa-pencil-square me-2"></i> {{ \Illuminate\Support\Facades\Lang::has('messages.edit_with_stackedit') ? __('messages.edit_with_stackedit') : 'Edit with StackEdit' }}
+                                            </button>
+                                        </div>
                                         <textarea id="store-topic-textarea" class="form-control bg-light rounded-4 mb-3 border p-3" rows="15">{{ $topic->txt }}</textarea>
                                     </div>
                                 @endif
@@ -356,6 +380,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+<script src="https://unpkg.com/stackedit-js@1.0.7/docs/lib/stackedit.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Markdown rendering
@@ -397,6 +422,37 @@
             const textarea = document.getElementById(idPrefix + '-textarea');
 
             if (!editBtn) return;
+
+            // StackEdit Integration
+            const typeName = idPrefix.split('-')[1]; // "details" or "topic"
+            const stackeditBtn = editor.querySelector('.open-stackedit-' + typeName);
+            if (stackeditBtn) {
+                stackeditBtn.addEventListener('click', function() {
+                    if (typeof Stackedit === 'undefined') {
+                        alert('StackEdit is loading, please try again.');
+                        return;
+                    }
+                    const stackedit = new Stackedit();
+                    stackedit.openFile({
+                        name: "{{ $product->name }}",
+                        content: { text: textarea.value }
+                    });
+                    const adjustIframe = () => {
+                        const iframe = document.querySelector('iframe[src*="stackedit.io"]');
+                        if (iframe) {
+                            iframe.style.top = '0';
+                            iframe.style.height = '100%';
+                            iframe.style.zIndex = '9999';
+                        } else {
+                            setTimeout(adjustIframe, 50);
+                        }
+                    };
+                    adjustIframe();
+                    stackedit.on('fileChange', (file) => {
+                        textarea.value = file.content.text;
+                    });
+                });
+            }
 
             editBtn.onclick = () => {
                 display.classList.add('d-none');

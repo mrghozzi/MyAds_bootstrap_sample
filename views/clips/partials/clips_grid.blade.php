@@ -1,4 +1,4 @@
-﻿@foreach($activities as $activity)
+@foreach($activities as $activity)
     @php
         $mediaUrl = null;
         if (isset($activity->related_content->attachments) && $activity->related_content->attachments->count() > 0) {

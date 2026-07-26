@@ -1,4 +1,4 @@
-﻿@php
+@php
     $activityUser = $activity->user;
     $activityUserProfileUrl = $activityUser ? route('profile.show', $activityUser->username) : '#';
     $activityUserName = $activityUser?->username ?? __('messages.unknown_user');

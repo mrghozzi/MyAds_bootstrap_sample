@@ -2,6 +2,23 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [1.2.0] - 2026-07-26
+
+### Added
+- **YouTube-Style Video Watch Page (`video.blade.php`):**
+  - Created a dedicated YouTube-style watch page view for regular video posts (`s_type == 10`).
+  - Integrated custom HTML5 video player with timeline scrubber, playback speed controls (0.5x-2x), volume range slider, fullscreen mode, and keyboard shortcuts.
+  - Implemented publisher header card with hexagonal avatar styling fallback, verified badge, role label, and interactive follow/unfollow toggle.
+  - Designed uniform compact action buttons with standalone popover flyouts (Reactions, Save, Share with link copy toast, Options/Report).
+  - Integrated a 4-column suggested videos sidebar strictly filtered to video posts only.
+- **Community Feed Publisher Enhancements (`add_post.blade.php`):**
+  - Added **Video Title (`video_title`)** input field to the video section of the composer box.
+  - Added **Video Thumbnail (`video_thumbnail`)** cover upload field with live client-side image preview.
+- **Topic & Post Edit View (`edit.blade.php`):**
+  - Added **Video Title** and **Video Thumbnail** cover image upload fields with current thumbnail preview when editing video posts.
+- **Metadata & Config:**
+  - Updated `theme.json` configuration and bumped minimum supported MyAds version to `4.5.0`.
+
 ## [1.1.0] - 2026-07-11
 
 ### Added

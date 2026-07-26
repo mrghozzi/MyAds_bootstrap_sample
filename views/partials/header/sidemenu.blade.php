@@ -1,4 +1,4 @@
-﻿<div class="d-flex flex-column nav-sidebar">
+<div class="d-flex flex-column nav-sidebar">
     <ul class="nav nav-pills flex-column mb-auto gap-1">
         <li class="nav-item">
             <a href="{{ url('/portal') }}" class="nav-link py-2.5 px-3 rounded-3 d-flex align-items-center gap-3 {{ Request::is('portal*', 'tag*') ? 'active' : 'hover-bg-light' }}">

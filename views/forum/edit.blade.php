@@ -41,9 +41,9 @@
                         <input type="hidden" name="id" value="{{ $topic->id }}">
                     @endif
 
-                    @if((int) ($topic->cat ?? 0) > 0)
+                    @if((int) ($topic->cat ?? 0) > 0 || (isset($status) && in_array((int)$status->s_type, [10, 4])))
                     <div class="mb-4">
-                        <label for="name" class="form-label small fw-bold">{{ __('messages.sbj') }}</label>
+                        <label for="name" class="form-label small fw-bold">{{ __('messages.sbj') }} / {{ __('messages.video_title') }}</label>
                         <div class="input-group input-group-lg">
                             <span class="input-group-text bg-light border-end-0"><i class="fa fa-edit text-muted"></i></span>
                             <input type="text" id="name" name="name" class="form-control border-start-0 ps-0" value="{{ old('name', $topic->name ?? '') }}" required>
@@ -51,6 +51,19 @@
                     </div>
                     @else
                         <input type="hidden" name="name" value="{{ $topic->name ?? 'text' }}">
+                    @endif
+
+                    @if(isset($status) && (int) $status->s_type === 10)
+                    <div class="mb-4">
+                        <label for="video_thumbnail" class="form-label small fw-bold"><i class="fa fa-image text-primary me-1"></i> {{ __('messages.video_thumbnail') }}</label>
+                        <input type="file" id="video_thumbnail" name="video_thumbnail" class="form-control form-control-lg" accept="image/*">
+                        @if($topic->image_url)
+                            <div class="mt-2">
+                                <p class="small text-muted mb-1">الغلاف الحالي للفيديو:</p>
+                                <img src="{{ asset($topic->image_url) }}" style="max-height: 100px; border-radius: 8px; border: 1px solid #e0e6ed;">
+                            </div>
+                        @endif
+                    </div>
                     @endif
 
                     <div class="mb-4">

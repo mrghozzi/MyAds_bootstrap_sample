@@ -12,6 +12,12 @@
                 <span class="fw-semibold">{{ __('messages.clips') ?? 'Clips' }}</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{{ route('video.index') }}" class="nav-link py-2.5 px-3 rounded-3 d-flex align-items-center gap-3 {{ Request::is('video*') ? 'active' : 'hover-bg-light' }}">
+                <i class="fa fa-play-circle fs-5 text-muted-icon"></i>
+                <span class="fw-semibold">{{ __('messages.video_hub') }}</span>
+            </a>
+        </li>
         @auth
             <li class="nav-item">
                 <a href="{{ url('/home') }}" class="nav-link py-2.5 px-3 rounded-3 d-flex align-items-center gap-3 {{ Request::is('home*') ? 'active' : 'hover-bg-light' }}">

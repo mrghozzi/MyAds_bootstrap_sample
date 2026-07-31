@@ -2,6 +2,18 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [1.3.0] - 2026-07-31
+
+### Added
+- **Redesigned Store Page (`views/store/index.blade.php`):**
+  - Upgraded categories grid to support all 9 store catalog categories (`script`, `themes`, `plugins`, `graphics`, `audio`, `video`, `ebooks`, `software`, `courses`) using `StoreCategoryCatalog::selectable()`.
+  - Added custom color gradients, FontAwesome icons, product count badges, and active category state indicator (`ring-active`).
+  - Redesigned Hero Banner with glassmorphism styling, user PTS balance counter badge (`auth()->user()->pts`), store title/description, and quick action buttons (`Add Product`, `Discount Codes`).
+  - Enhanced Product Cards with 16:9 thumbnail container with scale on hover, multi-badge overlay (Price PTS, Sale Discount with strikethrough, Free badge, Suspended status badge), category pill link, publisher avatar & profile link (`profile.show`), and latest version tag badge (`$latestFile->name`).
+  - Added responsive empty state card and Bootstrap 5 pagination styling.
+- **Localization:**
+  - Added `messages.try_adjusting_filters` translation key across all 14 supported language files (`ar`, `en`, `de`, `es`, `fa`, `fr`, `it`, `ja`, `pt`, `ru`, `sr`, `tr`, `zh_CN`, `zh_TW`).
+
 ## [1.2.0] - 2026-07-26
 
 ### Added

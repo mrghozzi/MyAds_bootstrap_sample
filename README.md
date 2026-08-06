@@ -1,6 +1,6 @@
 # MyAds Bootstrap Sample Theme
 
-A modern, responsive Bootstrap 5.3.3 theme designed for the **MyAds v4.4.1** platform.
+A modern, responsive Bootstrap 5.3.3 theme designed for the **MyAds v4.5.1** platform.
 
 ## Description
 
@@ -8,7 +8,7 @@ The Bootstrap Sample theme serves as a fully featured, clean, and highly customi
 
 ## Compatibility
 
-- **MyAds Platform:** Version `4.4.1` or higher.
+- **MyAds Platform:** Version `4.5.1` or higher.
 - **Frameworks/Libraries:** Bootstrap `5.3.3`, FontAwesome `6.x`, Vanilla JS.
 
 ## Key Features

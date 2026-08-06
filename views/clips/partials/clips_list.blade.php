@@ -74,6 +74,16 @@
                     <div class="reel-caption" dir="auto">
                         {!! \App\Support\ContentFormatter::format($activity->txt) !!}
                     </div>
+
+                    <!-- Sound Tag & Spinning Disc -->
+                    <div class="reel-sound-tag d-flex align-items-center gap-2 mt-2">
+                        <div class="spinning-audio-disc">
+                            <i class="fa fa-music"></i>
+                        </div>
+                        <span class="reel-sound-title text-truncate">
+                            <i class="fa fa-volume-up me-1"></i> {{ $activity->related_content->sound_title ?? ($activity->user ? $activity->user->username . ' • ' . __('messages.original_audio') : __('messages.original_audio')) }}
+                        </span>
+                    </div>
                 </div>
 
                 <!-- Right Actions Sidebar -->

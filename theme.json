@@ -1,9 +1,9 @@
 {
     "name": "Bootstrap Sample",
     "slug": "bootstrap-sample",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "author": "mrghozzi",
     "description": "A simple Bootstrap 5.3.3 theme for MyAds.",
     "thumbnail": "screenshot.png",
-    "min_myads": "4.5.0"
+    "min_myads": "4.5.1"
 }

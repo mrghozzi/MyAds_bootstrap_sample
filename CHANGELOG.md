@@ -2,6 +2,18 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [1.4.0] - 2026-08-06
+
+### Added
+- **Mini Floating Picture-in-Picture (PIP) Video Player (`views/forum/video.blade.php`):**
+  - Integrated `IntersectionObserver` on `#videoStageCard` that automatically transitions active playing video to a floating corner card (`.v-mini-floating-player`) when scrolling down.
+  - Added floating overlay controls providing expand-back to main player and PIP dismiss actions without interrupting playback position.
+- **Shorts Clips Sound Tagging & Spinning Disc (`views/clips/partials/clips_list.blade.php` & `views/clips/index.blade.php`):**
+  - Added sound tag pill (`messages.original_audio`) displaying sound title and creator.
+  - Integrated CSS keyframe spinning audio disc animation (`.spinning-audio-disc`) in bottom corner overlay.
+- **Metadata & Config:**
+  - Updated `theme.json` configuration and bumped minimum supported MyAds version to `4.5.1`.
+
 ## [1.3.0] - 2026-07-31
 
 ### Added

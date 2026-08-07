@@ -2,6 +2,15 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [1.6.0] - 2026-08-08
+
+### Added
+- **Referral System Overhaul & ADStn Integration (`views/ads/referrals.blade.php`, `views/ads/referrals_list.blade.php`, `views/home.blade.php`):**
+  - Upgraded referral views to match `@.superdesign` glassmorphic standards with stat counters, multi-size banner embed codes, multi-language support (i18n), 1-click clipboard copy tools, and direct sharing to 7 networks including **ADStn Network (`https://www.adstn.ovh/share`)** using `fa-brands fa-buysellads`.
+  - Integrated high-visibility **Referral Hub Widget** (`modern-card` > `modern-service-block`) on home dashboard with crisp text contrast colors and live metric counters.
+- **Metadata & Config:**
+  - Updated `theme.json` configuration version to `1.6.0`.
+
 ## [1.5.0] - 2026-08-07
 
 ### Added

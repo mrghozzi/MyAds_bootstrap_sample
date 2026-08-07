@@ -381,17 +381,77 @@
                 </div>
             </div>
 
-            <!-- Referral Card -->
-            <div class="card border-0 shadow-sm rounded-4 mb-4 bg-light">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3"><i class="fa fa-users me-2 text-primary"></i> {{ __('messages.referral_program') }}</h6>
-                    <p class="small text-muted mb-4">{{ __('messages.referral_pitch') ?? 'Invite your friends and earn points for every signup and activity.' }}</p>
-                    <div class="d-grid gap-2">
-                        <a href="{{ url('/referral') }}" class="btn btn-outline-dark btn-sm rounded-pill fw-bold">{{ __('messages.referral_list') }}</a>
-                        <a href="{{ url('/r_code') }}" class="btn btn-dark btn-sm rounded-pill fw-bold shadow-sm">{{ __('messages.get_referral_link') }}</a>
+            <!-- Dedicated @.superdesign Referral Hub Widget -->
+            <div class="modern-card card border-0 shadow-sm rounded-4 mb-4" style="margin-top: 0;">
+                <div class="modern-service-block" style="background: linear-gradient(135deg, rgba(52, 84, 209, 0.08) 0%, rgba(97, 93, 250, 0.05) 100%); border: 1px solid rgba(52, 84, 209, 0.2); border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.04);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #3454d1, #615dfa); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 12px rgba(52, 84, 209, 0.3);">
+                                <i class="fa-solid fa-share-nodes"></i>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 17px; font-weight: 800; margin: 0; color: var(--text-color, #1e293b);">{{ __('messages.referral_hub_title') }}</h3>
+                                <span style="font-size: 12px; color: var(--text-color, #475569); opacity: 0.85; display: block; margin-top: 2px;">{{ __('messages.referral_hub_desc') }}</span>
+                            </div>
+                        </div>
+                        <span class="superdesign-pill-badge" style="background: rgba(23, 198, 102, 0.15); color: #17c666; border: 1px solid rgba(23, 198, 102, 0.3); padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 12px;">
+                            <i class="fa-solid fa-coins me-1"></i> {{ __('messages.pts_per_referral') }}
+                        </span>
+                    </div>
+
+                    <!-- Quick Metrics -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                        <div style="background: var(--admin-premium-surface, #fff); border: 1px solid var(--border-color, rgba(0,0,0,0.08)); padding: 12px 16px; border-radius: 14px; text-align: center;">
+                            <span style="font-size: 11px; color: var(--text-color, #475569); font-weight: 700; opacity: 0.85; text-transform: uppercase; display: block; margin-bottom: 4px;">{{ __('messages.total_referrals') }}</span>
+                            <strong style="font-size: 18px; color: #17c666;">{{ number_format($referralStats['total'] ?? 0) }}</strong>
+                        </div>
+                        <div style="background: var(--admin-premium-surface, #fff); border: 1px solid var(--border-color, rgba(0,0,0,0.08)); padding: 12px 16px; border-radius: 14px; text-align: center;">
+                            <span style="font-size: 11px; color: var(--text-color, #475569); font-weight: 700; opacity: 0.85; text-transform: uppercase; display: block; margin-bottom: 4px;">{{ __('messages.points_earned_referral') }}</span>
+                            <strong style="font-size: 18px; color: #ffa21d;">{{ number_format($referralStats['pts'] ?? 0) }} PTS</strong>
+                        </div>
+                    </div>
+
+                    <!-- 1-Click Referral Copy Link -->
+                    @php $homeRefUrl = url('/') . '?ref=' . $user->id; @endphp
+                    <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+                        <input type="text" id="bsHomeRefInput" value="{{ $homeRefUrl }}" readonly style="flex: 1; min-width: 200px; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border-color, #ddd); font-size: 13px; font-weight: 600; background: var(--input-bg, rgba(0,0,0,0.02)); color: var(--text-color, #1e293b);">
+                        <button type="button" id="bsHomeCopyBtn" style="background: linear-gradient(135deg, #3454d1, #615dfa); color: #fff; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(52, 84, 209, 0.25);">
+                            <i class="fa-solid fa-copy"></i> <span id="bsHomeCopyBtnText">{{ __('messages.copy_link') }}</span>
+                        </button>
+                    </div>
+
+                    <!-- Action Link Buttons -->
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <a href="{{ route('ads.referrals') }}" class="btn btn-primary btn-sm rounded-pill fw-bold" style="padding: 8px 16px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fa-solid fa-code"></i> {{ __('messages.referral_banners_codes') }}
+                        </a>
+                        <a href="{{ route('legacy.referral') }}" class="btn btn-outline-dark btn-sm rounded-pill fw-bold" style="padding: 8px 16px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fa-solid fa-users"></i> {{ __('messages.my_referrals_list') }}
+                        </a>
                     </div>
                 </div>
             </div>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const bBtn = document.getElementById('bsHomeCopyBtn');
+                const bInput = document.getElementById('bsHomeRefInput');
+                const bText = document.getElementById('bsHomeCopyBtnText');
+                if (bBtn && bInput && bText) {
+                    bBtn.addEventListener('click', function() {
+                        bInput.select();
+                        document.execCommand('copy');
+                        const orig = bText.innerText;
+                        bText.innerText = "{{ __('messages.link_copied') }}";
+                        bBtn.style.background = '#17c666';
+                        setTimeout(() => {
+                            bText.innerText = orig;
+                            bBtn.style.background = 'linear-gradient(135deg, #3454d1, #615dfa)';
+                        }, 2500);
+                    });
+                }
+            });
+            </script>
 
             <x-widget-column side="portal_right" />
         </div>

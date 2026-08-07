@@ -2,7 +2,19 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [1.5.0] - 2026-08-07
+
+### Added
+- **Continuous Audio Player Bar (`views/partials/continuous_audio_player.blade.php`):**
+  - Integrated persistent floating glassmorphic audio player bar supporting continuous HTML5 audio playback across page navigations with `sessionStorage` state management, track title/avatar rendering, spinning disc animation, scrubber progress, and volume controls.
+  - Included partial in `views/layouts/master.blade.php`.
+- **Plugin Dynamic Widgets Integration (`<x-widget-column>`):**
+  - Full compatibility with MYADS v4.5.2's `registered_plugin_widgets` filter hook allowing 3rd-party plugins under `plugins/` to inject custom widgets dynamically.
+- **Metadata & Config:**
+  - Updated `theme.json` configuration and bumped minimum supported MyAds version to `4.5.2`.
+
 ## [1.4.0] - 2026-08-06
+
 
 ### Added
 - **Mini Floating Picture-in-Picture (PIP) Video Player (`views/forum/video.blade.php`):**

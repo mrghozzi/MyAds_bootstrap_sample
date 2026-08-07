@@ -916,5 +916,7 @@
             });
         });
     </script>
+    @include('theme::partials.continuous_audio_player')
 </body>
+
 </html>

@@ -42,9 +42,9 @@
         <div class="col-md-6">
             <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
                 <div class="card-body d-flex flex-column h-100">
-                    <form action="{{ route('profile.block.store', $user->id) }}" method="POST" class="d-flex flex-column h-100">
+                    <form action="{{ route('profile.block.store', $user->username) }}" method="POST" class="d-flex flex-column h-100">
                         @csrf
-                        <input type="hidden" name="user_id" value="{{ $user->id }}">
+                        <input type="hidden" name="user_id" value="{{ $user->username }}">
                         
                         <div class="mb-4">
                             <label for="block_type" class="form-label fw-bold">

@@ -112,7 +112,7 @@
                                     <div class="col-md-auto text-md-end">
                                         <div class="d-flex gap-2 justify-content-md-end">
                                             @if(Auth::check() && Auth::id() !== $targetUser->id)
-                                                <form action="{{ route('profile.follow', $targetUser->id) }}" method="POST">
+                                                <form action="{{ route('profile.follow', $targetUser->username) }}" method="POST">
                                                     @csrf
                                                     <button type="submit" class="btn btn-{{ $isViewerFollowingTarget ? 'danger' : 'primary' }} rounded-pill fw-black px-4 py-2 shadow-sm transition-all hover-translate-y">
                                                         <i class="fa {{ $isViewerFollowingTarget ? 'fa-user-times' : 'fa-user-plus' }} me-2"></i>

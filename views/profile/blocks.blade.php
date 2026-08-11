@@ -107,7 +107,7 @@
                                                 @endif
                                             </td>
                                             <td class="px-4 py-3 border-light text-end">
-                                                <form action="{{ route('profile.block.destroy', $block->blocked_user_id) }}" method="POST" class="d-inline">
+                                                <form action="{{ route('profile.block.destroy', $block->blockedUser->username ?? $block->blocked_user_id) }}" method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-2 fw-black shadow-sm transition-all hover-translate-y" onclick="return confirm('{{ __('messages.confirm_unblock') ?? 'Are you sure you want to unblock this user?' }}')">

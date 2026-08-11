@@ -88,14 +88,14 @@
                             </a>
                         @else
                             @if($isFollowing)
-                                <form action="{{ route('profile.follow', $user->id) }}" method="POST" class="d-inline">
+                                <form action="{{ route('profile.follow', $user->username) }}" method="POST" class="d-inline">
                                     @csrf
                                     <button type="submit" class="btn btn-danger rounded-pill fw-black px-4 py-3 shadow-lg transition-all hover-translate-y">
                                         <i class="fa fa-user-times me-2"></i> {{ __('messages.unfollow') }}
                                     </button>
                                 </form>
                             @else
-                                <form action="{{ route('profile.follow', $user->id) }}" method="POST" class="d-inline">
+                                <form action="{{ route('profile.follow', $user->username) }}" method="POST" class="d-inline">
                                     @csrf
                                     <button type="submit" class="btn btn-primary rounded-pill fw-black px-4 py-3 shadow-lg transition-all hover-translate-y">
                                         <i class="fa fa-user-plus me-2"></i> {{ __('messages.follow') }}
@@ -107,6 +107,12 @@
                                     <i class="fa fa-envelope me-2"></i> {{ __('messages.send_message') }}
                                 </a>
                             @endif
+                            <a href="{{ route('profile.block.create', $user->username) }}" class="btn btn-outline-danger rounded-pill fw-black px-3 py-3 shadow-sm transition-all hover-translate-y" title="{{ __('messages.block') ?? 'Block' }}">
+                                <i class="fa fa-ban"></i>
+                            </a>
+                            <a href="{{ route('report.index', ['user' => $user->username]) }}" class="btn btn-outline-warning rounded-pill fw-black px-3 py-3 shadow-sm transition-all hover-translate-y" title="{{ __('messages.report') ?? 'Report' }}">
+                                <i class="fa fa-flag"></i>
+                            </a>
                         @endif
                     </div>
                 </div>

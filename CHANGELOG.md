@@ -2,6 +2,17 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [1.7.0] - 2026-08-11
+
+### Security & Privacy
+- **Member ID Privacy & Anti-Enumeration System (`views/profile/show.blade.php`, `views/profile/block_create.blade.php`, `views/profile/blocks.blade.php`, `views/profile/partials/*`, `views/partials/widgets/widget_members.blade.php`, `views/forum/video.blade.php`, `views/partials/ajax/user_popover.blade.php`):**
+  - Updated all follow forms across profile, widgets, and video watch views to use `username` parameters instead of internal database `id`s (`route('profile.follow', $user->username)`).
+  - Updated block (`route('profile.block.create', $user->username)`), store block (`route('profile.block.store', $user->username)`), unblock (`route('profile.block.destroy', $block->blockedUser->username)`), and report (`route('report.index', ['user' => $user->username])`) actions to use `username` instead of numeric member `id`s.
+  - Updated inline JavaScript handlers in `user_popover.blade.php` to pass `username` string parameters to `toggleFollow()`.
+
+### Metadata & Config
+- Updated `theme.json` configuration version to `1.7.0`.
+
 ## [1.6.0] - 2026-08-08
 
 ### Added

@@ -49,7 +49,7 @@
                     </div>
 
                     @auth
-                        <form action="{{ route('profile.follow', $user->id) }}" method="POST" class="flex-shrink-0">
+                        <form action="{{ route('profile.follow', $user->username) }}" method="POST" class="flex-shrink-0">
                             @csrf
                             <button type="submit" class="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center p-0" style="width: 30px; height: 30px;" title="{{ __('messages.follow') ?? 'Follow' }}">
                                 <i class="fa fa-user-plus" style="font-size: 11px;"></i>

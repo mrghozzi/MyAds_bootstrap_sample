@@ -2,6 +2,16 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [1.9.0] - 2026-08-15
+
+### Added
+- **Developer Platform & Guides Modernization (`views/developer/index.blade.php`, `views/developer/guides.blade.php`, `views/developer/partials/styles.blade.php`):**
+  - Modernized the Developer Platform landing page (`/developer`) with interactive feature cards (OAuth 2.0, REST API v1, JavaScript Widgets, Web Share API), dynamic rate limit badges (30 req/min), live multi-language Code Playground sandbox (PHP, Node.js, Python, cURL), and scopes category overview.
+  - Upgraded Developer Guides (`/developer/guides`) with a sticky Table of Contents (TOC), corrected OAuth 2.0 Authorization Code Flow lifecycle and valid scope strings, multi-language SDK code examples, interactive 20+ endpoint directory with HTTP method badges (`GET`/`POST`) and parameter specifications, complete 26-scope OAuth 2.0 catalog table with sensitive warning badges, ready-to-use HTML snippets for 3 embed widgets (Follow, Profile, Feed), External Web Share API documentation with live link builder, and standard JSON response envelopes.
+  - Added custom styling tokens for HTTP method badges (`GET`, `POST`, `PUT`, `DELETE`), endpoint cards, custom tables, and responsive code tabs in `styles.blade.php`.
+- **Metadata & Config:**
+  - Updated `theme.json` configuration version to `1.9.0`.
+
 ## [1.8.0] - 2026-08-15
 
 ### Added

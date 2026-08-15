@@ -2,6 +2,16 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [1.8.0] - 2026-08-15
+
+### Added
+- **Developer Platform Scopes & Categorization (`views/developer/partials/scope_grid.blade.php`, `views/oauth/authorize.blade.php`):**
+  - Updated developer scope grid to display expanded OAuth 2.0 permissions grouped into 7 clean categories (`Identity & Profile`, `Content & Interactions`, `Messages & Notifications`, `Wallet & Rewards`, `Community & Media`, `Store & Advertising`, and `App Owner Integrations`) with Bootstrap 5 cards and category headers.
+  - Added visual indicators for sensitive permissions (`badge bg-danger`) and code tags.
+  - Synchronized OAuth consent screen (`views/oauth/authorize.blade.php`) with complete icon mappings across all 27 developer scopes.
+- **Metadata & Config:**
+  - Updated `theme.json` configuration version to `1.8.0`.
+
 ## [1.7.0] - 2026-08-11
 
 ### Security & Privacy

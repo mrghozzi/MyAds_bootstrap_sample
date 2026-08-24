@@ -2,6 +2,17 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [1.9.1] - 2026-08-24
+
+### Added
+- **Real-Time Events Engine (SSE Live Stream — RT-04) Integration (`views/layouts/master.blade.php`, `assets/js/live-events.js`, `assets/js/messages-app.js`):**
+  - Integrated `LiveEventManager` client script (`assets/js/live-events.js`) with Server-Sent Events (SSE) `/live/stream` connection, live Bootstrap 5 toast alerts, dynamic notification & message badge counters, and progressive fallback polling.
+  - Bound `myads:live-message` custom event listener inside `messages-app.js` for instant conversation refreshes on incoming messages.
+  - Added `\App\Helpers\Hooks::do_action('theme_master_before_body_close')` hook invocation in `views/layouts/master.blade.php`.
+
+### Metadata & Config
+- Updated `theme.json` version to `1.9.1` and bumped `min_myads` compatibility to `4.5.3`.
+
 ## [1.9.0] - 2026-08-15
 
 ### Added

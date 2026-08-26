@@ -9,6 +9,8 @@ All notable changes to the MyAds Bootstrap Sample theme will be documented in th
   - Integrated dynamic CSS variables engine (`ThemeCustomizerService`) linking `custom_variables.css` or compiled inline styles across `master.blade.php` and `welcome.blade.php`.
   - Added live `window.addEventListener('message')` listener for bidirectional `postMessage` synchronization, rendering color, font, radius, and glassmorphism adjustments in real-time within the admin live customizer iframe preview (`/?theme_preview=1`).
   - Mapped design tokens (`--theme-primary`, `--theme-secondary`, `--theme-bg`, `--theme-text`, `--theme-radius`, `--theme-card-bg`) into Bootstrap 5 CSS variables (`--bs-primary`, `--bs-secondary`, `--bs-body-bg`, `--bs-body-color`, `--bs-border-radius`) across buttons, navbar, cards, and widget boxes.
+- **Profile Video Hub & Shorts Clips Tab Parity (`views/profile/partials/videos_tab.blade.php`, `views/profile/partials/videos_grid_items.blade.php`, `views/profile/partials/clips_tab.blade.php`, `views/profile/partials/clips_grid_items.blade.php`):**
+  - Synchronized dedicated 16:9 YouTube-style video cards and 9:16 Shorts clips grid items inside member profiles with video hover previews, play overlays, view counts, and infinite scrolling.
 
 ### Metadata & Config
 - Bumped `theme.json` version to `1.9.3` with `min_myads` compatibility at `4.5.3`.

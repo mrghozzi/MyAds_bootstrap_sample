@@ -1,8 +1,13 @@
 /* Bootstrap Sample Compatibility CSS */
 
 :root {
-    --bs-primary: #0d6efd;
-    --bs-secondary: #6c757d;
+    --bs-primary: var(--theme-primary, #0d6efd);
+    --bs-secondary: var(--theme-secondary, #6c757d);
+    --bs-body-bg: var(--theme-bg, #f8f9fa);
+    --bs-body-color: var(--theme-text, #212529);
+    --bs-border-radius: var(--theme-radius, 0.75rem);
+    --bs-border-radius-lg: var(--theme-radius, 1rem);
+    --bs-border-radius-sm: calc(var(--theme-radius, 0.5rem) * 0.75);
 }
 
 /* Grids */
@@ -19,8 +24,8 @@
 
 /* Legacy Redesign Compatibility Layer */
 .widget-box { 
-    background: #fff; 
-    border-radius: 1rem; 
+    background: var(--theme-card-bg, #fff); 
+    border-radius: var(--theme-radius, 1rem); 
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); 
     margin-bottom: 1.5rem; 
     padding: 1.25rem;
@@ -29,7 +34,7 @@
 .widget-box-title { 
     font-weight: 700; 
     margin-bottom: 1rem; 
-    color: #1d2129; 
+    color: var(--theme-text, #1d2129); 
     font-size: 1rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -44,14 +49,14 @@
     user-select: none; 
     padding: 0.6rem 1.2rem; 
     font-size: 0.9rem; 
-    border-radius: 0.5rem; 
+    border-radius: var(--theme-radius, 0.5rem); 
     transition: all 0.2s ease-in-out; 
     text-decoration: none;
     border: 0;
     cursor: pointer;
 }
-.button.primary { background-color: #615dfa; color: #fff; }
-.button.secondary { background-color: #23d2e2; color: #fff; }
+.button.primary { background-color: var(--theme-primary, #615dfa); color: #fff; }
+.button.secondary { background-color: var(--theme-secondary, #23d2e2); color: #fff; }
 .button.white { background-color: #fff; color: #3e3f5e; border: 1px solid #dedee9; }
 .button.full { width: 100%; }
 

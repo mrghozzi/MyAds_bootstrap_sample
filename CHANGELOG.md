@@ -2,6 +2,17 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [1.9.3] - 2026-08-26
+
+### Added
+- **Live Theme Customizer & Dynamic CSS Variables Engine (`THEME-07`) Integration (`views/layouts/master.blade.php`, `views/welcome.blade.php`, `assets/css/style.css`):**
+  - Integrated dynamic CSS variables engine (`ThemeCustomizerService`) linking `custom_variables.css` or compiled inline styles across `master.blade.php` and `welcome.blade.php`.
+  - Added live `window.addEventListener('message')` listener for bidirectional `postMessage` synchronization, rendering color, font, radius, and glassmorphism adjustments in real-time within the admin live customizer iframe preview (`/?theme_preview=1`).
+  - Mapped design tokens (`--theme-primary`, `--theme-secondary`, `--theme-bg`, `--theme-text`, `--theme-radius`, `--theme-card-bg`) into Bootstrap 5 CSS variables (`--bs-primary`, `--bs-secondary`, `--bs-body-bg`, `--bs-body-color`, `--bs-border-radius`) across buttons, navbar, cards, and widget boxes.
+
+### Metadata & Config
+- Bumped `theme.json` version to `1.9.3` with `min_myads` compatibility at `4.5.3`.
+
 ## [1.9.2] - 2026-08-26
 
 ### Fixed

@@ -2,6 +2,15 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [1.9.2] - 2026-08-26
+
+### Fixed
+- **Developer Platform Scopes & Redirect URIs State Synchronization (`views/developer/partials/form_fields.blade.php`):**
+  - Enhanced `form_fields.blade.php` to robustly decode `requested_scopes` and `redirect_uris` whether stored as JSON string, array, or null, ensuring reliable persistence and accurate checkbox/input state rendering during developer application updates.
+
+### Metadata & Config
+- Updated `theme.json` version to `1.9.2` and maintained `min_myads` compatibility at `4.5.3`.
+
 ## [1.9.1] - 2026-08-24
 
 ### Added

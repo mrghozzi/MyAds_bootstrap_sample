@@ -204,6 +204,22 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card border-0 shadow-sm rounded-4 dev-panel">
+                <div class="card-header bg-white py-3 border-bottom-0">
+                    <h6 class="fw-bold mb-0 text-uppercase small text-danger">{{ __('messages.danger_zone') }}</h6>
+                </div>
+                <div class="card-body p-4 pt-0">
+                    <p class="text-muted small mb-3">{{ __('messages.delete_app_warning') }}</p>
+                    <form action="{{ route('developer.apps.destroy', $app->id) }}" method="POST" onsubmit="return confirm('@lang('messages.confirm_delete_app')')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-outline-danger rounded-pill fw-bold px-4 w-100">
+                            <i class="fa fa-trash me-1"></i> {{ __('messages.delete_app') }}
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -2,6 +2,16 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [1.9.4] - 2026-08-27
+
+### Added
+- **Developer Application Deletion & Lifecycle Management (`views/developer/apps/index.blade.php`, `views/developer/apps/show.blade.php`):**
+  - Added delete application button with confirmation dialog on developer apps list cards (`/developer/apps`).
+  - Added dedicated Danger Zone card with application deletion form in the app workspace inspection view (`/developer/apps/{id}`).
+
+### Metadata & Config
+- Bumped `theme.json` version to `1.9.4` with `min_myads` compatibility at `4.5.4`.
+
 ## [1.9.3] - 2026-08-26
 
 ### Added

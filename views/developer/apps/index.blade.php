@@ -108,8 +108,15 @@
                                     </span>
                                 </div>
 
-                                <div class="mt-4">
+                                <div class="mt-4 d-flex align-items-center gap-2 flex-wrap">
                                     <a href="{{ route('developer.apps.show', $developerApp->id) }}" class="btn btn-outline-secondary rounded-pill fw-bold px-4">{{ __('messages.manage') }}</a>
+                                    <form action="{{ route('developer.apps.destroy', $developerApp->id) }}" method="POST" onsubmit="return confirm('@lang('messages.confirm_delete_app')')" class="m-0">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger rounded-pill fw-bold px-3">
+                                            <i class="fa fa-trash me-1"></i> {{ __('messages.delete_app') }}
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </article>

@@ -36,6 +36,12 @@
                 </div>
             @endif
 
+            @if(session('error'))
+                <div class="alert alert-danger rounded-4 shadow-sm mb-0" role="alert">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <div class="card border-0 shadow-sm rounded-4 dev-panel">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">

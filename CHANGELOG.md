@@ -2,6 +2,15 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [1.9.5] - 2026-08-29
+
+### Added
+- **Developer Platform Flash Notification Alerts (`views/developer/apps/create.blade.php`, `views/developer/apps/show.blade.php`):**
+  - Integrated `session('success')` and `session('error')` feedback banners into developer application creation and management views with Bootstrap 5 rounded alerts and shadow styling.
+
+### Metadata & Config
+- Bumped `theme.json` version to `1.9.5` with `min_myads` compatibility at `4.5.5`.
+
 ## [1.9.4] - 2026-08-27
 
 ### Added

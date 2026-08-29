@@ -25,6 +25,18 @@
 
     <div class="col-lg-6">
         <div class="d-flex flex-column gap-4">
+            @if(session('success'))
+                <div class="alert alert-success rounded-4 shadow-sm mb-0" role="alert">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-danger rounded-4 shadow-sm mb-0" role="alert">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             @if($errors->any())
                 <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger rounded-4 mb-0">
                     <strong><i class="fa fa-exclamation-circle me-1"></i>{{ __('messages.save') }}</strong>

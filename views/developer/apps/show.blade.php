@@ -133,12 +133,15 @@
                 </div>
             </div>
 
+            <div id="dev-form-alert" class="alert alert-danger rounded-4 shadow-sm mb-0" style="display: none;"></div>
+            <div id="dev-form-success" class="alert alert-success rounded-4 shadow-sm mb-0" style="display: none;"></div>
+
             <div class="card border-0 shadow-sm rounded-4 dev-panel">
                 <div class="card-header bg-white py-3 border-bottom-0">
                     <h6 class="fw-bold mb-0 text-uppercase small text-muted">{{ __('messages.app_settings') }}</h6>
                 </div>
                 <div class="card-body p-4 pt-0">
-                    <form action="{{ route('developer.apps.update', $app->id) }}" method="POST" class="dev-form-layout">
+                    <form action="{{ route('developer.apps.update', $app->id) }}" method="POST" class="dev-form-layout" id="dev-update-app-form">
                         @csrf
                         @method('PUT')
 
@@ -149,7 +152,7 @@
                         ])
 
                         <div class="dev-form-actions mt-4 d-flex gap-2">
-                            <button type="submit" class="btn btn-primary rounded-pill fw-bold px-4">{{ __('messages.save_changes') }}</button>
+                            <button type="submit" class="btn btn-primary rounded-pill fw-bold px-4" id="dev-update-btn">{{ __('messages.save_changes') }}</button>
                             <a href="{{ route('developer.apps.index') }}" class="btn btn-outline-secondary rounded-pill fw-bold px-4">{{ __('messages.my_apps') }}</a>
                         </div>
                     </form>

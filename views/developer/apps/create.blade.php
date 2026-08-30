@@ -183,13 +183,25 @@ document.addEventListener('DOMContentLoaded', function () {
             } else if (response.status === 419) {
                 errorMsg = 'Session/CSRF expired (HTTP 419). Please refresh the page and log in again.';
             } else {
-                const cleanSnippet = rawText.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-                                            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-                                            .replace(/<[^>]+>/g, ' ')
-                                            .replace(/\s+/g, ' ')
-                                            .trim()
-                                            .substring(0, 300);
-                errorMsg = '[HTTP ' + response.status + ' ' + response.statusText + '] ' + (cleanSnippet || 'Permission Denied / WAF Block');
+                let specificError = '';
+                try {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(rawText, 'text/html');
+                    const title = doc.querySelector('.error-title')?.innerText || doc.querySelector('h1')?.innerText || '';
+                    const message = doc.querySelector('.error-message')?.innerText || doc.querySelector('.error-card p')?.innerText || doc.querySelector('p')?.innerText || '';
+                    specificError = (title + (message ? ' — ' + message : '')).trim();
+                } catch (e) {}
+
+                if (!specificError) {
+                    specificError = rawText.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+                                           .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+                                           .replace(/<[^>]+>/g, ' ')
+                                           .replace(/\s+/g, ' ')
+                                           .trim()
+                                           .substring(0, 300);
+                }
+
+                errorMsg = '[HTTP ' + response.status + ' ' + response.statusText + '] ' + (specificError || 'Permission Denied / WAF Block');
             }
 
             if (alertContainer) {

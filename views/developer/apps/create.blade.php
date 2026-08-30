@@ -141,16 +141,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             const formData = new FormData(form);
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
+                || form.querySelector('input[name="_token"]')?.value 
+                || '';
+
             const response = await fetch(form.action, {
                 method: 'POST',
                 body: formData,
                 headers: {
                     'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken
                 }
             });
 
-            const data = await response.json().catch(() => ({}));
+            const rawText = await response.text();
+            let data = {};
+            try {
+                data = JSON.parse(rawText);
+            } catch (err) {
+                data = {};
+            }
 
             if (response.ok && data.success) {
                 if (data.redirect) {
@@ -161,10 +172,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            let errorMsg = data.message || 'Error occurred while saving.';
-            if (data.errors) {
-                const list = Object.values(data.errors).flat().join('<br>');
-                if (list) errorMsg = list;
+            let errorMsg = '';
+            if (data.message) {
+                errorMsg = data.message;
+            } else if (data.errors) {
+                errorMsg = Object.values(data.errors).flat().join('<br>');
+            } else if (response.status === 419) {
+                errorMsg = 'Session/CSRF expired (HTTP 419). Please refresh the page and log in again.';
+            } else if (response.status === 403) {
+                errorMsg = 'Access Forbidden (HTTP 403). You might not be eligible or permission was denied.';
+            } else if (response.status === 404) {
+                errorMsg = 'Endpoint not found (HTTP 404): ' + form.action;
+            } else {
+                const cleanSnippet = rawText.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 200);
+                errorMsg = '[HTTP ' + response.status + ' ' + response.statusText + '] ' + (cleanSnippet || 'Unknown server response');
             }
 
             if (alertContainer) {
@@ -175,8 +196,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert(errorMsg);
             }
         } catch (err) {
-            console.error('AJAX Submit Error, falling back to standard submit:', err);
-            form.submit();
+            console.error('AJAX Submit Exception:', err);
+            if (alertContainer) {
+                alertContainer.innerHTML = '<strong>Network / Script Error: ' + err.message + '</strong>';
+                alertContainer.style.display = 'block';
+            } else {
+                alert('Network Error: ' + err.message);
+            }
         } finally {
             if (submitBtn) {
                 submitBtn.disabled = false;

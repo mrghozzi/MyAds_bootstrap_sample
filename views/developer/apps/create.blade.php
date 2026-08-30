@@ -55,7 +55,7 @@
                     <h6 class="fw-bold mb-0 text-uppercase small text-muted">{{ __('messages.create_app') }}</h6>
                 </div>
                 <div class="card-body p-4 pt-0">
-                    <form action="{{ route('developer.apps.store') }}" method="POST" class="dev-form-layout" id="dev-create-app-form">
+                    <form action="{{ route('developer.apps.store', [], false) }}" method="POST" class="dev-form-layout" id="dev-create-app-form">
                         @csrf
 
                         @include('theme::developer.partials.form_fields', [
@@ -145,9 +145,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 || form.querySelector('input[name="_token"]')?.value 
                 || '';
 
-            const response = await fetch(form.action, {
+            const targetUrl = form.getAttribute('action') || '{{ route("developer.apps.store", [], false) }}';
+
+            const response = await fetch(targetUrl, {
                 method: 'POST',
                 body: formData,
+                credentials: 'same-origin',
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
@@ -179,13 +182,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 errorMsg = Object.values(data.errors).flat().join('<br>');
             } else if (response.status === 419) {
                 errorMsg = 'Session/CSRF expired (HTTP 419). Please refresh the page and log in again.';
-            } else if (response.status === 403) {
-                errorMsg = 'Access Forbidden (HTTP 403). You might not be eligible or permission was denied.';
-            } else if (response.status === 404) {
-                errorMsg = 'Endpoint not found (HTTP 404): ' + form.action;
             } else {
-                const cleanSnippet = rawText.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 200);
-                errorMsg = '[HTTP ' + response.status + ' ' + response.statusText + '] ' + (cleanSnippet || 'Unknown server response');
+                const cleanSnippet = rawText.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+                                            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+                                            .replace(/<[^>]+>/g, ' ')
+                                            .replace(/\s+/g, ' ')
+                                            .trim()
+                                            .substring(0, 300);
+                errorMsg = '[HTTP ' + response.status + ' ' + response.statusText + '] ' + (cleanSnippet || 'Permission Denied / WAF Block');
             }
 
             if (alertContainer) {

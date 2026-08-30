@@ -127,6 +127,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('dev-create-app-form');
     if (!form) return;
 
+    const getCsrfToken = function () {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
+            || form.querySelector('input[name="_token"]')?.value 
+            || '';
+    };
+
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
         const submitBtn = document.getElementById('dev-submit-btn');
@@ -140,22 +146,32 @@ document.addEventListener('DOMContentLoaded', function () {
         if (alertContainer) alertContainer.style.display = 'none';
 
         try {
-            const formData = new FormData(form);
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
-                || form.querySelector('input[name="_token"]')?.value 
-                || '';
+            const csrfToken = getCsrfToken();
+            const scopes = [];
+            form.querySelectorAll('input[name="requested_scopes[]"]:checked').forEach(function (cb) {
+                scopes.push(cb.value);
+            });
 
-            const targetUrl = form.getAttribute('action') || '{{ route("developer.apps.store", [], false) }}';
+            const payload = {
+                _token: csrfToken,
+                name: form.querySelector('input[name="name"]')?.value || '',
+                domain: form.querySelector('input[name="domain"]')?.value || '',
+                description: form.querySelector('textarea[name="description"]')?.value || '',
+                redirect_uris: form.querySelector('textarea[name="redirect_uris"]')?.value || '',
+                requested_scopes: scopes
+            };
 
-            const response = await fetch(targetUrl, {
+            const storeUrl = '{{ route("developer.apps.store") }}';
+
+            const response = await fetch(storeUrl, {
                 method: 'POST',
-                body: formData,
-                credentials: 'same-origin',
                 headers: {
+                    'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-TOKEN': csrfToken
-                }
+                },
+                body: JSON.stringify(payload)
             });
 
             const rawText = await response.text();

@@ -26,6 +26,7 @@
 @endphp
 
 @include('theme::store.partials.page-shell-styles')
+@include('theme::store.partials.kb-superdesign-formatter')
 
 <div class="section-banner" style="background: url({{ theme_asset('img/banner/Newsfeed.png') }}) no-repeat 50%;">
     <img class="section-banner-icon" src="{{ theme_asset('img/banner/marketplace-icon.png') }}">
@@ -540,6 +541,9 @@
                             el.innerHTML = DOMPurify.sanitize(marked.parse(el.innerText || rawContent));
                             el.setAttribute('data-rendered', 'true');
                             el.style.display = 'block';
+                            if (window.enhanceSuperdesignKbContent) {
+                                window.enhanceSuperdesignKbContent(el);
+                            }
                         } catch (e) {
                             console.error('Error rendering markdown:', e);
                         }
@@ -547,6 +551,10 @@
                 });
             };
             renderMarkdown();
+
+            if (window.initKbSnippetsToolbar) {
+                window.initKbSnippetsToolbar('kb-editor');
+            }
 
             // StackEdit Integration
             const textarea = document.getElementById('kb-editor');
@@ -617,12 +625,18 @@
                             ajaxPreviewTitle.innerText = title;
                             ajaxPreviewContent.innerHTML = renderedHtml;
                             ajaxPreviewCard.style.display = 'block';
+                            if (window.enhanceSuperdesignKbContent) {
+                                window.enhanceSuperdesignKbContent(ajaxPreviewContent);
+                            }
                             if (window.innerWidth < 1100) {
                                 ajaxPreviewCard.scrollIntoView({ behavior: 'smooth' });
                             }
                         } else if (previewModal && modalPreviewContent) {
                             modalPreviewTitle.innerText = title;
                             modalPreviewContent.innerHTML = renderedHtml;
+                            if (window.enhanceSuperdesignKbContent) {
+                                window.enhanceSuperdesignKbContent(modalPreviewContent);
+                            }
                             previewModal.show();
                         }
                     }

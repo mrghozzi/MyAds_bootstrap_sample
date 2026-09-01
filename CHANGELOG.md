@@ -2,6 +2,20 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.1.0] - 2026-09-02
+
+### Added
+- **Superdesign Code & Diagram Formatter Integration (`views/store/partials/kb-superdesign-formatter.blade.php`):**
+  - **Mermaid Interactive Diagram Cards (` ```mermaid `):** Integrated dynamic SVG rendering for Mermaid flowcharts and diagrams with real-time Diagram/Code view switcher, one-click copy button, and adaptive Light/Dark mode themes.
+  - **Syntax-Highlighted macOS Dark Code Windows:** Beautiful dark window cards with 3 colored macOS action dots, language badge chips (`PHP`, `Blade`, `HTML`, `CSS`, `JSON`, `Text`, `Code`), line numbers gutter, and animated one-click clipboard copy.
+  - **Knowledgebase (`/kb/*`):** Enabled Superdesign code and Mermaid diagram rendering across knowledgebase articles, live AJAX topic preview cards, and mobile preview modals (`views/store/knowledgebase.blade.php`).
+  - **Store Products (`/store/*`):** Enabled Superdesign code and diagram rendering across product details and topic description tabs (`views/store/show.blade.php`).
+  - **Forum Topics & Posts (`/forum/*`):** Enabled automatic Superdesign code formatting and Mermaid rendering across all forum topic discussions, replies, and community activity posts (`views/forum/_assets.blade.php`).
+  - **Quick Snippets Insertion Toolbar (`initKbSnippetsToolbar`):** Added a quick-insert template toolbar above knowledgebase and product markdown textareas to insert pre-formatted snippet templates with a single click.
+
+### Metadata & Config
+- Bumped `theme.json` version to `2.1.0` with `min_myads` compatibility at `4.5.5`.
+
 ## [2.0.0] - 2026-09-01
 
 ### Added

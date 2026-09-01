@@ -11,6 +11,7 @@
     $fileCount = $files->count();
     $reportKey = 'product' . $product->id;
 @endphp
+@include('theme::store.partials.kb-superdesign-formatter')
 
 <div class="container py-4">
     <!-- Breadcrumbs -->
@@ -387,12 +388,22 @@
         function renderMarkdown() {
             document.querySelectorAll('.markdown-content').forEach(el => {
                 if (!el.getAttribute('data-rendered')) {
-                    el.innerHTML = DOMPurify.sanitize(marked.parse(el.innerText || el.innerHTML));
+                    let text = (el.textContent || el.innerText || el.innerHTML || '');
+                    text = text.replace(/^\s+/, '').trimEnd();
+                    el.innerHTML = DOMPurify.sanitize(marked.parse(text));
                     el.setAttribute('data-rendered', 'true');
+                    if (window.enhanceSuperdesignKbContent) {
+                        window.enhanceSuperdesignKbContent(el);
+                    }
                 }
             });
         }
         renderMarkdown();
+
+        if (window.initKbSnippetsToolbar) {
+            window.initKbSnippetsToolbar('store-details-textarea');
+            window.initKbSnippetsToolbar('store-topic-textarea');
+        }
 
         // Points check
         document.querySelectorAll('.not-enough-points').forEach(btn => {

@@ -2,6 +2,31 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.0.0] - 2026-09-01
+
+### Added
+- **Superdesign Private Messaging Overhaul (`views/messages/`, `assets/css/messages.css`):**
+  - Completely redesigned the messaging module (`/messages`, `/messages/{id}`, `/messages/create`) based on `.superdesign` design tokens (`#615dfa` primary, `#23d2e2` accent, `#1df377` online indicator, and `#161c2d` dark mode surface).
+  - Modernized 2-column responsive layout (`_page.blade.php`, `index.blade.php`, `show.blade.php`) with instant conversation searching, unread badge pulses, active cyan highlight, and mobile drawer toggle (`[data-rail-toggle]`).
+  - Upgraded message thread stream (`views/messages/partials/conversation.blade.php`) with incoming soft surface bubbles, outgoing primary gradient bubbles, rich image attachment previews with lightbox links, formatted file attachment cards, and encryption notice badges.
+  - Upgraded interactive composer (`views/messages/partials/composer.blade.php`) with attachment preview strip, auto-expanding textarea, full emoji popover with category tabs and localStorage persistence, and enter-to-send support.
+  - Redesigned `/messages/create` (`views/messages/create.blade.php`) with modern hero banner, `@username` recipient input, validation error banners, and action sidebar card.
+  - Rewrote `assets/css/messages.css` with comprehensive CSS custom properties for Light/Dark modes, complete Arabic RTL support, smooth micro-animations, and custom scrollbars.
+- **Theme Customizer Header Partial (`views/partials/_customizer_head.blade.php`):**
+  - Added unified customizer head partial for real-time CSS variables compilation and `postMessage` preview synchronization.
+
+### Fixed
+- **Profile Visual Identity Upload & Live Preview (`views/profile/edit.blade.php`):**
+  - Connected interactive upload triggers for profile avatar and cover photo.
+  - Added instant client-side `FileReader` live preview for newly selected avatar and cover images with file validation.
+  - Added visible camera badge overlay on the avatar and upload feedback alert banner.
+- **Profile Badges Showcase Interactive Selector (`views/profile/badges.blade.php`):**
+  - Fixed badge selection cards to update visually on click with primary border glow, checkmark indicator, and real-time counter (`X / 6 Selected`).
+  - Added client-side cap validation enforcing the 6-badge showcase limit with friendly feedback.
+
+### Metadata & Config
+- Bumped `theme.json` version to `2.0.0` with `min_myads` compatibility at `4.5.5`.
+
 ## [1.9.5] - 2026-08-29
 
 ### Added

@@ -1,4 +1,79 @@
 @extends('theme::layouts.master')
+
+@push('head')
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+    }
+    .badge-selector-card {
+        cursor: pointer;
+        user-select: none;
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        position: relative;
+        background-color: var(--bs-card-bg, #ffffff);
+        border: 2px solid var(--bs-border-color, #eaeaf5) !important;
+    }
+    .badge-selector-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--msg-primary, #615dfa) !important;
+        box-shadow: 0 8px 20px rgba(97, 93, 250, 0.12) !important;
+    }
+    .badge-selector-card.is-selected,
+    .badge-selector-card:has(input:checked) {
+        border-color: var(--msg-primary, #615dfa) !important;
+        background-color: rgba(97, 93, 250, 0.06) !important;
+        box-shadow: 0 8px 24px rgba(97, 93, 250, 0.16) !important;
+    }
+    [data-theme="css_d"] .badge-selector-card.is-selected,
+    [data-bs-theme="dark"] .badge-selector-card.is-selected,
+    [data-theme="css_d"] .badge-selector-card:has(input:checked),
+    [data-bs-theme="dark"] .badge-selector-card:has(input:checked) {
+        background-color: rgba(119, 80, 248, 0.12) !important;
+        border-color: #7750f8 !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+    }
+    .badge-check-indicator {
+        position: absolute;
+        top: 14px;
+        inset-inline-end: 14px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid #dedeea;
+        background-color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: transparent;
+        font-size: 0.75rem;
+        transition: all 0.2s ease;
+    }
+    .badge-selector-card.is-selected .badge-check-indicator,
+    .badge-selector-card:has(input:checked) .badge-check-indicator {
+        background-color: var(--msg-primary, #615dfa);
+        border-color: var(--msg-primary, #615dfa);
+        color: #ffffff;
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(97, 93, 250, 0.35);
+    }
+    .badge-icon-box {
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        background-color: rgba(97, 93, 250, 0.1);
+        color: var(--msg-primary, #615dfa);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px auto;
+        transition: transform 0.2s ease;
+    }
+    .badge-selector-card:hover .badge-icon-box {
+        transform: scale(1.08);
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="container py-4">
     <!-- Page Header -->
@@ -27,8 +102,11 @@
         <!-- Main Content -->
         <div class="col-lg-9">
             <div class="card border-0 shadow-sm rounded-4 border border-light overflow-hidden mb-4">
-                <div class="card-header bg-white py-4 px-4 border-bottom">
+                <div class="card-header bg-white py-4 px-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <h5 class="fw-black mb-0 text-dark">{{ __('messages.badge_showcase') ?? 'Badge Showcase' }}</h5>
+                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 fw-black small" id="badge-counter">
+                        <i class="fa fa-shield-halved me-1"></i> <span id="selected-count">{{ count($showcaseIds) }}</span> / 6 {{ __('messages.selected') ?? 'Selected' }}
+                    </span>
                 </div>
                 <div class="card-body p-4 p-md-5">
                     @include('theme::billing.partials.alerts')
@@ -37,7 +115,7 @@
                         @include('theme::partials.upgrade_notice', ['upgradeNotice' => $upgradeNotice])
                     @endif
 
-                    <form action="{{ route('profile.badges.update') }}" method="POST">
+                    <form action="{{ route('profile.badges.update') }}" method="POST" id="badges-form">
                         @csrf
                         <fieldset {{ !($featureAvailable ?? true) ? 'disabled' : '' }}>
                             <div class="alert alert-info border-0 shadow-sm rounded-4 p-4 mb-5 d-flex align-items-center" role="alert">
@@ -50,36 +128,48 @@
                                 </div>
                             </div>
 
-                            <div class="row g-4">
+                            <div class="row g-4" id="badges-grid">
                                 @forelse($earnedBadges as $earned)
                                     @php $badge = $earned->badge; @endphp
                                     @if($badge)
                                         @php $isSelected = in_array($badge->id, $showcaseIds, true); @endphp
                                         <div class="col-lg-4 col-md-6">
-                                            <label class="card h-100 border-0 shadow-sm rounded-4 cursor-pointer transition-all hover-translate-y badge-selector-card overflow-hidden border border-light {{ $isSelected ? 'border-primary border-opacity-50 bg-primary bg-opacity-5' : 'bg-light bg-opacity-25' }}">
-                                                <input type="checkbox" name="badge_ids[]" value="{{ $badge->id }}" {{ $isSelected ? 'checked' : '' }} class="d-none badge-checkbox">
-                                                <div class="card-body p-4 text-center">
-                                                    <div class="bg-white rounded-circle shadow-sm p-3 mb-4 d-inline-flex border border-light transition-all hover-scale badge-icon-container" style="width: 80px; height: 80px; align-items: center; justify-content: center;">
-                                                        <div class="fs-1 text-primary">
-                                                            @if($badge->icon && str_contains($badge->icon, ' '))
-                                                                <i class="{{ $badge->icon }}"></i>
-                                                            @elseif($badge->icon && str_starts_with($badge->icon, 'fa-'))
-                                                                <i class="fa {{ $badge->icon }}"></i>
-                                                            @elseif($badge->icon && str_starts_with($badge->icon, 'svg-'))
-                                                                <svg class="icon {{ $badge->icon }} w-100 h-100"><use xlink:href="#{{ $badge->icon }}"></use></svg>
-                                                            @else
-                                                                <i class="fa fa-award"></i>
-                                                            @endif
-                                                        </div>
+                                            <label class="card h-100 rounded-4 p-4 text-center badge-selector-card {{ $isSelected ? 'is-selected' : '' }}" for="badge-check-{{ $badge->id }}">
+                                                <input
+                                                    type="checkbox"
+                                                    id="badge-check-{{ $badge->id }}"
+                                                    name="badge_ids[]"
+                                                    value="{{ $badge->id }}"
+                                                    {{ $isSelected ? 'checked' : '' }}
+                                                    class="badge-checkbox d-none"
+                                                >
+                                                
+                                                <div class="badge-check-indicator">
+                                                    <i class="fa fa-check"></i>
+                                                </div>
+
+                                                <div class="badge-icon-box">
+                                                    <div class="fs-1">
+                                                        @if($badge->icon && str_contains($badge->icon, ' '))
+                                                            <i class="{{ $badge->icon }}"></i>
+                                                        @elseif($badge->icon && str_starts_with($badge->icon, 'fa-'))
+                                                            <i class="fa {{ $badge->icon }}"></i>
+                                                        @elseif($badge->icon && str_starts_with($badge->icon, 'svg-'))
+                                                            <svg class="icon {{ $badge->icon }}" style="width: 36px; height: 36px;"><use xlink:href="#{{ $badge->icon }}"></use></svg>
+                                                        @else
+                                                            <i class="fa fa-award"></i>
+                                                        @endif
                                                     </div>
-                                                    <h6 class="fw-black mb-2 text-dark text-truncate">{{ __('messages.' . $badge->name_key) }}</h6>
-                                                    <p class="text-muted smallest mb-3 fw-bold lh-sm text-truncate-2" style="min-height: 32px;">{{ __('messages.' . $badge->description_key) }}</p>
-                                                    
-                                                    <div class="mt-auto">
-                                                        <span class="badge rounded-pill shadow-sm py-2 px-3 transition-all fw-black smaller letter-spacing-1 text-uppercase {{ $isSelected ? 'bg-primary' : 'bg-white text-muted border border-light' }} showcase-badge">
-                                                            <i class="fa {{ $isSelected ? 'fa-check-circle' : 'fa-eye' }} me-2"></i> {{ __('messages.showcase') ?? 'Showcase' }}
-                                                        </span>
-                                                    </div>
+                                                </div>
+
+                                                <h6 class="fw-black mb-2 text-dark text-truncate">{{ __('messages.' . $badge->name_key) }}</h6>
+                                                <p class="text-muted smallest mb-3 fw-bold lh-sm text-truncate-2" style="min-height: 32px;">{{ __('messages.' . $badge->description_key) }}</p>
+                                                
+                                                <div class="mt-auto pt-2">
+                                                    <span class="badge rounded-pill shadow-sm py-2 px-3 fw-black smaller letter-spacing-1 text-uppercase transition-all showcase-badge-pill {{ $isSelected ? 'bg-primary text-white' : 'bg-light text-muted border' }}">
+                                                        <i class="fa {{ $isSelected ? 'fa-check-circle' : 'fa-plus' }} me-1"></i>
+                                                        <span class="showcase-status-text">{{ $isSelected ? (__('messages.showcase') ?? 'Showcase') : (__('messages.select') ?? 'Select') }}</span>
+                                                    </span>
                                                 </div>
                                             </label>
                                         </div>
@@ -110,3 +200,63 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const MAX_BADGES = 6;
+        const checkboxes = document.querySelectorAll('.badge-checkbox');
+        const countDisplay = document.getElementById('selected-count');
+
+        function updateBadgeCount() {
+            const checkedCount = document.querySelectorAll('.badge-checkbox:checked').length;
+            if (countDisplay) {
+                countDisplay.textContent = checkedCount;
+            }
+        }
+
+        checkboxes.forEach(function(checkbox) {
+            const card = checkbox.closest('.badge-selector-card');
+            const pill = card ? card.querySelector('.showcase-badge-pill') : null;
+            const statusText = card ? card.querySelector('.showcase-status-text') : null;
+            const icon = pill ? pill.querySelector('i') : null;
+
+            function syncCardState(isChecked) {
+                if (!card) return;
+                card.classList.toggle('is-selected', isChecked);
+                if (pill) {
+                    pill.classList.toggle('bg-primary', isChecked);
+                    pill.classList.toggle('text-white', isChecked);
+                    pill.classList.toggle('bg-light', !isChecked);
+                    pill.classList.toggle('text-muted', !isChecked);
+                    pill.classList.toggle('border', !isChecked);
+                }
+                if (icon) {
+                    icon.className = isChecked ? 'fa fa-check-circle me-1' : 'fa fa-plus me-1';
+                }
+                if (statusText) {
+                    statusText.textContent = isChecked ? 'Showcase' : 'Select';
+                }
+            }
+
+            checkbox.addEventListener('change', function(e) {
+                const totalChecked = document.querySelectorAll('.badge-checkbox:checked').length;
+                if (this.checked && totalChecked > MAX_BADGES) {
+                    this.checked = false;
+                    syncCardState(false);
+                    alert('You can select up to ' + MAX_BADGES + ' badges for your showcase.');
+                    return;
+                }
+
+                syncCardState(this.checked);
+                updateBadgeCount();
+            });
+
+            // Initial sync
+            syncCardState(checkbox.checked);
+        });
+
+        updateBadgeCount();
+    });
+</script>
+@endpush

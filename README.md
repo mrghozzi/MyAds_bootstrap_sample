@@ -1,6 +1,6 @@
 # MyAds Bootstrap Sample Theme
 
-A modern, responsive Bootstrap 5.3.3 theme designed for the **MyAds v4.5.1** platform.
+A modern, responsive Bootstrap 5.3.3 theme designed for the **MyAds v4.5.5+** platform.
 
 ## Description
 
@@ -8,48 +8,52 @@ The Bootstrap Sample theme serves as a fully featured, clean, and highly customi
 
 ## Compatibility
 
-- **MyAds Platform:** Version `4.5.1` or higher.
+- **MyAds Platform:** Version `4.5.5` or higher.
 - **Frameworks/Libraries:** Bootstrap `5.3.3`, FontAwesome `6.x`, Vanilla JS.
 
 ## Key Features
 
-1. **Responsive Design:** Fluid grids and utility classes that adapt perfectly to mobile, tablet, and desktop screens.
-2. **Visit Exchange Anti-Fraud System:** Integrated 7-layer anti-fraud visit client-side interface featuring:
-   - Window focus tracking (automatically pauses visit countdown when the window loses focus).
-   - Math challenge solving before verification.
-   - Secure AJAX token-based verification with status indicators and a custom progress bar.
-3. **Optimized Portal & Social Feed:**
+1. **Responsive Design & Dark Mode:** Fluid grids and utility classes that adapt perfectly to mobile, tablet, and desktop screens with full Light/Dark mode and Arabic RTL support.
+2. **Superdesign Private Messaging Overhaul:**
+   - Real-time chat workspace (`/messages`, `/messages/{id}`) with conversation rail, instant search, and unread badge pulse.
+   - Rich message bubbles with inline image lightbox previews, formatted file chips, and encryption notice badges.
+   - Interactive composer with auto-expanding textarea, attachment preview dismiss bar, and full emoji picker with category tabs.
+   - Dedicated `/messages/create` direct message initiation form.
+3. **Live Theme Customizer (`THEME-07`):**
+   - Bidirectional `postMessage` synchronization in the admin live theme customizer.
+   - Dynamic CSS variable compilation mapped into Bootstrap 5 tokens.
+4. **Real-Time Events Engine (SSE Live Stream — RT-04):**
+   - Server-Sent Events `/live/stream` integration for instant message and notification alerts.
+5. **Interactive Profile Settings & Badge Showcase:**
+   - Client-side `FileReader` live previews for profile avatar and cover photo uploads.
+   - Interactive badge showcase selector with real-time counter and 6-badge cap validation.
+6. **Optimized Portal & Social Feed:**
    - Multi-format post composer (Text, Image Galleries, Links, Video, Audio, Files, Music, and Clips).
-   - Dynamic quote reposting and reactions.
-   - Interactive profile popovers and skeleton loading placeholders.
-4. **Improved Private Messaging:**
-   - Redesigned chat interface with real-time styling.
-   - Clean message entry wrapper with smooth resizeable textareas.
-   - Visual attachment indicators for file uploads.
-5. **Services Marketplace & Custom Ads:**
-   - Seamless workflow layouts for members negotiating Custom Ad spaces and direct publisher-advertiser deals.
-   - Clean interfaces for marketplace requests and structured provider offers.
-6. **Centralized SEO Engine & PWA Support:**
-   - Built-in layouts for the Free SEO Checker.
-   - PWA styling and offline fallback assets.
+   - Dynamic quote reposting, reactions, and interactive profile popovers.
+7. **Visit Exchange Anti-Fraud System:**
+   - 7-layer anti-fraud visit interface with window focus tracking and math challenges.
+8. **Centralized SEO Engine & PWA Support:**
+   - Built-in layouts for the Free SEO Checker and PWA offline fallbacks.
 
 ## Directory Structure
 
 ```text
 bootstrap-sample/
 ├── assets/                  # CSS styles, javascripts, images, and fonts
-│   ├── css/                 # Custom CSS overrides and styling
-│   ├── js/                  # Vanilla javascript controllers and helpers
+│   ├── css/                 # Custom CSS overrides and styling (messages.css, forum.css, etc.)
+│   ├── js/                  # Vanilla javascript controllers and helpers (messages-app.js, live-events.js)
 │   ├── img/                 # Screenshots and placeholders
 │   └── webfonts/            # Local FontAwesome 6 icons for offline performance
 ├── views/                   # Laravel Blade templates namespaced as `theme::`
 │   ├── auth/                # Login, registration, password recovery views
 │   ├── layouts/             # Main parent layouts and partials
 │   ├── messages/            # Chat and private messages inbox
+│   ├── profile/             # Member profile, settings, badges, and history
 │   ├── store/               # Product directory, sale pages, and knowledgebase wiki
 │   ├── visits/              # Visit exchange / Traffic Surf pages
 │   └── ...                  # Other module-specific views
 ├── theme.json               # Theme metadata configuration file
+├── CHANGELOG.md             # Detailed version history and release notes
 └── README.md                # This file
 ```
 

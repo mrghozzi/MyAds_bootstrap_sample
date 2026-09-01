@@ -332,6 +332,7 @@
     </style>
 
     @stack('head')
+    @include('theme::partials._customizer_head')
 </head>
 <body data-theme="{{ $css_path }}" class="oauth-layout-body {{ $pageDirection }}">
     <div class="oauth-shell">

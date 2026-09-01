@@ -1,11 +1,11 @@
-<div class="messages-chat-empty text-center p-5">
-    <div class="messages-empty-badge mb-3 d-inline-flex justify-content-center align-items-center bg-light p-4 rounded-circle">
-        <i class="fa fa-message fa-3x text-muted" aria-hidden="true"></i>
+<div class="messages-chat-empty">
+    <div class="messages-empty-badge">
+        <i class="fa fa-comments" aria-hidden="true"></i>
     </div>
-    <h3 class="fw-bold mb-2">{{ __('messages.msgs') }}</h3>
-    <p class="text-muted mb-4">{{ __('messages.no_msg') }}</p>
-    <a href="{{ route('messages.create') }}" class="btn btn-primary px-4 py-2">
-        <i class="fa fa-pen me-2" aria-hidden="true"></i>
-        <span>{{ __('messages.send_message') }}</span>
+    <h3>{{ __('messages.select_conversation') ?? __('messages.msgs') }}</h3>
+    <p>{{ __('messages.select_conversation_desc') ?? __('messages.no_msg') }}</p>
+    <a href="{{ route('messages.create') }}" class="messages-topbar-btn btn-primary-action px-4 py-2">
+        <i class="fa fa-plus me-1" aria-hidden="true"></i>
+        <span>{{ __('messages.new_message') }}</span>
     </a>
 </div>

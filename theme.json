@@ -1,9 +1,9 @@
 {
     "name": "Bootstrap Sample",
     "slug": "bootstrap-sample",
-    "version": "1.9.5",
+    "version": "2.0.0",
     "author": "mrghozzi",
-    "description": "A responsive Bootstrap 5.3.3 theme for MyAds with Live Theme Customizer & Real-Time SSE Stream support.",
+    "description": "A responsive Bootstrap 5.3.3 theme for MyAds with Superdesign Messaging, Live Theme Customizer & Real-Time SSE Stream support.",
     "thumbnail": "screenshot.png",
     "min_myads": "4.5.5"
 }

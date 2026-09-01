@@ -1,4 +1,58 @@
 @extends('theme::layouts.master')
+
+@push('head')
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+    }
+    .avatar-wrapper {
+        cursor: pointer;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .avatar-wrapper:hover {
+        transform: scale(1.04);
+    }
+    .avatar-camera-badge {
+        position: absolute;
+        bottom: 4px;
+        inset-inline-end: 4px;
+        width: 32px;
+        height: 32px;
+        background: var(--msg-primary, #615dfa);
+        color: #ffffff;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    .avatar-wrapper:hover .avatar-camera-badge {
+        transform: scale(1.15);
+        background: #524eee;
+    }
+    .cover-upload-btn {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(8px);
+        color: #2f3148;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+    [data-theme="css_d"] .cover-upload-btn,
+    [data-bs-theme="dark"] .cover-upload-btn {
+        background: rgba(31, 38, 56, 0.85);
+        color: #f4f7ff;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .cover-upload-btn:hover {
+        background: #ffffff;
+        color: var(--msg-primary, #615dfa);
+        transform: translateY(-2px);
+    }
+</style>
+@endpush
+
 @section('content')
 @php
     $coverOption = \App\Models\Option::where('o_type', 'user')->where('o_order', $user->id)->first();
@@ -38,7 +92,7 @@
                 <div class="card-body p-4 p-md-5">
                     @include('theme::billing.partials.alerts')
 
-                    <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" id="profile-edit-form">
                         @csrf
                         
                         <!-- Visual Identity Section -->
@@ -46,38 +100,49 @@
                             <h6 class="fw-black text-muted text-uppercase smaller letter-spacing-1 mb-4">{{ __('messages.visual_identity') ?? 'Visual Identity' }}</h6>
                             
                             <div class="position-relative rounded-4 overflow-hidden shadow-sm border border-light mb-4 transition-all" style="height: 250px;">
-                                <!-- Cover Image -->
-                                <div id="cover-display" class="w-100 h-100 transition-all" style="background: url({{ asset($cover) }}) center center / cover no-repeat;">
+                                <!-- Cover Image Display -->
+                                <div id="cover-display" class="w-100 h-100 transition-all cursor-pointer" title="{{ __('messages.cover') }}" style="background: url({{ asset($cover) }}) center center / cover no-repeat;">
                                     <div class="w-100 h-100 bg-dark bg-opacity-10"></div>
                                 </div>
                                 
-                                <!-- Cover Upload Overlay -->
+                                <!-- Cover Upload Button -->
                                 <div class="position-absolute top-0 end-0 p-4">
-                                    <button type="button" id="CoverUpload" class="btn btn-white btn-sm rounded-pill px-4 py-2 fw-black shadow-lg border-0 transition-all hover-translate-y">
+                                    <button type="button" id="CoverUpload" class="btn cover-upload-btn btn-sm rounded-pill px-4 py-2 fw-black shadow-lg transition-all hover-translate-y">
                                         <i class="fa fa-camera me-2 text-primary"></i> {{ __('messages.cover') }}
                                     </button>
                                 </div>
 
                                 <!-- Avatar Upload Overlay -->
                                 <div class="position-absolute bottom-0 start-0 p-4 mb-2">
-                                    <div class="position-relative d-inline-block">
-                                        <div class="rounded-circle border border-5 border-white shadow-lg overflow-hidden position-relative hover-scale transition-all" style="width: 120px; height: 120px;">
-                                            <img id="avatar-display" src="{{ $user->avatarUrl() }}" class="w-100 h-100" style="object-fit: cover;">
+                                    <div class="position-relative d-inline-block avatar-wrapper" id="AvatarUploadWrapper" title="{{ __('messages.avatar') ?? 'Change Avatar' }}">
+                                        <div class="rounded-circle border border-5 border-white shadow-lg overflow-hidden position-relative" style="width: 120px; height: 120px;">
+                                            <img id="avatar-display" src="{{ $user->avatarUrl() }}" alt="{{ $user->username }}" class="w-100 h-100" style="object-fit: cover;">
                                             <div id="AvatarUpload" class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-40 d-flex align-items-center justify-content-center opacity-0 hover-opacity-100 cursor-pointer transition-all">
                                                 <i class="fa fa-camera text-white fs-4"></i>
                                             </div>
                                         </div>
+                                        <div class="avatar-camera-badge" id="AvatarBadge">
+                                            <i class="fa fa-camera"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Upload Status Notification -->
+                            <div id="upload-feedback" class="alert alert-info border-0 rounded-4 p-3 d-none align-items-center gap-2 mb-3 shadow-sm">
+                                <i class="fa fa-circle-check text-info fs-5"></i>
+                                <span class="smaller fw-bold" id="upload-feedback-text"></span>
+                            </div>
+
                             <div class="alert alert-light border-0 rounded-4 p-3 d-flex align-items-center mb-0">
                                 <i class="fa fa-info-circle text-primary me-2"></i>
                                 <span class="smaller fw-bold text-muted">{{ __('messages.upload_reccomendation') ?? 'JPG, PNG or GIF. Max 2MB recommended for best performance.' }}</span>
                             </div>
                         </div>
 
-                        <input type="file" id="Avatarload" name="avatar" accept=".jpg, .jpeg, .png, .gif" class="d-none">
-                        <input type="file" id="Coverload" name="cover" accept=".jpg, .jpeg, .png, .gif" class="d-none">
+                        <!-- Hidden File Inputs -->
+                        <input type="file" id="Avatarload" name="avatar" accept="image/jpeg,image/png,image/gif,image/webp" class="d-none">
+                        <input type="file" id="Coverload" name="cover" accept="image/jpeg,image/png,image/gif,image/webp" class="d-none">
 
                         <!-- Basic Info Section -->
                         <div class="mb-5">
@@ -142,3 +207,92 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const avatarWrapper = document.getElementById('AvatarUploadWrapper');
+        const avatarOverlay = document.getElementById('AvatarUpload');
+        const avatarBadge = document.getElementById('AvatarBadge');
+        const avatarInput = document.getElementById('Avatarload');
+        const avatarDisplay = document.getElementById('avatar-display');
+
+        const coverButton = document.getElementById('CoverUpload');
+        const coverDisplay = document.getElementById('cover-display');
+        const coverInput = document.getElementById('Coverload');
+
+        const feedbackBox = document.getElementById('upload-feedback');
+        const feedbackText = document.getElementById('upload-feedback-text');
+
+        function showFeedback(message) {
+            if (feedbackBox && feedbackText) {
+                feedbackText.textContent = message;
+                feedbackBox.classList.remove('d-none');
+                feedbackBox.classList.add('d-flex');
+            }
+        }
+
+        // Trigger Avatar File Input Click
+        function triggerAvatarUpload(e) {
+            if (e) e.preventDefault();
+            if (avatarInput) avatarInput.click();
+        }
+
+        if (avatarWrapper) avatarWrapper.addEventListener('click', triggerAvatarUpload);
+        if (avatarOverlay) avatarOverlay.addEventListener('click', triggerAvatarUpload);
+        if (avatarBadge) avatarBadge.addEventListener('click', triggerAvatarUpload);
+
+        // Trigger Cover File Input Click
+        function triggerCoverUpload(e) {
+            if (e) e.preventDefault();
+            if (coverInput) coverInput.click();
+        }
+
+        if (coverButton) coverButton.addEventListener('click', triggerCoverUpload);
+
+        // Handle Avatar File Selection & Live Preview
+        if (avatarInput) {
+            avatarInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+                    if (file.size > 5242880) { // 5MB limit
+                        alert('Avatar file is too large. Please select an image under 5MB.');
+                        this.value = '';
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        if (avatarDisplay) {
+                            avatarDisplay.src = e.target.result;
+                        }
+                        showFeedback('Selected new avatar: ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB). Click "Save Changes" below to apply.');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Handle Cover File Selection & Live Preview
+        if (coverInput) {
+            coverInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+                    if (file.size > 8388608) { // 8MB limit
+                        alert('Cover file is too large. Please select an image under 8MB.');
+                        this.value = '';
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        if (coverDisplay) {
+                            coverDisplay.style.background = 'url(' + e.target.result + ') center center / cover no-repeat';
+                        }
+                        showFeedback('Selected new cover image: ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB). Click "Save Changes" below to apply.');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
+</script>
+@endpush

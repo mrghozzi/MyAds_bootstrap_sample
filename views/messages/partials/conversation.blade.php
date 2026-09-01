@@ -9,7 +9,7 @@
 @endphp
 
 @if(!$itemsOnly)
-<div class="messages-thread" data-oldest-id="{{ $oldestId }}" data-latest-id="{{ $latestId }}" data-has-older="{{ $hasOlder ? 1 : 0 }}">
+<div class="messages-thread" data-thread data-oldest-id="{{ $oldestId }}" data-latest-id="{{ $latestId }}" data-has-older="{{ $hasOlder ? 1 : 0 }}">
 @endif
     @forelse($messages as $message)
         @php
@@ -33,12 +33,14 @@
                 ? $messageDateTime->format('Y-m-d g:i A')
                 : $messageDateTime->format('g:i A');
         @endphp
+
         @if($showEncryptionNotice)
             <div class="messages-encryption-notice" role="note">
-                <span>{{ __('messages.private_messages_encryption_notice') }}</span>
+                <span><i class="fa fa-shield-halved text-success me-1"></i> {{ __('messages.private_messages_encryption_notice') }}</span>
             </div>
         @endif
-        <article class="messages-bubble-row {{ $isMine ? 'is-me' : '' }}" data-message-id="{{ $message->id_msg }}">
+
+        <article class="messages-bubble-row {{ $isMine ? 'is-me' : '' }}" data-thread-item data-message-id="{{ $message->id_msg }}">
             @unless($isMine)
                 <div class="messages-bubble-avatar">
                     <img src="{{ $partner ? $partner->avatarUrl() : asset('upload/_avatar.png') }}" alt="{{ $partner->username ?? __('messages.unknown_user') }}">
@@ -53,7 +55,7 @@
                 @if(!empty($attachmentPath))
                     @if($isImageAttachment)
                         <a
-                            class="messages-image-attachment {{ $isMine ? 'is-me' : '' }}"
+                            class="messages-image-attachment"
                             href="{{ $attachmentInlineUrl }}"
                             target="_blank"
                             rel="noopener"
@@ -62,7 +64,7 @@
                         </a>
 
                         <a
-                            class="messages-image-meta {{ $isMine ? 'is-me' : '' }}"
+                            class="messages-image-meta"
                             href="{{ $attachmentDownloadUrl }}"
                             target="_blank"
                             rel="noopener"
@@ -70,18 +72,18 @@
                             <i class="fa fa-image" aria-hidden="true"></i>
                             <span class="messages-image-meta-name">{{ $attachmentLabel }}</span>
                             @if($attachmentSize > 0)
-                                <span class="messages-image-meta-size">{{ number_format($attachmentSize / 1024, 1) }} KB</span>
+                                <span class="messages-image-meta-size">({{ number_format($attachmentSize / 1024, 1) }} KB)</span>
                             @endif
                         </a>
                     @else
                         <a
-                            class="messages-file-attachment {{ $isMine ? 'is-me' : '' }}"
+                            class="messages-file-attachment"
                             href="{{ $attachmentDownloadUrl }}"
                             target="_blank"
                             rel="noopener"
                         >
                             <span class="messages-file-attachment-icon">
-                                <i aria-hidden="true" class="fa fa-file"></i>
+                                <i aria-hidden="true" class="fa fa-file-lines"></i>
                             </span>
 
                             <span class="messages-file-attachment-meta">
@@ -89,7 +91,7 @@
                                 <span class="messages-file-attachment-sub">
                                     <span class="messages-file-attachment-ext">{{ $attachmentExtension ? strtoupper($attachmentExtension) : __('messages.file') }}</span>
                                     @if($attachmentSize > 0)
-                                        <span class="messages-file-attachment-size">{{ number_format($attachmentSize / 1024, 1) }} KB</span>
+                                        <span class="messages-file-attachment-size">&bull; {{ number_format($attachmentSize / 1024, 1) }} KB</span>
                                     @endif
                                 </span>
                             </span>
@@ -110,7 +112,10 @@
         @endphp
     @empty
         @if(!$itemsOnly)
-            <p class="messages-empty-thread">{{ __('messages.no_messages') }}</p>
+            <p class="messages-empty-thread text-center text-muted p-5 my-auto">
+                <i class="fa fa-message fa-2x mb-2 opacity-50 d-block"></i>
+                {{ __('messages.no_messages') }}
+            </p>
         @endif
     @endforelse
 @if(!$itemsOnly)

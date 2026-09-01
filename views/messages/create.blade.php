@@ -1,39 +1,118 @@
 @extends('theme::layouts.master')
 
-@section('content')
-<div class="section-banner" style="background: url({{ theme_asset('img/banner/profile.png') }}) no-repeat 50%;">
-    <p class="section-banner-title">{{ __('messages.send_message') }}</p>
-</div>
+@push('head')
+    <link href="{{ theme_asset('css/messages.css') }}" rel="stylesheet" type="text/css">
+@endpush
 
-<div class="row">
-    <div class="col-lg-3 col-md-4 mb-4">
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-header bg-transparent border-bottom-0 pt-4 pb-0 fw-bold fs-5">{{ __('messages.actions') }}</div>
-            <div class="card-body p-4">
-                <a href="{{ route('messages.index') }}" class="btn btn-outline-secondary rounded-pill w-100 fw-bold">{{ __('messages.back_to_inbox') }}</a>
-            </div>
-        </div>
+@section('content')
+<div class="container py-4">
+    <!-- Superdesign Hero Banner -->
+    <div class="messages-create-banner">
+        <p class="messages-kicker text-white-50 mb-1">{{ __('messages.my_profile') }}</p>
+        <h1 class="messages-create-title">{{ __('messages.new_message') }}</h1>
+        <p class="messages-create-desc">{{ __('messages.send_message') }}</p>
     </div>
 
-    <div class="col-lg-9 col-md-8 mb-4">
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body p-4 p-md-5">
-                <form action="{{ route('messages.store') }}" method="POST">
+    @if ($errors->any())
+        <div class="alert alert-danger rounded-4 mb-4 shadow-sm border-0 d-flex align-items-center gap-3">
+            <i class="fa fa-triangle-exclamation fs-4"></i>
+            <div>
+                <ul class="mb-0 ps-3">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
+
+    <div class="row g-4">
+        <!-- Sidebar Actions -->
+        <div class="col-lg-4 col-md-5">
+            <div class="messages-panel p-4 mb-4">
+                <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                    <i class="fa fa-sliders text-primary"></i>
+                    <span>{{ __('messages.actions') }}</span>
+                </h5>
+                <p class="text-muted small mb-4">
+                    {{ __('messages.select_conversation_desc') ?? 'Start a private direct conversation with any community member.' }}
+                </p>
+
+                <a href="{{ route('messages.index') }}" class="btn btn-outline-secondary w-100 py-2 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2">
+                    <i class="fa fa-arrow-left"></i>
+                    <span>{{ __('messages.back_to_inbox') ?? __('messages.msgs') }}</span>
+                </a>
+            </div>
+
+            <!-- Quick Tips Card -->
+            <div class="messages-panel p-4 bg-light bg-opacity-50">
+                <h6 class="fw-bold mb-2 text-uppercase text-muted small letter-spacing-1">
+                    <i class="fa fa-shield-halved text-success me-1"></i>
+                    <span>{{ __('messages.end_to_end_encrypted') }}</span>
+                </h6>
+                <p class="small text-muted mb-0">
+                    {{ __('messages.private_messages_encryption_notice') }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Compose Form -->
+        <div class="col-lg-8 col-md-7">
+            <div class="messages-create-card">
+                <form action="{{ route('messages.store') }}" method="POST" id="new-message-form">
                     @csrf
-                    
+
+                    <!-- Recipient -->
                     <div class="mb-4">
-                        <label for="recipient" class="form-label small fw-bold">{{ __('messages.recipient') }}</label>
-                        <input type="text" id="recipient" name="recipient" class="form-control form-control-lg bg-light border-0" value="{{ $recipient ?? '' }}" required>
+                        <label for="recipient" class="form-label fw-bold text-muted small text-uppercase">
+                            <i class="fa fa-user me-1 text-primary"></i> {{ __('messages.recipient') }}
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 rounded-start-3 text-muted">@</span>
+                            <input
+                                type="text"
+                                id="recipient"
+                                name="recipient"
+                                class="form-control form-control-lg bg-light border-start-0 rounded-end-3 fs-6 fw-semibold @error('recipient') is-invalid @enderror"
+                                placeholder="{{ __('messages.name_placeholder') }}..."
+                                value="{{ old('recipient', $recipient ?? '') }}"
+                                required
+                                autofocus
+                            >
+                        </div>
+                        @error('recipient')
+                            <div class="text-danger small mt-1 fw-bold">{{ $message }}</div>
+                        @enderror
                     </div>
 
+                    <!-- Message Body -->
                     <div class="mb-4">
-                        <label for="message" class="form-label small fw-bold">{{ __('messages.message') }}</label>
-                        <textarea id="message" name="message" class="form-control bg-light border-0" required style="height: 150px;"></textarea>
+                        <label for="message_body" class="form-label fw-bold text-muted small text-uppercase">
+                            <i class="fa fa-message me-1 text-primary"></i> {{ __('messages.message') ?? __('messages.text') }}
+                        </label>
+                        <textarea
+                            id="message_body"
+                            name="message"
+                            class="form-control bg-light rounded-3 p-3 fs-6 fw-medium @error('message') is-invalid @enderror"
+                            rows="6"
+                            placeholder="{{ __('messages.write_reply_placeholder') ?? 'Type your message here...' }}"
+                            required
+                            style="resize: vertical; min-height: 140px;"
+                        >{{ old('message') }}</textarea>
+                        @error('message')
+                            <div class="text-danger small mt-1 fw-bold">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    <div class="mt-4 pt-3 border-top">
-                        <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow-sm">
-                            <i class="fa fa-paper-plane me-2"></i> {{ __('messages.send') }}
+                    <!-- Actions -->
+                    <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+                        <a href="{{ route('messages.index') }}" class="btn btn-link text-muted text-decoration-none fw-bold small">
+                            {{ __('messages.cancel') }}
+                        </a>
+
+                        <button type="submit" class="btn btn-primary px-5 py-2 rounded-3 fw-bold shadow-sm d-flex align-items-center gap-2" style="background: linear-gradient(135deg, var(--msg-primary), var(--msg-primary-hover)); border: none;">
+                            <i class="fa fa-paper-plane"></i>
+                            <span>{{ __('messages.send') }}</span>
                         </button>
                     </div>
                 </form>

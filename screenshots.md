@@ -2,22 +2,27 @@
 
 Explore the modern, responsive interface and user experience of the Bootstrap Sample theme.
 
-## 🌟 Main Feed & Modern Portal
-A clean, card-based social feed and community exchange with quick navigation, responsive widgets, and multi-format post composer.
+## 👤 Member Profile & Visual Identity
+Comprehensive user profile with custom cover art, verified badges, live online presence indicator, follower statistics, and dedicated media tabs (Timeline, About Me, Photos, Videos, Audio, Files, Clips, and Followers).
 
-![Main Portal & Feed](./screenshot.png)
+![Member Profile & Visual Identity](./assets/screenshots/profile_page.png)
 
-## 💬 Superdesign Private Messaging
-An ultra-modern 2-column real-time messaging workspace featuring active conversation highlighted states, soft bubble threads, image previews, file chips, and an interactive emoji picker.
+## 🌐 Community Social Feed & Video Reels
+Clean, card-based social activity stream with multi-channel filtering (All Updates, Following, Groups), multi-format video and reel players, instant translation, reactions, and sharing.
 
-![Messaging Workspace](./screenshot.png)
+![Community Social Feed & Video Reels](./assets/screenshots/community_feed.png)
 
-## 🎨 Live Theme Customizer & Real-Time Sync
-Fine-tune design tokens (primary colors, border radius, fonts, and dark mode surface) with instant live preview and bidirectional synchronization.
+## 📊 Member Board & Advertising Hub
+Centralized member dashboard featuring live PTS balance, banner/text/smart ad campaigns management, traffic visit exchange, YouTube views exchange, Custom Ads marketplace, Free SEO Checker, and PTS vouchers transfer.
 
-![Live Theme Customizer](./screenshot.png)
+![Member Board & Advertising Hub](./assets/screenshots/board_dashboard.png)
 
-## 👤 Profile Settings, Visual Identity & Badges Showcase
-Intuitive visual identity editor with instant client-side photo previews, plus an interactive 6-badge showcase selector with real-time counters.
+## 💬 Community Forum Boards & Statistics
+Structured discussion forum with modern categorized boards, topic and reply counters, latest activity tracking, and visual forum statistics counters.
 
-![Profile Settings & Badges](./screenshot.png)
+![Community Forum Boards & Statistics](./assets/screenshots/forum_categories.png)
+
+## 🎬 Videos & Short Clips Hub
+Rich multimedia entertainment hub featuring 9:16 vertical Short Clips, trending feature video players, 16:9 YouTube-style main video grid, and one-click video and clip submission tools.
+
+![Videos & Short Clips Hub](./assets/screenshots/video_hub.png)

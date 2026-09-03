@@ -2,6 +2,15 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.1.1] - 2026-09-03
+
+### Fixed
+- **OAuth 2.0 Post-Login Redirection (`views/auth/login.blade.php`):**
+  - Added hidden input `<input type="hidden" name="next" value="{{ request('next') }}">` inside the login form to preserve the intended OAuth consent URL when unauthenticated users are directed to log in before approving third-party developer applications.
+
+### Metadata & Config
+- Bumped `theme.json` version to `2.1.1` with `min_myads` compatibility at `4.5.5`.
+
 ## [2.1.0] - 2026-09-02
 
 ### Added

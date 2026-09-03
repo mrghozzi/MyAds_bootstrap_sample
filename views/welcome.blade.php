@@ -529,7 +529,7 @@
         }
     </style>
     <!-- Theme Customizer Dynamic Styles (THEME-07) -->
-    @include('theme::partials._customizer_head')
+    @includeIf('theme::partials._customizer_head')
 </head>
 <body>
 

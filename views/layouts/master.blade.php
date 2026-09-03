@@ -110,7 +110,7 @@
         }
     </style>
 
-    @include('theme::partials._customizer_head')
+    @includeIf('theme::partials._customizer_head')
     @stack('head')
 </head>
 <body class="{{ $pageDirection }}" data-theme="{{ request()->cookie('modedark', 'css') }}">

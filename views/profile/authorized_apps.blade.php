@@ -59,7 +59,7 @@
                                             
                                             <div class="d-flex flex-wrap gap-4 text-muted smaller fw-black letter-spacing-1 text-uppercase">
                                                 <span class="d-flex align-items-center">
-                                                    <i class="fa-solid fa-calendar-check me-2 text-primary opacity-50"></i> @lang('messages.authorized_on') {{ $auth->created_at->format('M d, Y') }}
+                                                    <i class="fa-solid fa-calendar-check me-2 text-primary opacity-50"></i> @lang('messages.authorized_on') {{ optional($auth->created_at)->format('M d, Y') ?? '—' }}
                                                 </span>
                                                 @if($auth->app->client_id)
                                                     <span class="d-flex align-items-center">

@@ -2,6 +2,16 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.1.2] - 2026-09-03
+
+### Fixed
+- **OAuth 2.0 & View Exception Safety:**
+  - Safely included customizer header partial using `@includeIf('theme::partials._customizer_head')` across `layouts/oauth.blade.php`, `layouts/app.blade.php`, `layouts/master.blade.php`, and `welcome.blade.php` to prevent uncaught `ViewNotFoundException` during view cache reloads.
+  - Safeguarded `created_at` timestamp formatting in `views/profile/authorized_apps.blade.php` using `optional($auth->created_at)->format('M d, Y') ?? '—'` ensuring seamless compatibility with legacy or timestamp-less database schemas.
+
+### Metadata & Config
+- Bumped `theme.json` version to `2.1.2` with `min_myads` compatibility at `4.5.6`.
+
 ## [2.1.1] - 2026-09-03
 
 ### Fixed

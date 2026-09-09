@@ -10,20 +10,23 @@
     $latestVersionLabel = $latestFile ? $latestFile->name : 'v1.0';
     $fileCount = $files->count();
     $reportKey = 'product' . $product->id;
+    $pageSummary = \Illuminate\Support\Str::limit(strip_tags((string) ($product->o_valuer ?: ($topic?->txt ?? ''))), 240);
 @endphp
 @include('theme::store.partials.kb-superdesign-formatter')
 
-<div class="container py-4">
-    <!-- Breadcrumbs -->
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb bg-white p-3 px-4 rounded-pill shadow-sm border">
-            <li class="breadcrumb-item"><a href="{{ route('store.index') }}" class="text-decoration-none text-primary fw-bold"><i class="fa fa-shopping-cart"></i></a></li>
-            @if($categoryLabel)
-                <li class="breadcrumb-item"><a href="{{ route('store.index', ['category' => $categoryName]) }}" class="text-decoration-none text-muted small">{{ $categoryLabel }}</a></li>
-            @endif
-            <li class="breadcrumb-item active text-truncate small fw-bold" aria-current="page" style="max-width: 300px;">{{ $product->name }}</li>
-        </ol>
-    </nav>
+<article class="container py-4 store-detail-page post{{ $status ? $status->id : $product->id }}" itemscope itemtype="https://schema.org/Product">
+    <!-- Breadcrumbs & Header -->
+    <header class="mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-white p-3 px-4 rounded-pill shadow-sm border">
+                <li class="breadcrumb-item"><a href="{{ route('store.index') }}" class="text-decoration-none text-primary fw-bold"><i class="fa fa-shopping-cart"></i></a></li>
+                @if($categoryLabel)
+                    <li class="breadcrumb-item"><a href="{{ route('store.index', ['category' => $categoryName]) }}" class="text-decoration-none text-muted small">{{ $categoryLabel }}</a></li>
+                @endif
+                <li class="breadcrumb-item active text-truncate small fw-bold" aria-current="page" style="max-width: 300px;">{{ $product->name }}</li>
+            </ol>
+        </nav>
+    </header>
 
     @include('theme::partials.ads', ['id' => 5])
 
@@ -47,7 +50,7 @@
                 <div class="row g-0">
                     <div class="col-md-5">
                         <div class="bg-light h-100 d-flex align-items-center justify-content-center p-4 border-end position-relative overflow-hidden">
-                            <img src="{{ $productImage }}" class="img-fluid rounded-4 shadow transition-all hover-scale position-relative z-1" alt="{{ $product->name }}" style="max-height: 300px; object-fit: contain;">
+                            <img itemprop="image" src="{{ $productImage }}" class="img-fluid rounded-4 shadow transition-all hover-scale position-relative z-1" alt="{{ $product->name }}" title="{{ $product->name }}" loading="eager" decoding="async" width="280" height="180" style="max-height: 300px; object-fit: contain;" onerror="this.onerror=null;this.src='{{ theme_asset('img/error_plug.png') }}';">
                             <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background: url('{{ $productImage }}') center/cover no-preview;"></div>
                         </div>
                     </div>
@@ -55,19 +58,28 @@
                         <div class="card-body p-4 p-md-5 h-100 d-flex flex-column">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div class="d-flex gap-2">
-                                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill px-3 py-2 fw-bold smaller">{{ $categoryLabel }}</span>
-                                    @if($product->o_order > 0)
-                                        @if($product->sale && $product->sale->is_active)
+                                    @php
+                                        $numericPrice = (float) ($product->has_active_sale ? $product->sale_price : $product->o_order);
+                                    @endphp
+                                    <div itemprop="offers" itemscope itemtype="https://schema.org/Offer" class="d-inline-flex gap-2 align-items-center">
+                                        <meta itemprop="price" content="{{ $numericPrice }}">
+                                        <meta itemprop="priceCurrency" content="PTS">
+                                        <meta itemprop="availability" content="https://schema.org/InStock">
+                                        <meta itemprop="url" content="{{ route('store.show', $product->name) }}">
+                                        @if($categoryLabel)
+                                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill px-3 py-2 fw-bold smaller" itemprop="category">{{ $categoryLabel }}</span>
+                                        @endif
+                                        @if($product->has_active_sale)
                                             <span class="badge bg-danger fw-black rounded-pill px-3 py-2 shadow-sm">
                                                 <span class="text-decoration-line-through opacity-75 me-1">{{ number_format($product->o_order) }}</span>
-                                                {{ number_format($product->sale->sale_price) }} PTS
+                                                {{ number_format($product->sale_price) }} PTS
                                             </span>
-                                        @else
+                                        @elseif($product->o_order > 0)
                                             <span class="badge bg-primary fw-black rounded-pill px-3 py-2 shadow-sm">{{ number_format($product->o_order) }} PTS</span>
+                                        @else
+                                            <span class="badge bg-success fw-black rounded-pill px-3 py-2 shadow-sm">{{ __('messages.free') }}</span>
                                         @endif
-                                    @else
-                                        <span class="badge bg-success fw-black rounded-pill px-3 py-2 shadow-sm">{{ __('messages.free') }}</span>
-                                    @endif
+                                    </div>
                                 </div>
                                 <div class="dropdown">
                                     <button class="btn btn-light btn-sm rounded-circle shadow-sm" data-bs-toggle="dropdown" style="width: 32px; height: 32px; padding: 0;"><i class="fa fa-ellipsis-v"></i></button>
@@ -77,6 +89,7 @@
                                             <li><a class="dropdown-item py-2 small fw-bold" href="{{ route('store.update', $product->name) }}"><i class="fa fa-edit me-2 text-muted"></i> {{ __('messages.edit_product') }}</a></li>
                                             <li><a class="dropdown-item py-2 small fw-bold" href="{{ route('store.downloads', $product->name) }}"><i class="fa fa-users me-2 text-muted"></i> {{ __('messages.downloads') ?? 'Downloads' }}</a></li>
                                             <li><a class="dropdown-item py-2 small fw-bold" href="{{ route('store.updates', $product->name) }}"><i class="fa fa-history me-2 text-muted"></i> {{ __('messages.manage_updates') ?? 'Manage Updates' }}</a></li>
+                                            <li><button type="button" class="dropdown-item py-2 small fw-bold" id="trigger-topic-edit-from-menu"><i class="fa fa-pencil-square me-2 text-muted"></i> {{ __('messages.edit_topic') }}</button></li>
                                             <li><button class="dropdown-item py-2 small fw-bold text-danger" onclick="deletePost({{ $product->id }}, 7867, '.row')"><i class="fa fa-trash me-2"></i> {{ __('messages.delete') }}</button></li>
                                         @elseif(auth()->check())
                                             <li><button class="dropdown-item py-2 small fw-bold" onclick="reportPost({{ $product->id }}, 7867)"><i class="fa fa-flag me-2 text-muted"></i> {{ __('messages.report_product') ?? 'Report Product' }}</button></li>
@@ -88,7 +101,8 @@
                                 </div>
                             </div>
                             
-                            <h1 class="fw-black mb-4 text-dark h2">{{ $product->name }}</h1>
+                            <h1 class="fw-black mb-3 text-dark h2 section-title" itemprop="name">{{ $product->name }}</h1>
+                            <p class="text-muted mb-4 fs-6">{{ $pageSummary }}</p>
                             
                             <div class="row g-2 mb-4">
                                 <div class="col-4">
@@ -186,17 +200,10 @@
                 <div class="card-header bg-white border-bottom p-0 overflow-x-auto">
                     <ul class="nav nav-tabs nav-pills nav-fill gap-2 p-2 border-0" id="productTabs" role="tablist">
                         <li class="nav-item">
-                            <button class="nav-link active fw-bold py-3 rounded-4" data-bs-toggle="tab" data-bs-target="#desc-tab">
-                                <i class="fa fa-info-circle me-2"></i> {{ __('messages.details') }}
+                            <button class="nav-link active fw-bold py-3 rounded-4" data-bs-toggle="tab" data-bs-target="#topic-tab">
+                                <i class="fa fa-comments me-2"></i> {{ __('messages.topic') }}
                             </button>
                         </li>
-                        @if($topic)
-                            <li class="nav-item">
-                                <button class="nav-link fw-bold py-3 rounded-4" data-bs-toggle="tab" data-bs-target="#topic-tab">
-                                    <i class="fa fa-comments me-2"></i> {{ __('messages.forum_topic') }}
-                                </button>
-                            </li>
-                        @endif
                         <li class="nav-item">
                             <button class="nav-link fw-bold py-3 rounded-4" data-bs-toggle="tab" data-bs-target="#comments-tab" onclick="loadComments({{ $product->id }}, 'store')">
                                 <i class="fa fa-comment me-2"></i> {{ __('messages.comments') }} <span class="badge bg-light text-muted border ms-1">{{ $commentCount }}</span>
@@ -211,51 +218,27 @@
                 </div>
                 <div class="card-body p-4 p-md-5">
                     <div class="tab-content">
-                        <!-- Details Tab -->
-                        <div class="tab-pane fade show active" id="desc-tab">
+                        <!-- Topic Tab (Default & Active) -->
+                        <div class="tab-pane fade show active" id="topic-tab">
                             @if($canManageProduct)
                                 <div class="mb-4 d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-primary rounded-pill px-4 fw-bold" id="store-details-edit-btn"><i class="fa fa-edit me-2"></i> {{ __('messages.edit') }}</button>
-                                    <button class="btn btn-sm btn-primary rounded-pill px-4 fw-bold d-none" id="store-details-save-btn"><i class="fa fa-save me-2"></i> {{ __('messages.save') }}</button>
-                                    <button class="btn btn-sm btn-light border rounded-pill px-4 fw-bold d-none" id="store-details-cancel-btn">{{ __('messages.cancel') }}</button>
+                                    <button class="btn btn-sm btn-outline-primary rounded-pill px-4 fw-bold" id="store-topic-edit-btn"><i class="fa fa-edit me-2"></i> {{ __('messages.edit_topic') }}</button>
+                                    <button class="btn btn-sm btn-primary rounded-pill px-4 fw-bold d-none" id="store-topic-save-btn"><i class="fa fa-save me-2"></i> {{ __('messages.save') }}</button>
+                                    <button class="btn btn-sm btn-light border rounded-pill px-4 fw-bold d-none" id="store-topic-cancel-btn">{{ __('messages.cancel') }}</button>
                                 </div>
                             @endif
-                            <div id="store-details-display" class="markdown-content lh-lg fs-5 text-dark">{!! $product->o_valuer !!}</div>
+                            <div id="store-topic-display" class="markdown-content lh-lg fs-5 text-dark" data-rendered="true" itemprop="description">{!! \Illuminate\Support\Str::markdown($topic?->txt ?? $product->o_valuer ?? '') !!}</div>
                             @if($canManageProduct)
-                                <div id="store-details-editor" class="d-none">
+                                <div id="store-topic-editor" class="d-none">
                                     <div class="mb-2">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 open-stackedit-details">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 open-stackedit-topic">
                                             <i class="fa fa-pencil-square me-2"></i> {{ \Illuminate\Support\Facades\Lang::has('messages.edit_with_stackedit') ? __('messages.edit_with_stackedit') : 'Edit with StackEdit' }}
                                         </button>
                                     </div>
-                                    <textarea id="store-details-textarea" class="form-control bg-light rounded-4 mb-3 border p-3" rows="15">{{ $product->o_valuer }}</textarea>
+                                    <textarea id="store-topic-textarea" class="form-control bg-light rounded-4 mb-3 border p-3" rows="15">{{ $topic?->txt ?? $product->o_valuer }}</textarea>
                                 </div>
                             @endif
                         </div>
-
-                        <!-- Topic Tab -->
-                        @if($topic)
-                            <div class="tab-pane fade" id="topic-tab">
-                                @if($canManageProduct)
-                                    <div class="mb-4 d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-primary rounded-pill px-4 fw-bold" id="store-topic-edit-btn"><i class="fa fa-edit me-2"></i> {{ __('messages.edit') }}</button>
-                                        <button class="btn btn-sm btn-primary rounded-pill px-4 fw-bold d-none" id="store-topic-save-btn"><i class="fa fa-save me-2"></i> {{ __('messages.save') }}</button>
-                                        <button class="btn btn-sm btn-light border rounded-pill px-4 fw-bold d-none" id="store-topic-cancel-btn">{{ __('messages.cancel') }}</button>
-                                    </div>
-                                @endif
-                                <div id="store-topic-display" class="markdown-content lh-lg fs-5 text-dark">{!! $topic->txt !!}</div>
-                                @if($canManageProduct)
-                                    <div id="store-topic-editor" class="d-none">
-                                        <div class="mb-2">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 open-stackedit-topic">
-                                                <i class="fa fa-pencil-square me-2"></i> {{ \Illuminate\Support\Facades\Lang::has('messages.edit_with_stackedit') ? __('messages.edit_with_stackedit') : 'Edit with StackEdit' }}
-                                            </button>
-                                        </div>
-                                        <textarea id="store-topic-textarea" class="form-control bg-light rounded-4 mb-3 border p-3" rows="15">{{ $topic->txt }}</textarea>
-                                    </div>
-                                @endif
-                            </div>
-                        @endif
 
                         <!-- Comments Tab -->
                         <div class="tab-pane fade" id="comments-tab">
@@ -302,7 +285,7 @@
         </div>
 
         <!-- Sidebar -->
-        <div class="col-lg-4">
+        <aside class="col-lg-4 store-aside">
             <!-- Publisher Card -->
             <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden text-center">
                 <div class="bg-primary bg-opacity-10 py-3 border-bottom">
@@ -358,9 +341,9 @@
             @endif
 
             <x-widget-column side="store_sidebar" />
-        </div>
+        </aside>
     </div>
-</div>
+</article>
 
 <style>
     .fw-black { font-weight: 900; }
@@ -372,6 +355,7 @@
     .hover-bg-dark:hover { background-color: #212529 !important; }
     .hover-bg-primary:hover { background-color: #615dfa !important; }
     .hover-text-white:hover { color: #fff !important; }
+    .markdown-content { display: block; word-break: break-word; }
     .markdown-content img { max-width: 100%; border-radius: 12px; margin: 1.5rem 0; box-shadow: 0 0.5rem 1rem rgba(0,0,0,.1); }
     .nav-pills .nav-link { color: #6c757d; transition: all 0.2s ease; }
     .nav-pills .nav-link.active { background-color: rgba(97, 93, 250, 0.1); color: #615dfa; }
@@ -392,16 +376,15 @@
                     text = text.replace(/^\s+/, '').trimEnd();
                     el.innerHTML = DOMPurify.sanitize(marked.parse(text));
                     el.setAttribute('data-rendered', 'true');
-                    if (window.enhanceSuperdesignKbContent) {
-                        window.enhanceSuperdesignKbContent(el);
-                    }
+                }
+                if (window.enhanceSuperdesignKbContent) {
+                    window.enhanceSuperdesignKbContent(el);
                 }
             });
         }
         renderMarkdown();
 
         if (window.initKbSnippetsToolbar) {
-            window.initKbSnippetsToolbar('store-details-textarea');
             window.initKbSnippetsToolbar('store-topic-textarea');
         }
 
@@ -511,8 +494,20 @@
             };
         }
 
-        setupInlineEdit('store-details', "{{ route('store.update.details', $product->name) }}");
         setupInlineEdit('store-topic', "{{ route('store.update.topic', $product->name) }}");
+
+        // Menu trigger to edit topic
+        const menuTrigger = document.getElementById('trigger-topic-edit-from-menu');
+        if (menuTrigger) {
+            menuTrigger.addEventListener('click', function() {
+                const topicTabBtn = document.querySelector('[data-bs-target="#topic-tab"]');
+                if (topicTabBtn) {
+                    bootstrap.Tab.getOrCreateInstance(topicTabBtn).show();
+                    const editBtn = document.getElementById('store-topic-edit-btn');
+                    if (editBtn) editBtn.click();
+                }
+            });
+        }
 
         // Coupon code and purchase AJAX scripts
         const applyCouponBtn = document.getElementById('apply-coupon-btn');

@@ -12,6 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $resolvedTitle }}</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @include('theme::partials._seo_head')
     
     <!-- PWA & Web App Meta Tags -->
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">

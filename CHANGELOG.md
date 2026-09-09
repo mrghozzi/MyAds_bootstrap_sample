@@ -2,6 +2,27 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.1.3] - 2026-09-09
+
+### Added
+- **Store Product Pages SEO & Microdata Optimization (`views/store/show.blade.php`):**
+  - Wrapped product view inside semantic `<article itemscope itemtype="https://schema.org/Product">`, `<header>`, `<aside>`, and `<nav aria-label="breadcrumb">` elements.
+  - Implemented single `<h1>` hierarchy with `<h1 class="... section-title" itemprop="name">` for product title and converted navbar brand header in `desktop_sidebar.blade.php` to `<span>`.
+  - Added Schema.org `Offer` microdata (`price`, `priceCurrency="PTS"`, `availability="https://schema.org/InStock"`).
+  - Injected `@include('theme::partials._seo_head')` into `layouts/master.blade.php` `<head>` for automated canonical URLs, Open Graph, Twitter cards, and Schema JSON-LD.
+  - Optimized product hero image with `loading="eager"`, `decoding="async"`, explicit dimensions (`width="280" height="180"`), and `itemprop="image"`.
+
+### Changed
+- **Store Product Tab Architecture & Topic-First Display (`views/store/show.blade.php`):**
+  - Made the **Topic** tab (`#topic-tab`) the first and default active tab with pre-selected tab pill navigation.
+  - Eliminated the redundant **Details** tab (`#desc-tab`), consolidating full markdown content into the Topic tab.
+  - Pre-rendered markdown content server-side via `\Illuminate\Support\Str::markdown()` with `data-rendered="true"` and `itemprop="description"`.
+  - Updated stylesheet to render `.markdown-content { display: block; word-break: break-word; }` eliminating layout shifts.
+  - Connected `#trigger-topic-edit-from-menu` in the dropdown menu to activate and open the topic editor.
+
+### Metadata & Config
+- Bumped `theme.json` version to `2.1.3` with `min_myads` compatibility at `4.5.6`.
+
 ## [2.1.2] - 2026-09-03
 
 ### Fixed

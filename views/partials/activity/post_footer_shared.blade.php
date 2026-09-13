@@ -35,11 +35,17 @@
         <div class="dropdown">
             <button class="btn btn-link text-decoration-none text-muted fw-bold d-flex align-items-center gap-1 dropdown-toggle py-1 px-2 border-0 bg-transparent" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="reaction-btn-{{ $targetId }}">
                 @php
-                    $myReaction = \App\Models\Like::where('uid', auth()->id())
-                        ->where('sid', $targetId)
-                        ->where('type', $reactionType)
-                        ->first();
-                    $myReactionOption = $myReaction ? \App\Models\Option::where('o_parent', $myReaction->id)->where('o_type', 'data_reaction')->first() : null;
+                    $userReactData = $activity->user_reaction_data ?? null;
+                    if ($userReactData !== null) {
+                        $myReaction = $userReactData['like'] ?? null;
+                        $myReactionOption = $userReactData['option'] ?? null;
+                    } else {
+                        $myReaction = \App\Models\Like::where('uid', auth()->id())
+                            ->where('sid', $targetId)
+                            ->where('type', $reactionType)
+                            ->first();
+                        $myReactionOption = $myReaction ? \App\Models\Option::where('o_parent', $myReaction->id)->where('o_type', 'data_reaction')->first() : null;
+                    }
                 @endphp
                 @if($myReactionOption)
                     <img class="reaction-option-image" src="{{ theme_asset('img/reaction/'.$myReactionOption->o_valuer.'.png') }}" width="24" height="24" alt="reaction-{{ $myReactionOption->o_valuer }}">

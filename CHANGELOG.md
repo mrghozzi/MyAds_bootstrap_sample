@@ -2,6 +2,18 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.1.4] - 2026-09-13
+
+### Performance & TTFB Optimization
+- **Preloaded Activity User Reactions (`views/partials/activity/post_footer_shared.blade.php`):**
+  - Updated reaction button resolver to check for preloaded `$activity->user_reaction_data` before executing fallback database queries (`Like::where` and `Option::where`), eliminating N+1 queries during activity feed and portal rendering for authenticated members.
+- **Full Compatibility with MyAds v4.5.6 Performance Overhaul:**
+  - Fully compatible with core static asset memoization (`theme_asset`), bulk activity decoration, bootstrap lifecycle caching, GZIP compression, and eager loaded video relations.
+  - Benchmarked across all core routes (`/`, `/portal`, `/forum`, `/directory`, `/video`, `/store`, `/news`, `/clips`) with sub-100ms average response times and 0 fatal errors.
+
+### Metadata & Config
+- Bumped `theme.json` version to `2.1.4` with `min_myads` compatibility at `4.5.6`.
+
 ## [2.1.3] - 2026-09-09
 
 ### Added

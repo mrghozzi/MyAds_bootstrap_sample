@@ -34,6 +34,7 @@
     <!-- Theme Compatibility CSS -->
     <link href="{{ theme_asset('css/style.css') }}" rel="stylesheet">
     <link href="{{ theme_asset('css/styles.min.css') }}" rel="stylesheet">
+    <link href="{{ theme_asset('css/theme-tokens.css') }}" rel="stylesheet">
     @if($pageDirection === 'rtl')
         <link href="{{ theme_asset('css/rtl.css') }}" rel="stylesheet">
     @endif
@@ -318,6 +319,7 @@
                             <li><a class="dropdown-item py-2 rounded-3 small" href="{{ route('profile.show', auth()->user()->username) }}"><i class="fa fa-user me-2 text-muted"></i> {{ __('messages.member_profile') }}</a></li>
                             <li><a class="dropdown-item py-2 rounded-3 small" href="{{ route('profile.edit') }}"><i class="fa fa-user-pen me-2 text-muted"></i> {{ __('messages.edit_profile') }}</a></li>
                             <li><a class="dropdown-item py-2 rounded-3 small" href="{{ route('profile.history') }}"><i class="fa fa-clock-rotate-left me-2 text-muted"></i> {{ __('messages.points_history') }}</a></li>
+                            <li><a class="dropdown-item py-2 rounded-3 small" href="{{ route('bookmarks.index') }}"><i class="fa fa-bookmark me-2 text-muted"></i> {{ __('messages.saved_posts') }}</a></li>
                             @if(auth()->user()->hasAdminAccess())
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item py-2 rounded-3 small fw-bold text-primary" href="{{ route('admin.index') }}"><i class="fa fa-shield-halved me-2"></i> Admin Panel</a></li>
@@ -440,26 +442,62 @@
 
         function postComment(id, type) {
             const input = document.getElementById('txt_comment' + id);
-            if (!input || !input.value.trim()) return;
+            if (!input) return;
 
             const text = input.value;
+            const mediaFile = window.getCommentPendingMedia ? window.getCommentPendingMedia(id) : null;
+            if (!text.trim() && !mediaFile) return;
+
+            const submitBtn = document.querySelector('[data-comment-submit="' + id + '"]');
+            if (submitBtn) submitBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('id', id);
+            formData.append('type', type);
+            formData.append('comment', text);
+            if (mediaFile) {
+                formData.append('attachment', mediaFile);
+            }
+
             fetch('{{ route("comment.store") }}', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': getCsrfToken()
                 },
-                body: JSON.stringify({ id: id, type: type, comment: text })
+                body: formData
             })
-            .then(r => r.text())
+            .then(async response => {
+                const contentType = response.headers.get('content-type') || '';
+                if (contentType.includes('application/json')) {
+                    const data = await response.json();
+                    if (!response.ok || data.error) {
+                        throw new Error(data.error || 'Error posting comment');
+                    }
+                    return data.html || '';
+                }
+                const html = await response.text();
+                if (!response.ok) {
+                    throw new Error('Error posting comment');
+                }
+                return html;
+            })
             .then(html => {
                 const container = document.querySelector('.post-comment-list-' + id);
-                if (container) {
+                if (container && html) {
                     container.innerHTML = html;
-                    input.value = '';
                 }
+                input.value = '';
+                if (window.clearCommentPendingMedia) {
+                    window.clearCommentPendingMedia(id);
+                }
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.focus();
             })
-            .catch(e => alert('Error posting comment: ' + e));
+            .catch(e => alert(e.message || ('Error posting comment: ' + e)))
+            .finally(() => {
+                if (submitBtn) submitBtn.disabled = false;
+            });
         }
 
         function deleteComment(trashid, type) {
@@ -501,6 +539,76 @@
                 } else if (data.error) {
                     alert(data.error);
                 }
+            });
+        }
+
+        function toggleBookmark(statusId, btn) {
+            if (!btn || btn.dataset.busy === "true") return;
+            btn.dataset.busy = "true";
+
+            let icon = btn.querySelector('.bookmark-icon') || btn.querySelector('i');
+            let label = btn.querySelector('.bookmark-label') || btn.querySelector('span');
+            let isSaved = icon && icon.classList.contains('fa-solid');
+
+            // Optimistic UI toggle
+            if (icon) {
+                icon.classList.toggle('fa-solid', !isSaved);
+                icon.classList.toggle('fa-regular', isSaved);
+                icon.classList.toggle('text-primary', !isSaved);
+            }
+            if (label) {
+                label.textContent = !isSaved ? '{{ __('messages.saved') }}' : '{{ __('messages.save') }}';
+                label.classList.toggle('text-primary', !isSaved);
+            }
+
+            fetch('{{ route("status.save_toggle") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': typeof getCsrfToken === 'function' ? getCsrfToken() : (document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ status_id: statusId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (icon) {
+                        icon.classList.toggle('fa-solid', data.saved);
+                        icon.classList.toggle('fa-regular', !data.saved);
+                        icon.classList.toggle('text-primary', data.saved);
+                    }
+                    if (label) {
+                        label.textContent = data.saved ? '{{ __('messages.saved') }}' : '{{ __('messages.save') }}';
+                        label.classList.toggle('text-primary', data.saved);
+                    }
+                } else {
+                    // Revert
+                    if (icon) {
+                        icon.classList.toggle('fa-solid', isSaved);
+                        icon.classList.toggle('fa-regular', !isSaved);
+                        icon.classList.toggle('text-primary', isSaved);
+                    }
+                    if (label) {
+                        label.textContent = isSaved ? '{{ __('messages.saved') }}' : '{{ __('messages.save') }}';
+                        label.classList.toggle('text-primary', isSaved);
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Bookmark error:', err);
+                if (icon) {
+                    icon.classList.toggle('fa-solid', isSaved);
+                    icon.classList.toggle('fa-regular', !isSaved);
+                    icon.classList.toggle('text-primary', isSaved);
+                }
+                if (label) {
+                    label.textContent = isSaved ? '{{ __('messages.saved') }}' : '{{ __('messages.save') }}';
+                    label.classList.toggle('text-primary', isSaved);
+                }
+            })
+            .finally(() => {
+                btn.dataset.busy = "false";
             });
         }
 
@@ -918,6 +1026,7 @@
                 }
             });
         });
+    @include('theme::partials.mobile_bottom_nav')
     @include('theme::partials.continuous_audio_player')
     @auth
     <script>
@@ -931,6 +1040,12 @@
     </script>
     <script src="{{ theme_asset('js/live-events.js') }}" defer></script>
     @endauth
+    <script>
+        window.MYADS_I18N = window.MYADS_I18N || {};
+        window.MYADS_I18N.suggested_members = '{{ __('messages.suggested_members') }}';
+        window.MYADS_I18N.suggested_tags = '{{ __('messages.suggested_tags') }}';
+    </script>
+    <script src="{{ asset('js/smart-autocomplete.js') }}" defer></script>
     <?php
         \App\Helpers\Hooks::do_action('theme_master_before_body_close');
     ?>

@@ -1,0 +1,472 @@
+/**
+ * MYADS Design Tokens & Modern Visual System (v4.6.0)
+ * Bootstrap 5.3.3 Edition - Modern CSS variables, glassmorphic surfaces, fluid micro-interactions, and skeleton loaders.
+ */
+
+:root,
+html[data-theme="css"],
+[data-bs-theme="light"] {
+    /* Brand & Accent Palette */
+    --myads-primary: #0d6efd;
+    --myads-primary-rgb: 13, 110, 253;
+    --myads-primary-hover: #0b5ed7;
+    --myads-primary-glow: rgba(13, 110, 253, 0.25);
+    
+    --myads-accent: #0dcaf0;
+    --myads-accent-rgb: 13, 202, 240;
+    --myads-accent-glow: rgba(13, 202, 240, 0.25);
+
+    --myads-success: #198754;
+    --myads-warning: #ffc107;
+    --myads-danger: #dc3545;
+
+    /* Surfaces & Backgrounds */
+    --myads-bg: #f8f9fa;
+    --myads-surface: #ffffff;
+    --myads-surface-elevated: #ffffff;
+    --myads-surface-border: #dee2e6;
+
+    /* Glassmorphism 2.0 Tokens */
+    --myads-glass-bg: rgba(255, 255, 255, 0.82);
+    --myads-glass-border: rgba(255, 255, 255, 0.65);
+    --myads-glass-blur: 16px;
+    --myads-glass-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+
+    /* Typography */
+    --myads-text-main: #212529;
+    --myads-text-muted: #6c757d;
+    --myads-text-light: #adb5bd;
+
+    /* Radii & Shadows */
+    --myads-radius-sm: 0.375rem;
+    --myads-radius-md: 0.5rem;
+    --myads-radius-lg: 1rem;
+    --myads-radius-xl: 1.5rem;
+    --myads-radius-pill: 50rem;
+
+    --myads-shadow-sm: 0 .125rem .25rem rgba(0,0,0,.075);
+    --myads-shadow-md: 0 .5rem 1rem rgba(0,0,0,.15);
+    --myads-shadow-lg: 0 1rem 3rem rgba(0,0,0,.175);
+    --myads-shadow-floating: 0 16px 40px rgba(13, 110, 253, 0.18);
+
+    /* Transitions */
+    --myads-transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --myads-transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Mode Tokens */
+html[data-theme="css_d"],
+[data-bs-theme="dark"] {
+    --myads-primary: #3d8bfd;
+    --myads-primary-rgb: 61, 139, 253;
+    --myads-primary-hover: #6ea8fe;
+    --myads-primary-glow: rgba(61, 139, 253, 0.3);
+
+    --myads-bg: #212529;
+    --myads-surface: #2b3035;
+    --myads-surface-elevated: #343a40;
+    --myads-surface-border: #495057;
+
+    --myads-glass-bg: rgba(33, 37, 41, 0.85);
+    --myads-glass-border: rgba(255, 255, 255, 0.1);
+    --myads-glass-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+
+    --myads-text-main: #f8f9fa;
+    --myads-text-muted: #adb5bd;
+    --myads-text-light: #6c757d;
+
+    --myads-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.25);
+    --myads-shadow-md: 0 6px 18px rgba(0, 0, 0, 0.35);
+    --myads-shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.45);
+    --myads-shadow-floating: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* Modern Glassmorphic Container Utility */
+.myads-glass-surface {
+    background: var(--myads-glass-bg) !important;
+    backdrop-filter: blur(var(--myads-glass-blur)) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(var(--myads-glass-blur)) saturate(180%) !important;
+    border: 1px solid var(--myads-glass-border) !important;
+    box-shadow: var(--myads-glass-shadow) !important;
+}
+
+/* Micro-Interactions & Hover Lift */
+.myads-hover-lift {
+    transition: transform var(--myads-transition-smooth), box-shadow var(--myads-transition-smooth) !important;
+}
+
+.myads-hover-lift:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: var(--myads-shadow-lg) !important;
+}
+
+.myads-btn-press {
+    transition: transform var(--myads-transition-fast), filter var(--myads-transition-fast) !important;
+}
+
+.myads-btn-press:active {
+    transform: scale(0.96) !important;
+}
+
+/* Skeleton Loading Utilities (Zero-CLS Shimmer) */
+.myads-skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--myads-surface-border) !important;
+    border-radius: var(--myads-radius-sm);
+}
+
+.myads-skeleton::after {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0,
+        rgba(255, 255, 255, 0.15) 20%,
+        rgba(255, 255, 255, 0.3) 60%,
+        rgba(255, 255, 255, 0)
+    );
+    animation: myads-shimmer 2s infinite;
+    content: '';
+}
+
+@keyframes myads-shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Mobile Bottom Navigation Bar Styles */
+.myads-mobile-bottom-nav {
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        padding-bottom: 74px !important;
+    }
+
+    .myads-mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        background: var(--myads-glass-bg);
+        backdrop-filter: blur(18px) saturate(190%);
+        -webkit-backdrop-filter: blur(18px) saturate(190%);
+        border-top: 1px solid var(--myads-glass-border);
+        box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.12);
+        z-index: 9999;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 8px;
+        margin: 0;
+    }
+
+    .myads-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        height: 100%;
+        color: var(--myads-text-muted);
+        text-decoration: none !important;
+        font-size: 11px;
+        font-weight: 600;
+        transition: color var(--myads-transition-fast), transform var(--myads-transition-fast);
+        position: relative;
+    }
+
+    .myads-nav-item i {
+        font-size: 19px;
+        margin-bottom: 2px;
+        transition: transform var(--myads-transition-fast);
+    }
+
+    .myads-nav-item.active,
+    .myads-nav-item:hover {
+        color: var(--myads-primary);
+    }
+
+    .myads-nav-item.active i {
+        transform: translateY(-2px);
+    }
+
+    .myads-nav-fab {
+        position: relative;
+        top: -14px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--myads-primary) 0%, var(--myads-accent) 100%);
+        color: #ffffff !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 20px var(--myads-primary-glow);
+        border: 3px solid var(--myads-surface);
+        transition: transform var(--myads-transition-fast), box-shadow var(--myads-transition-fast);
+        text-decoration: none !important;
+        flex-shrink: 0;
+    }
+
+    .myads-nav-fab i {
+        font-size: 20px;
+        color: #ffffff;
+        margin: 0;
+    }
+
+    .myads-nav-fab:active {
+        transform: scale(0.92);
+    }
+
+    .myads-nav-badge {
+        position: absolute;
+        top: 6px;
+        right: 22%;
+        background-color: var(--myads-danger);
+        color: #ffffff;
+        font-size: 9px;
+        font-weight: bold;
+        min-width: 16px;
+        height: 16px;
+        line-height: 16px;
+        border-radius: 999px;
+        text-align: center;
+        padding: 0 4px;
+        box-shadow: 0 2px 6px rgba(220, 53, 69, 0.4);
+    }
+}
+
+/* Glassmorphism 2.0 Reaction Picker Bubble & Spring Interactions */
+.reaction-options.reaction-options-dropdown {
+    background: var(--myads-glass-bg) !important;
+    backdrop-filter: blur(var(--myads-glass-blur)) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(var(--myads-glass-blur)) saturate(180%) !important;
+    border: 1px solid var(--myads-glass-border) !important;
+    box-shadow: var(--myads-glass-shadow), 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+    border-radius: var(--myads-radius-pill) !important;
+    padding: 6px 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    height: auto !important;
+}
+
+.reaction-options.reaction-options-dropdown .reaction-option {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.2s ease !important;
+    cursor: pointer !important;
+    padding: 2px !important;
+}
+
+.reaction-options.reaction-options-dropdown .reaction-option:hover {
+    transform: scale(1.35) translateY(-5px) !important;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5)) !important;
+    z-index: 10 !important;
+}
+
+.reaction-options.reaction-options-dropdown .reaction-option:active {
+    transform: scale(0.92) !important;
+}
+
+.reaction-options.reaction-options-dropdown .reaction-option .reaction-option-image {
+    width: 32px !important;
+    height: 32px !important;
+    object-fit: contain !important;
+    transition: transform 0.2s ease !important;
+}
+
+/* Post Composer Dropzone & Interactive Chips */
+.composer-dropzone {
+    border: 2px dashed transparent;
+    transition: border-color var(--myads-transition-smooth), background-color var(--myads-transition-smooth), transform var(--myads-transition-smooth);
+    border-radius: var(--myads-radius-md);
+}
+
+.composer-dropzone.composer-dropzone--active {
+    border-color: var(--myads-primary) !important;
+    background-color: rgba(var(--myads-primary-rgb), 0.12) !important;
+    transform: scale(1.008);
+}
+
+.composer-dropzone-indicator {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    color: var(--myads-primary);
+    font-weight: 600;
+    font-size: 13px;
+    background: var(--myads-glass-bg);
+    border-radius: var(--myads-radius-sm);
+    margin-top: 8px;
+    backdrop-filter: blur(8px);
+}
+
+.composer-dropzone.composer-dropzone--active .composer-dropzone-indicator {
+    display: flex !important;
+}
+
+.composer-media-chip {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 6px 12px !important;
+    border-radius: var(--myads-radius-pill) !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    background: var(--myads-surface-border) !important;
+    color: var(--myads-text-main) !important;
+    transition: all var(--myads-transition-fast) !important;
+    border: 1px solid transparent !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+}
+
+.composer-media-chip:hover {
+    background: rgba(var(--myads-primary-rgb), 0.15) !important;
+    color: var(--myads-primary) !important;
+    border-color: rgba(var(--myads-primary-rgb), 0.25) !important;
+    transform: translateY(-1px) !important;
+}
+
+.composer-media-chip.active {
+    background: var(--myads-primary) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px var(--myads-primary-glow) !important;
+}
+
+/* Universal Messages & Comments Dropzone & Media Hub Styles */
+.messages-composer {
+    position: relative !important;
+}
+
+.messages-composer-drop-indicator {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(35, 210, 226, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 2px dashed var(--myads-primary, #23d2e2);
+    border-radius: var(--myads-radius-md, 12px);
+    z-index: 50;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--myads-primary, #23d2e2);
+    pointer-events: none;
+}
+
+.messages-composer.messages-composer--dropzone-active .messages-composer-drop-indicator {
+    display: flex !important;
+}
+
+.forum-rdx-comment-composer {
+    position: relative !important;
+    transition: border-color var(--myads-transition-fast), box-shadow var(--myads-transition-fast);
+}
+
+.forum-rdx-comment-composer.comment-dropzone--active {
+    border-color: var(--myads-primary, #23d2e2) !important;
+    box-shadow: 0 0 0 3px rgba(35, 210, 226, 0.25) !important;
+}
+
+.forum-rdx-comment-dropzone-indicator {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    color: var(--myads-primary, #23d2e2);
+    font-weight: 600;
+    font-size: 12px;
+    background: rgba(35, 210, 226, 0.15);
+    border: 1px dashed var(--myads-primary, #23d2e2);
+    border-radius: var(--myads-radius-sm, 8px);
+}
+
+.forum-rdx-comment-composer.comment-dropzone--active .forum-rdx-comment-dropzone-indicator {
+    display: flex !important;
+}
+
+.forum-rdx-comment-media-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+    margin: 6px 0;
+    background: var(--myads-glass-bg, rgba(15, 23, 42, 0.85));
+    border: 1px solid var(--myads-surface-border, rgba(255, 255, 255, 0.1));
+    border-radius: var(--myads-radius-sm, 8px);
+    width: fit-content;
+    max-width: 100%;
+}
+
+.forum-rdx-comment-media-preview.is-hidden {
+    display: none !important;
+}
+
+.forum-rdx-comment-media-preview .comment-media-thumb {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.forum-rdx-comment-media-preview .comment-media-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--myads-text-main, #f1f5f9);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.forum-rdx-comment-media-preview .comment-media-remove {
+    background: transparent;
+    border: none;
+    color: var(--myads-danger, #ef4444);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background-color var(--myads-transition-fast);
+}
+
+.forum-rdx-comment-media-preview .comment-media-remove:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+/* Comment Image Markdown Display Styling */
+.post-comment-text img,
+.forum-rdx-comment-body img {
+    max-width: 100% !important;
+    max-height: 380px !important;
+    height: auto !important;
+    border-radius: var(--myads-radius-sm, 8px) !important;
+    margin-top: 8px !important;
+    display: block !important;
+    object-fit: contain !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+    transition: transform var(--myads-transition-fast), box-shadow var(--myads-transition-fast);
+}
+
+.post-comment-text img:hover,
+.forum-rdx-comment-body img:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+

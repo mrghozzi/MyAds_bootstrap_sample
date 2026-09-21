@@ -2,6 +2,39 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.3.0] - 2026-09-21
+
+### Added
+- **Saved Posts & Bookmarks Hub (`views/saved.blade.php`, `views/partials/activity/post_footer_shared.blade.php`):**
+  - Integrated native Bootstrap 5 saved items page (`views/saved.blade.php`) matching grid hierarchy (`row g-4`), empty state card, and infinite scroll.
+  - Added dedicated Bookmark action button in post actions bar (`post_footer_shared.blade.php`) with active saved state styling.
+  - Implemented optimistic `toggleBookmark(statusId, btn)` client-side handler in `views/layouts/master.blade.php`.
+  - Added saved posts navigation links in navbar user dropdown (`master.blade.php`), desktop sidebar (`desktop_sidebar.blade.php`), small navigation sidebar (`nav.blade.php`), offcanvas drawer menu (`sidemenu.blade.php`), and mobile drawer (`mobile_sidebar.blade.php`).
+- **Zero-Dependency Smart Autocomplete for Mentions & Hashtags (`views/layouts/master.blade.php`):**
+  - Injected `smart-autocomplete.js` and localized i18n configurations in master layout, providing cursor-following autocomplete popups when typing `@` or `#` across textareas and comments.
+
+## [2.2.0] - 2026-09-17
+
+- **Universal Drag-and-Drop & Clipboard Paste (`Ctrl+V`) Support:**
+  - **Status Post Composer (`views/partials/status/add_post.blade.php`):** Dragging files directly over `#composer-editor-shell` reveals the dropzone indicator and attaches files to the gallery; pasting images via `Ctrl+V` seamlessly auto-creates named image files and queues them into the gallery.
+  - **Private Messages (`views/messages/partials/composer.blade.php` & `assets/js/messages-app.js`):** Bound dragover/dragleave/drop and `paste` listeners to drop files or paste images directly into the chat attachment pipeline with size validation and preview strip.
+  - **Comments System (`views/partials/activity/comments.blade.php` & `views/layouts/master.blade.php`):** Added image attachment button, hidden file input, dropzone indicator, preview card, and `Ctrl+V` clipboard paste handler; updated `postComment` in `master.blade.php` to upload attachments via `FormData`.
+- **Design Tokens & Modern Visual System (`assets/css/theme-tokens.css` & `assets/css_d/theme-tokens.css`):**
+  - Added dropzone active indicators, preview badge styles, reaction picker springs, and comment image markdown display styles (`.post-comment-text img`, `.forum-rdx-comment-body img`).
+  - Integrated CSS custom properties defining semantic colors, typography sizing, elevations, fluid spacing, and transitions harmonized with Bootstrap 5.3.3 (`[data-bs-theme="light"]`, `[data-bs-theme="dark"]`, `data-theme="css"`, `data-theme="css_d"`).
+  - Implemented **Glassmorphism 2.0** (`.myads-glass-surface`) utilizing multi-layer backdrop blur, ambient light borders, and frosted translucent gradients compatible with both light and dark modes.
+  - Added dynamic micro-interactions (`.myads-hover-lift`, `.myads-btn-press`) and accessible skeleton loading state animations (`.myads-skeleton`).
+- **Ergonomic Mobile Bottom Navigation Hub (`views/partials/mobile_bottom_nav.blade.php` & `layouts/master.blade.php`):**
+  - Added responsive fixed bottom navigation bar on mobile/tablet viewports (`< 768px`) with active route indicators, real-time unread badges for messages and notifications, and an elevated central quick-post Floating Action Button (FAB).
+
+### Performance & Platform Compatibility
+- **Full Compatibility with MyAds v4.6.0:**
+  - Automatic compatibility with Guest Page Micro-Caching (`GuestPageCacheMiddleware`), ETag HTTP 304 conditional responses, and Google Sitelinks Search Schema.org (`SeoManager`) via `_seo_head.blade.php`.
+  - Zero-CLS performance with streamlined layout rendering and body bottom padding adaptation for mobile navigation.
+
+### Metadata & Config
+- Bumped `theme.json` version to `2.2.0` with `min_myads: "4.6.0"` and `max_myads: "4.6.x"` compatibility bounding.
+
 ## [2.1.4] - 2026-09-13
 
 ### Performance & TTFB Optimization

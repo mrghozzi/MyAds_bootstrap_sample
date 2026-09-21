@@ -92,7 +92,7 @@
                 <small class="text-muted smaller fw-bold">{{ \Carbon\Carbon::createFromTimestamp((int) $date)->diffForHumans() }}</small>
             </div>
 
-            <div class="small text-secondary lh-lg mb-2 forum-rdx-comment-body">
+            <div class="small text-secondary lh-lg mb-2 forum-rdx-comment-body post-comment-text">
                 {!! $formattedText !!}
             </div>
 
@@ -174,9 +174,9 @@
             <div class="d-flex gap-3 p-3 bg-white rounded-4 border border-light">
                 <img src="{{ auth()->user()->avatarUrl() }}" class="rounded-circle border" width="36" height="36" alt="">
                 <div class="flex-grow-1">
-                    <div class="border rounded-3 p-2 bg-light bg-opacity-20">
+                    <div class="border rounded-3 p-2 bg-light bg-opacity-20 forum-rdx-comment-composer" id="comment_composer_{{ $id }}">
                         <!-- Toolbar -->
-                        <div class="d-flex gap-1 border-bottom pb-2 mb-2 flex-wrap">
+                        <div class="d-flex gap-1 border-bottom pb-2 mb-2 flex-wrap forum-rdx-comment-toolbar">
                             <button type="button" class="btn btn-light btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;" data-md-action="bold" data-target="txt_comment{{ $id }}" title="{{ __('messages.markdown_bold') }}">
                                 <i class="fa fa-bold text-secondary" style="font-size: 11px;"></i>
                             </button>
@@ -195,8 +195,23 @@
                             <button type="button" class="btn btn-light btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;" data-md-action="emoji" data-target="txt_comment{{ $id }}" title="{{ __('messages.markdown_emoji') }}">
                                 <i class="fa fa-smile text-secondary" style="font-size: 11px;"></i>
                             </button>
+                            <button type="button" class="btn btn-light btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;" data-comment-media-btn="{{ $id }}" title="{{ __('messages.image') ?? 'إرفاق صورة' }}">
+                                <i class="fa fa-image text-secondary" style="font-size: 11px;"></i>
+                            </button>
                         </div>
-                        <textarea id="txt_comment{{ $id }}" name="comment_text" class="form-control border-0 bg-transparent p-0 small" data-md-editor="1" rows="2" placeholder="{{ __('messages.your_comment') }}" style="box-shadow: none; resize: none;"></textarea>
+                        <input type="file" id="comment_media_file_{{ $id }}" class="d-none" accept=".jpg,.jpeg,.png,.gif,.webp,.bmp" style="display: none;">
+                        <div class="forum-rdx-comment-dropzone-indicator" id="comment_drop_indicator_{{ $id }}">
+                            <i class="fa fa-cloud-arrow-up" aria-hidden="true"></i>
+                            <span>{{ __('messages.drop_files_here') ?? 'أفلت الصورة هنا للإرفاق' }}</span>
+                        </div>
+                        <textarea id="txt_comment{{ $id }}" name="comment_text" class="form-control border-0 bg-transparent p-0 small forum-rdx-comment-input" data-md-editor="1" rows="2" placeholder="{{ __('messages.your_comment') }}" style="box-shadow: none; resize: none;"></textarea>
+                        <div class="forum-rdx-comment-media-preview is-hidden" id="comment_media_preview_{{ $id }}">
+                            <img src="" alt="preview" id="comment_media_thumb_{{ $id }}" class="comment-media-thumb">
+                            <span class="comment-media-name" id="comment_media_name_{{ $id }}"></span>
+                            <button type="button" class="comment-media-remove" id="comment_media_remove_{{ $id }}" aria-label="{{ __('messages.delete') ?? 'Delete' }}" title="{{ __('messages.delete') ?? 'حذف' }}">
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="d-flex justify-content-end mt-2">
                         <button type="button" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm" data-comment-submit="{{ $id }}" onclick="postComment({{ $id }}, '{{ $type }}')">
@@ -222,3 +237,165 @@
         {{ __('messages.load_more_comments') }}
     </button>
 </p>
+
+<script>
+    window.pendingCommentMedia = window.pendingCommentMedia || {};
+
+    if (typeof window.getCommentPendingMedia !== 'function') {
+        window.getCommentPendingMedia = function (id) {
+            return window.pendingCommentMedia[id] || null;
+        };
+    }
+
+    if (typeof window.clearCommentPendingMedia !== 'function') {
+        window.clearCommentPendingMedia = function (id) {
+            delete window.pendingCommentMedia[id];
+            const fileInput = document.getElementById('comment_media_file_' + id);
+            const preview = document.getElementById('comment_media_preview_' + id);
+            const thumb = document.getElementById('comment_media_thumb_' + id);
+            const nameEl = document.getElementById('comment_media_name_' + id);
+
+            if (fileInput) fileInput.value = '';
+            if (thumb) thumb.src = '';
+            if (nameEl) nameEl.textContent = '';
+            if (preview) preview.classList.add('is-hidden');
+        };
+    }
+
+    if (typeof window.setCommentPendingMedia !== 'function') {
+        window.setCommentPendingMedia = function (id, file) {
+            if (!file) {
+                window.clearCommentPendingMedia(id);
+                return;
+            }
+
+            const maxBytes = 5 * 1024 * 1024;
+            if (file.size > maxBytes) {
+                alert(@json(__('messages.max_file_size_exceeded') ?? 'حجم الملف يتجاوز الحد الأقصى (5 ميغابايت)'));
+                window.clearCommentPendingMedia(id);
+                return;
+            }
+
+            window.pendingCommentMedia[id] = file;
+            const preview = document.getElementById('comment_media_preview_' + id);
+            const thumb = document.getElementById('comment_media_thumb_' + id);
+            const nameEl = document.getElementById('comment_media_name_' + id);
+
+            if (nameEl) {
+                const sizeKb = (file.size / 1024).toFixed(1) + ' KB';
+                nameEl.textContent = file.name + ' (' + sizeKb + ')';
+            }
+
+            if (thumb && file.type && file.type.indexOf('image') !== -1) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    thumb.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            if (preview) {
+                preview.classList.remove('is-hidden');
+            }
+        };
+    }
+
+    if (typeof window.initCommentComposerMedia !== 'function') {
+        window.initCommentComposerMedia = function (id) {
+            const composer = document.getElementById('comment_composer_' + id) || (document.getElementById('txt_comment' + id) ? document.getElementById('txt_comment' + id).closest('.forum-rdx-comment-composer') : null);
+            const mediaBtn = document.querySelector('[data-comment-media-btn="' + id + '"]');
+            const fileInput = document.getElementById('comment_media_file_' + id);
+            const removeBtn = document.getElementById('comment_media_remove_' + id);
+            const textarea = document.getElementById('txt_comment' + id);
+
+            if (mediaBtn && fileInput && !mediaBtn.dataset.mediaBound) {
+                mediaBtn.dataset.mediaBound = '1';
+                mediaBtn.addEventListener('click', function () {
+                    fileInput.click();
+                });
+            }
+
+            if (fileInput && !fileInput.dataset.mediaBound) {
+                fileInput.dataset.mediaBound = '1';
+                fileInput.addEventListener('change', function () {
+                    if (fileInput.files && fileInput.files.length > 0) {
+                        window.setCommentPendingMedia(id, fileInput.files[0]);
+                    }
+                });
+            }
+
+            if (removeBtn && !removeBtn.dataset.mediaBound) {
+                removeBtn.dataset.mediaBound = '1';
+                removeBtn.addEventListener('click', function () {
+                    window.clearCommentPendingMedia(id);
+                });
+            }
+
+            if (composer && !composer.dataset.dropBound) {
+                composer.dataset.dropBound = '1';
+                ['dragenter', 'dragover'].forEach(function (eventName) {
+                    composer.addEventListener(eventName, function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        composer.classList.add('comment-dropzone--active');
+                    });
+                });
+
+                ['dragleave', 'drop'].forEach(function (eventName) {
+                    composer.addEventListener(eventName, function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        composer.classList.remove('comment-dropzone--active');
+                    });
+                });
+
+                composer.addEventListener('drop', function (e) {
+                    const dt = e.dataTransfer;
+                    if (dt && dt.files && dt.files.length > 0) {
+                        const file = dt.files[0];
+                        if (file && (!file.type || file.type.indexOf('image') !== -1)) {
+                            window.setCommentPendingMedia(id, file);
+                        }
+                    }
+                });
+            }
+
+            function handleCommentPaste(e) {
+                const cd = e.clipboardData || window.clipboardData;
+                if (!cd || !cd.items) return;
+                for (let i = 0; i < cd.items.length; i++) {
+                    const item = cd.items[i];
+                    if (item.type && (item.type.indexOf('image') !== -1 || item.kind === 'file')) {
+                        const file = item.getAsFile();
+                        if (file) {
+                            e.preventDefault();
+                            const ext = (file.type.split('/')[1] || 'png').replace('jpeg', 'jpg');
+                            const filename = file.name && file.name !== 'image.png'
+                                ? file.name
+                                : 'pasted-comment-' + Date.now() + '.' + ext;
+                            let named = file;
+                            try {
+                                named = new File([file], filename, { type: file.type });
+                            } catch (err) {}
+                            window.setCommentPendingMedia(id, named);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (textarea && !textarea.dataset.pasteBound) {
+                textarea.dataset.pasteBound = '1';
+                textarea.addEventListener('paste', handleCommentPaste);
+            }
+            if (composer && !composer.dataset.pasteBound) {
+                composer.dataset.pasteBound = '1';
+                composer.addEventListener('paste', handleCommentPaste);
+            }
+        };
+    }
+
+    if (typeof window.initCommentComposerMedia === 'function') {
+        window.initCommentComposerMedia({{ $id }});
+    }
+</script>

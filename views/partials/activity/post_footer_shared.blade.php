@@ -70,6 +70,12 @@
             <i class="fa-regular fa-comment"></i>
             <span>{{ __('messages.comment') }}</span>
         </button>
+
+        <!-- Bookmark Trigger -->
+        <button class="btn btn-link text-decoration-none text-muted fw-bold d-flex align-items-center gap-1 py-1 px-2 border-0 bg-transparent bookmark-toggle-btn" onclick="toggleBookmark({{ $activity->id }}, this)" data-status-id="{{ $activity->id }}" title="{{ ($activity->is_saved ?? false) ? __('messages.saved') : __('messages.save') }}">
+            <i class="fa-bookmark {{ ($activity->is_saved ?? false) ? 'fa-solid text-primary' : 'fa-regular' }} bookmark-icon"></i>
+            <span class="bookmark-label {{ ($activity->is_saved ?? false) ? 'text-primary' : '' }}">{{ ($activity->is_saved ?? false) ? __('messages.saved') : __('messages.save') }}</span>
+        </button>
     @endauth
 
     <!-- Share Trigger -->

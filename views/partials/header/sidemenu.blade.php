@@ -37,6 +37,12 @@
                     <span class="fw-semibold">{{ __('messages.badges') }}</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('bookmarks.index') }}" class="nav-link py-2.5 px-3 rounded-3 d-flex align-items-center gap-3 {{ Request::is('saved*') ? 'active' : 'hover-bg-light' }}">
+                    <i class="fa fa-bookmark fs-5 text-muted-icon"></i>
+                    <span class="fw-semibold">{{ __('messages.saved_posts') }}</span>
+                </a>
+            </li>
         @endauth
         <li class="nav-item">
             <a href="{{ url('/forum') }}" class="nav-link py-2.5 px-3 rounded-3 d-flex align-items-center gap-3 {{ Request::is('forum*', 'f*', 't*', 'post*', 'editor*') ? 'active' : 'hover-bg-light' }}">

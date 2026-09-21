@@ -1,4 +1,9 @@
 <footer class="messages-composer" data-message-composer>
+    <div class="messages-composer-drop-indicator" aria-hidden="true">
+        <i class="fa fa-cloud-arrow-up" aria-hidden="true"></i>
+        <span>{{ __('messages.drop_files_here') ?? 'أفلت الملف أو الصورة هنا للإرفاق' }}</span>
+    </div>
+
     <!-- Attachment Preview Strip -->
     <div class="messages-compose-file is-hidden" id="message_attachment_meta">
         <span class="d-flex align-items-center gap-2">

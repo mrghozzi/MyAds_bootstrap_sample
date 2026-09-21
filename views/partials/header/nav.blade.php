@@ -65,6 +65,13 @@
                     </svg>
                 </a>
             </li>
+            <li class="menu-item {{ Request::is('saved*') ? 'active' : '' }}">
+                <a class="menu-item-link text-tooltip-tfr" href="{{ route('bookmarks.index') }}" data-title="{{ __('messages.saved_posts') }}">
+                    <svg class="menu-item-link-icon icon-pinned">
+                        <use xlink:href="#svg-pinned"></use>
+                    </svg>
+                </a>
+            </li>
         @endauth
         <li class="menu-item {{ Request::is('forum*', 'f*', 't*', 'post*', 'editor*') ? 'active' : '' }}">
             <a class="menu-item-link text-tooltip-tfr" href="{{ url('/forum') }}" data-title="{{ __('messages.forum') }}">

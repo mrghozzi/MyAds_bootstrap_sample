@@ -2,6 +2,26 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.4.0] - 2026-09-25
+
+### Added
+- **User Dashboard (`views/home.blade.php`) Superdesign Suite & Zero-Reload AJAX Overhaul:**
+  - Modernized the primary user dashboard (`/home`) conforming to `.superdesign` design language and tokens, featuring full bidirectional (LTR & RTL) support and responsive layouts.
+  - Implemented scoped CSS custom properties (`--sd-*`) adapting seamlessly to both Light Mode (`[data-bs-theme="light"]`, `html[data-theme="css"]`) and Dark Mode (`[data-bs-theme="dark"]`, `html[data-theme="css_d"]`, `body.dark-mode`, `html.app-skin-dark`), ensuring optimal text contrast, refined card elevations, and elegant glassmorphism.
+  - **Hero Command Header:** Designed a vibrant gradient command header with user greeting, member status, glowing PTS balance badge, and instant action shortcuts.
+  - **Quick Inventory Strip:** Added a clean 4-pill inventory overview displaying live balances for Banner Ads (`$user->nvu`), Text Ads (`$user->nlink`), Visits Exchange (`$user->vu`), and Smart Ads credits (`$user->nsmart`).
+  - **Core Traffic KPI Cards:** Four elevated KPI cards providing at-a-glance insight into delivered views, clicks, visits, and impressions, coupled with direct management links to `/b_list`, `/l_list`, `/v_list`, and `/ads/smart`.
+  - **Modernized Service Launchpads:** Rebuilt SaaS service banners for Smart Ads Studio, YouTube Views Exchange, Custom Ads Marketplace, and embedded 1-click SEO Checker direct audit.
+  - **Referral Accelerator Hub:** Integrated a dedicated 1-click referral link copy toolbar with live copy confirmation feedback, referral count, and total PTS earned.
+  - **Zero-Reload AJAX Operations Engine:**
+    - **Points Converter (`convertPoints`):** Implemented client-side live conversion calculation (`pts * ratio`), quick preset buttons (`+10`, `+50`, `+100`, `All`), balance checking, and optimistic DOM balance updates with floating toast notifications.
+    - **Transfer Points (`transferPts`):** Real-time peer-to-peer PTS transfer to any registered user with self-transfer and balance protection, model refresh, and atomic balance deduction.
+    - **Vouchers Hub (`generateVoucher` & `claimVoucher`):** Seamless tabbed interface allowing users to generate 12-character cryptographic coupon codes or redeem vouchers into their account. Newly generated vouchers are instantly prepended to the vouchers table with a 1-click copy button, and claimed vouchers dynamically transition status to "Redeemed".
+  - Standardized English translation strings (`messages.*`) with zero obscure legacy keys or hardcoded untranslated strings.
+
+### Metadata & Config
+- Bumped `theme.json` version to `2.4.0` with `min_myads: "4.6.0"` and `max_myads: "4.6.x"` compatibility bounding.
+
 ## [2.3.0] - 2026-09-21
 
 ### Added

@@ -1,9 +1,9 @@
 {
     "name": "Bootstrap Sample",
     "slug": "bootstrap-sample",
-    "version": "2.3.0",
+    "version": "2.4.0",
     "author": "mrghozzi",
-    "description": "A responsive Bootstrap 5.3.3 theme for MyAds with Design Tokens, Glassmorphism 2.0, Mobile Navigation Hub, Superdesign Code & Mermaid Diagrams, and Real-Time SSE Stream support.",
+    "description": "A responsive Bootstrap 5.3.3 theme for MyAds with Superdesign User Dashboard, Zero-Reload AJAX Operations, Design Tokens, Glassmorphism 2.0, Mobile Navigation Hub, and Real-Time SSE Stream support.",
     "thumbnail": "screenshot.png",
     "siteweb": "https://github.com/mrghozzi/MyAds_bootstrap_sample",
     "latest": "https://github.com/mrghozzi/MyAds_bootstrap_sample/releases/latest",

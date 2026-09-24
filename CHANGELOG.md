@@ -18,6 +18,10 @@ All notable changes to the MyAds Bootstrap Sample theme will be documented in th
     - **Transfer Points (`transferPts`):** Real-time peer-to-peer PTS transfer to any registered user with self-transfer and balance protection, model refresh, and atomic balance deduction.
     - **Vouchers Hub (`generateVoucher` & `claimVoucher`):** Seamless tabbed interface allowing users to generate 12-character cryptographic coupon codes or redeem vouchers into their account. Newly generated vouchers are instantly prepended to the vouchers table with a 1-click copy button, and claimed vouchers dynamically transition status to "Redeemed".
   - Standardized English translation strings (`messages.*`) with zero obscure legacy keys or hardcoded untranslated strings.
+- **Dual Banner Image Upload & Promotion Suite (`views/ads/promote.blade.php`, `views/ads/banners/create.blade.php`, `views/ads/banners/edit.blade.php`):**
+  - Modernized `/ads/promote` (`promote.blade.php`) to the `.superdesign` design language with glassmorphic hero, sidebar navigation, cost badges, and live banner preview.
+  - Added dual banner image selection (URL input mode or Device file upload mode) with instant client-side preview and validation across all promotion and banner creation/edit screens.
+  - Fully integrated with `BannerImageUploadService` and A/B test split variations (Version A & Version B).
 
 ### Metadata & Config
 - Bumped `theme.json` version to `2.4.0` with `min_myads: "4.6.0"` and `max_myads: "4.6.x"` compatibility bounding.

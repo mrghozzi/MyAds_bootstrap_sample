@@ -52,6 +52,10 @@
             <i class="fa fa-award {{ request()->routeIs('profile.badges') ? 'text-primary' : 'opacity-50' }}"></i>
             <span class="smaller">{{ __('messages.badges') }}</span>
         </a>
+        <a href="{{ route('profile.verification') }}" class="list-group-item list-group-item-action py-3 px-4 d-flex align-items-center gap-3 transition-all {{ request()->routeIs('profile.verification*') ? 'bg-primary bg-opacity-10 text-primary border-primary border-opacity-25 fw-black' : 'text-muted fw-bold border-light' }}">
+            <i class="fa fa-circle-check {{ request()->routeIs('profile.verification*') ? 'text-primary' : 'opacity-50' }}"></i>
+            <span class="smaller">{{ __('messages.profile_verification') }}</span>
+        </a>
         <a href="{{ route('profile.history') }}" class="list-group-item list-group-item-action py-3 px-4 d-flex align-items-center gap-3 transition-all {{ request()->routeIs('profile.history') ? 'bg-primary bg-opacity-10 text-primary border-primary border-opacity-25 fw-black' : 'text-muted fw-bold border-light' }}">
             <i class="fa fa-history {{ request()->routeIs('profile.history') ? 'text-primary' : 'opacity-50' }}"></i>
             <span class="smaller">{{ __('messages.pts_history') }}</span>

@@ -2,6 +2,19 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.4.1] - 2026-09-29
+
+### Added
+- Added a Bootstrap 5 profile verification request page with eligibility status, terms, evidence links, and rejected-request resubmission.
+- Added profile verification to the member settings navigation.
+
+### Changed
+- Render localized verification decision notifications in the desktop header and notification center.
+- Normalize notification icon classes for notification and Font Awesome identifiers.
+
+### Metadata & Config
+- Bumped the theme version to `2.4.1` and minimum MYADS compatibility to `4.6.1` for the profile verification routes and localized notification display accessor.
+
 ## [2.4.0] - 2026-09-25
 
 ### Added

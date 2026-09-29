@@ -296,7 +296,7 @@
                                             <i class="fa fa-bell"></i>
                                         </div>
                                         <div class="flex-grow-1 min-w-0">
-                                            <p class="small text-body mb-1 fw-bold text-truncate">{{ $headerNotif->name }}</p>
+                                            <p class="small text-body mb-1 fw-bold text-truncate">{{ $headerNotif->display_name }}</p>
                                             <small class="text-muted smaller" style="font-size: 0.7rem;">{{ \Carbon\Carbon::createFromTimestamp($headerNotif->time)->diffForHumans() }}</small>
                                         </div>
                                     </a>

@@ -2,6 +2,28 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.4.2] - 2026-10-02
+
+### Added
+- **Global Knowledgebase Portal (`views/store/knowledgebase_portal.blade.php`):**
+  - Integrated dedicated Knowledgebase portal template featuring searchable documentation cards, platform-wide metrics (articles count, documented products, contributors), and category exploration.
+- **Knowledgebase Modernization & Interactive Features (`views/store/knowledgebase.blade.php`):**
+  - Added fast real-time debounced AJAX search with live dropdown suggestions and in-page topic card filtering.
+  - Implemented interactive helpful/unhelpful feedback voting widget with instant count updates.
+  - Added reading time estimation in article headers and dynamic sticky Table of Contents (TOC) with scrollspy navigation.
+  - Added previous and next sibling navigation cards for intuitive multi-topic browsing.
+  - Added visual color-coded line-by-line Diff viewer comparing proposed revisions against published articles.
+  - Added "Add Topic" action support with seamless routing and `#kb-new-topic` hash scrolling.
+  - Modernized "Filter by category" filter chips with `.superdesign` pill badges, hover lift animations, and active glow states.
+
+### Fixed
+- **Markdown & Script Payload Encapsulation:**
+  - Encapsulated raw Markdown content and diff/revision templates inside `<script type="application/json">` payloads with strict JSON HEX escaping (`JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE`), preventing code examples containing closing script tags (e.g. `</script>`) from prematurely terminating HTML script tags and breaking the page layout.
+  - Added resilient multi-format DOM payload parser (`getRawPayload()`) with 100% fidelity for Unicode and code blocks.
+
+### Metadata & Config
+- Bumped theme version to `2.4.2`.
+
 ## [2.4.1] - 2026-09-29
 
 ### Added

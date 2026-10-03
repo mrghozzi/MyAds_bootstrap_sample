@@ -234,7 +234,9 @@
             @endif
 
         @else
-            @include('theme::partials.status.add_post')
+            <div id="quick-post-box">
+                @include('theme::partials.status.add_post')
+            </div>
             
             <!-- TABS -->
             @auth

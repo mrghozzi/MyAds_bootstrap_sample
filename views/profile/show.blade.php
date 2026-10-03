@@ -216,7 +216,9 @@
         <!-- Main Timeline -->
         <div class="col-lg-8">
             @if(Auth::check() && Auth::id() == $user->id && !in_array($selectedTab, ['photos', 'about'], true))
-                @include('theme::partials.status.add_post')
+                <div id="quick-post-box">
+                    @include('theme::partials.status.add_post')
+                </div>
             @endif
 
             <div id="infinite-scroll-container">

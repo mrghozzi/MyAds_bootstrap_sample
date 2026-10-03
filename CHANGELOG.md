@@ -2,6 +2,28 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.4.3] - 2026-10-03
+
+### Added
+- **Standalone Photo/Image Post Overhaul (`views/forum/image.blade.php`):**
+  - Completely revamped dedicated photo/image post view (`s_type=4`) based on `.superdesign` design tokens with contemporary social media aesthetics and glassmorphic card container (`.photo-viewer-card`).
+  - Styled the author avatar with clean, modern Bootstrap 5 circular silhouettes (`rounded-circle` with online status indicator and verified badge), adhering strictly to the Bootstrap Sample theme design language.
+  - Integrated zero-reload AJAX interactions for reactions/likes, bookmarks, comments, and 1-click clipboard link sharing with toast feedback.
+  - Implemented high-resolution lightbox slideshow modal, keyboard shortcuts (`Esc`, arrows), responsive image scaling, and direct image download actions.
+  - Integrated rich SEO metadata (Schema.org `ImageGallery` JSON-LD, OpenGraph, Twitter Cards, semantic HTML5 structure).
+- **Mobile Navigation Smart Quick-Post Routing (`views/partials/mobile_bottom_nav.blade.php`):**
+  - Updated mobile bottom navigation with context-aware quick-post FAB targeting `#quick-post-box` on `/portal` and member profile (`/u/{auth_username}`) with smooth auto-scroll and input focus, falling back to `/share` elsewhere.
+  - Wrapped status composer in `views/portal/index.blade.php` and `views/profile/show.blade.php` with `<div id="quick-post-box">`.
+  - Added realtime unread count attributes (`data-notification-badge`, `data-message-unread-count`) for live WebSocket/SSE badge synchronization.
+
+### Fixed
+- **Standalone Image Post 500 Error Immunity:**
+  - Hardened author relationship checks and image collection fallbacks in `views/forum/image.blade.php` to prevent HTTP 500 errors on posts with missing attachments or deleted user properties.
+  - Synchronized all localized strings across `lang/en/messages.php` and `lang/ar/messages.php`.
+
+### Metadata & Config
+- Bumped theme version to `2.4.3`.
+
 ## [2.4.2] - 2026-10-02
 
 ### Added

@@ -37,6 +37,12 @@
         </div>
     @endif
 
+    @if($isPending ?? $product->is_pending ?? false)
+        <div class="alert alert-warning rounded-4 shadow-sm border-0 mb-4" role="alert">
+            <i class="fa fa-clock me-2"></i> {{ __('messages.pending_approval') }}
+        </div>
+    @endif
+
     @if($isSuspended)
         <div class="alert alert-danger rounded-4 shadow-sm border-0 mb-4" role="alert">
             <i class="fa fa-exclamation-triangle me-2"></i> {{ __('messages.product_suspended_notice') }}
@@ -79,6 +85,9 @@
                                         @else
                                             <span class="badge bg-success fw-black rounded-pill px-3 py-2 shadow-sm">{{ __('messages.free') }}</span>
                                         @endif
+                                        <span class="badge bg-warning bg-opacity-25 text-dark border border-warning border-opacity-50 rounded-pill px-3 py-2 fw-bold smaller" onclick="document.getElementById('pills-reviews-tab')?.click();" style="cursor: pointer;">
+                                            <i class="fa fa-star text-warning"></i> {{ number_format($averageRating, 1) }} ({{ $reviewsCount }})
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="dropdown">
@@ -105,19 +114,25 @@
                             <p class="text-muted mb-4 fs-6">{{ $pageSummary }}</p>
                             
                             <div class="row g-2 mb-4">
-                                <div class="col-4">
+                                <div class="col-6 col-md-3">
                                     <div class="bg-light bg-opacity-50 p-3 rounded-4 border text-center shadow-sm">
                                         <small class="text-muted d-block smaller fw-black text-uppercase letter-spacing-1 mb-1">{{ __('messages.version') }}</small>
                                         <span class="fw-black text-primary">{{ $latestVersionLabel }}</span>
                                     </div>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-6 col-md-3">
                                     <div class="bg-light bg-opacity-50 p-3 rounded-4 border text-center shadow-sm">
                                         <small class="text-muted d-block smaller fw-black text-uppercase letter-spacing-1 mb-1">{{ __('messages.download') }}</small>
                                         <span class="fw-black text-dark">{{ number_format($downloadCount) }}</span>
                                     </div>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-6 col-md-3" style="cursor: pointer;" onclick="document.getElementById('pills-reviews-tab')?.click();">
+                                    <div class="bg-light bg-opacity-50 p-3 rounded-4 border text-center shadow-sm">
+                                        <small class="text-muted d-block smaller fw-black text-uppercase letter-spacing-1 mb-1">{{ __('messages.rating') }}</small>
+                                        <span class="fw-black text-warning"><i class="fa fa-star"></i> {{ number_format($averageRating, 1) }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
                                     <div class="bg-light bg-opacity-50 p-3 rounded-4 border text-center shadow-sm">
                                         <small class="text-muted d-block smaller fw-black text-uppercase letter-spacing-1 mb-1">{{ __('messages.comments') }}</small>
                                         <span class="fw-black text-dark">{{ number_format($commentCount) }}</span>
@@ -134,7 +149,17 @@
                                         $canDownloadDirectly = $hasLicense || $isOwner || $isFree;
                                         $downloadUrl = route('store.download.hash', $downloadHash);
                                     @endphp
-                                    <div class="d-flex gap-2">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @if($liveDemoUrl)
+                                            <a href="{{ $liveDemoUrl }}" target="_blank" rel="noopener noreferrer" class="btn btn-info text-white rounded-pill fw-black shadow-sm px-4 py-3 d-flex align-items-center justify-content-center transition-all hover-translate-y">
+                                                <i class="fa fa-external-link me-2"></i> {{ __('messages.live_preview_demo') }}
+                                            </a>
+                                        @endif
+                                        @if($videoPreviewUrl)
+                                            <a href="{{ $videoPreviewUrl }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger rounded-pill fw-black shadow-sm px-4 py-3 d-flex align-items-center justify-content-center transition-all hover-translate-y">
+                                                <i class="fa fa-play me-2"></i> {{ __('messages.video_preview') }}
+                                            </a>
+                                        @endif
                                         @if(auth()->check())
                                             @if($canDownloadDirectly)
                                                 <a href="{{ $downloadUrl }}" class="btn btn-primary flex-grow-1 fw-black fs-5 py-3 rounded-pill shadow shadow-sm transition-all hover-translate-y">
@@ -195,6 +220,29 @@
                 </div>
             </div>
 
+            @if($screenshots->isNotEmpty())
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-black mb-0 text-dark">
+                            <i class="fa fa-camera-retro text-primary me-2"></i> {{ __('messages.screenshots_gallery') }}
+                        </h5>
+                        <span class="badge bg-light text-muted border rounded-pill">{{ $screenshots->count() }} {{ __('messages.screenshots') }}</span>
+                    </div>
+                    <div class="row g-3">
+                        @foreach($screenshots as $ss)
+                            <div class="col-6 col-md-4">
+                                <div class="position-relative overflow-hidden rounded-4 shadow-sm border ratio ratio-16x9" style="cursor: pointer;" onclick="openStoreLightbox('{{ asset($ss->url) }}', '{{ addslashes($ss->caption ?? $product->name) }}')">
+                                    <img src="{{ asset($ss->url) }}" alt="{{ $ss->caption ?? $product->name }}" class="object-fit-cover w-100 h-100" loading="lazy">
+                                    <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25 d-flex align-items-center justify-content-center opacity-0 hover-opacity-100 transition-all text-white">
+                                        <i class="fa fa-search-plus fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             <!-- Tabs Content -->
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
                 <div class="card-header bg-white border-bottom p-0 overflow-x-auto">
@@ -202,6 +250,11 @@
                         <li class="nav-item">
                             <button class="nav-link active fw-bold py-3 rounded-4" data-bs-toggle="tab" data-bs-target="#topic-tab">
                                 <i class="fa fa-comments me-2"></i> {{ __('messages.topic') }}
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link fw-bold py-3 rounded-4" id="pills-reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews-tab">
+                                <i class="fa fa-star text-warning me-2"></i> {{ __('messages.reviews') }} <span class="badge bg-light text-muted border ms-1" id="tab-reviews-count">{{ $reviewsCount }}</span>
                             </button>
                         </li>
                         <li class="nav-item">
@@ -238,6 +291,163 @@
                                     <textarea id="store-topic-textarea" class="form-control bg-light rounded-4 mb-3 border p-3" rows="15">{{ $topic?->txt ?? $product->o_valuer }}</textarea>
                                 </div>
                             @endif
+                        </div>
+
+                        <!-- Reviews Tab -->
+                        <div class="tab-pane fade" id="reviews-tab">
+                            <!-- Rating Breakdown Summary -->
+                            <div class="card bg-light border-0 rounded-4 p-4 mb-4">
+                                <div class="row align-items-center g-4">
+                                    <div class="col-md-4 text-center border-end-md">
+                                        <div class="display-3 fw-black text-warning mb-1" id="reviews-avg-display">{{ number_format($averageRating, 1) }}</div>
+                                        <div class="mb-2">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <i class="fa {{ $i <= round($averageRating) ? 'fa-star' : 'fa-star-o' }} text-warning fs-5"></i>
+                                            @endfor
+                                        </div>
+                                        <div class="text-muted small fw-bold" id="reviews-total-label">
+                                            {{ __('messages.based_on_reviews', ['count' => $reviewsCount]) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="d-flex flex-column gap-2">
+                                            @for($star = 5; $star >= 1; $star--)
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <span class="small fw-bold text-muted" style="width: 45px;">{{ $star }} <i class="fa fa-star text-warning"></i></span>
+                                                    <div class="progress flex-grow-1 rounded-pill" style="height: 10px;">
+                                                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $ratingBreakdown['percentages'][$star] ?? 0 }}%;"></div>
+                                                    </div>
+                                                    <span class="small fw-bold text-muted text-end" style="width: 30px;">{{ $ratingBreakdown['counts'][$star] ?? 0 }}</span>
+                                                </div>
+                                            @endfor
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Review Submission Form -->
+                            <div class="card border border-2 rounded-4 p-4 mb-4">
+                                @if(auth()->check())
+                                    @if($hasReviewed && $userReview)
+                                        <div class="alert alert-success d-flex justify-content-between align-items-center rounded-3 mb-0" id="user-review-box">
+                                            <div>
+                                                <h6 class="fw-bold mb-1"><i class="fa fa-check-circle me-1"></i> {{ __('messages.already_reviewed') }}</h6>
+                                                <div class="mb-2">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <i class="fa {{ $i <= $userReview->rating ? 'fa-star' : 'fa-star-o' }} text-warning"></i>
+                                                    @endfor
+                                                    <span class="fw-bold ms-2">{{ $userReview->rating }}/5</span>
+                                                </div>
+                                                @if($userReview->title)
+                                                    <p class="fw-bold mb-1">{{ $userReview->title }}</p>
+                                                @endif
+                                                <p class="mb-0 text-muted small">{{ $userReview->comment }}</p>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 delete-my-review-btn" data-id="{{ $userReview->id }}">
+                                                <i class="fa fa-trash me-1"></i> {{ __('messages.delete') }}
+                                            </button>
+                                        </div>
+                                    @else
+                                        <form id="store-review-form">
+                                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                                <h5 class="fw-black mb-0 text-dark"><i class="fa fa-pencil text-primary me-2"></i> {{ __('messages.write_review') }}</h5>
+                                                @if($isVerifiedBuyer)
+                                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fw-bold">
+                                                        <i class="fa fa-shield me-1"></i> {{ __('messages.verified_buyer') }}
+                                                    </span>
+                                                @endif
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label small fw-bold text-muted">{{ __('messages.your_rating') }} <span class="text-danger">*</span></label>
+                                                <div class="d-flex align-items-center gap-1" id="star-picker">
+                                                    @for($s = 1; $s <= 5; $s++)
+                                                        <i class="fa fa-star interactive-star text-warning fs-3" data-rating="{{ $s }}" style="cursor: pointer;"></i>
+                                                    @endfor
+                                                    <span id="star-picker-label" class="fw-bold ms-2 fs-6 text-dark">5/5</span>
+                                                </div>
+                                                <input type="hidden" name="rating" id="review-rating-value" value="5">
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label small fw-bold text-muted">{{ __('messages.review_title') }}</label>
+                                                <input type="text" name="title" id="review-title-input" class="form-control rounded-3" placeholder="{{ __('messages.review_title') }}...">
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label small fw-bold text-muted">{{ __('messages.review_content') }} <span class="text-danger">*</span></label>
+                                                <textarea name="comment" id="review-comment-input" rows="4" class="form-control rounded-3" placeholder="{{ __('messages.review_content') }}..." required></textarea>
+                                            </div>
+
+                                            <div id="review-form-error" class="alert alert-danger py-2 small" style="display: none;"></div>
+
+                                            <div class="d-flex justify-content-end">
+                                                <button type="submit" id="submit-review-btn" class="btn btn-primary rounded-pill px-4 fw-bold">
+                                                    <span class="btn-text"><i class="fa fa-paper-plane me-1"></i> {{ __('messages.submit_review') }}</span>
+                                                    <span class="btn-spinner d-none"><i class="fa fa-spinner fa-spin me-1"></i> {{ __('messages.saving') ?? 'Saving...' }}</span>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    @endif
+                                @else
+                                    <div class="alert alert-info rounded-3 mb-0">
+                                        <i class="fa fa-info-circle me-1"></i> <a href="{{ route('login') }}" class="fw-bold text-decoration-underline">{{ __('messages.login') }}</a> {{ __('messages.to_review_prompt') ?? 'to leave a review for this product.' }}
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Reviews List -->
+                            <div class="mt-4">
+                                <h5 class="fw-black mb-3 text-dark">
+                                    {{ __('messages.reviews') }} (<span id="reviews-header-count">{{ $reviewsCount }}</span>)
+                                </h5>
+                                <div id="store-reviews-container" class="d-flex flex-column gap-3">
+                                    @forelse($reviews as $rev)
+                                        @php
+                                            $revUser = $rev->user;
+                                            $revAvatar = $revUser ? $revUser->avatarUrl() : asset('upload/_avatar.png');
+                                            $canDeleteRev = auth()->check() && (auth()->id() == $rev->user_id || auth()->user()->isAdmin());
+                                        @endphp
+                                        <div class="card border rounded-4 p-3 shadow-sm" id="review-item-{{ $rev->id }}">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <img src="{{ $revAvatar }}" alt="" class="rounded-circle border" width="44" height="44" style="object-fit: cover;">
+                                                    <div>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <span class="fw-bold text-dark">{{ $revUser?->username ?? __('messages.unknown') }}</span>
+                                                            @if($rev->is_verified_buyer)
+                                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-1 smaller fw-bold">
+                                                                    <i class="fa fa-check-circle me-1"></i> {{ __('messages.verified_buyer') }}
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                        <small class="text-muted">{{ $rev->created_at ? $rev->created_at->diffForHumans() : '' }}</small>
+                                                    </div>
+                                                </div>
+                                                @if($canDeleteRev)
+                                                    <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="deleteStoreReview({{ $rev->id }})" title="{{ __('messages.delete') }}">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                @endif
+                                            </div>
+                                            <div class="mb-2">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <i class="fa {{ $i <= $rev->rating ? 'fa-star' : 'fa-star-o' }} text-warning small"></i>
+                                                @endfor
+                                            </div>
+                                            @if($rev->title)
+                                                <h6 class="fw-bold text-dark mb-1">{{ $rev->title }}</h6>
+                                            @endif
+                                            <p class="text-muted small mb-0 lh-base">{{ $rev->comment }}</p>
+                                        </div>
+                                    @empty
+                                        <div class="text-center py-5 text-muted" id="empty-reviews-placeholder">
+                                            <i class="fa fa-star-o fa-3x text-warning opacity-25 mb-3 d-block"></i>
+                                            <p class="mb-0">{{ __('messages.no_reviews_yet') }}</p>
+                                        </div>
+                                    @endforelse
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Comments Tab -->
@@ -613,6 +823,168 @@
                     purchaseError.textContent = "{{ __('messages.network_error') ?? 'An error occurred. Please try again.' }}";
                     purchaseError.style.display = 'block';
                 });
+            });
+        }
+    });
+</script>
+
+{{-- Lightbox Modal for Screenshots --}}
+<div id="store-lightbox-modal" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body p-0 text-center position-relative">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3 z-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                <img id="store-lightbox-img" src="" alt="Screenshot" class="img-fluid rounded-4 shadow-lg object-fit-contain" style="max-height: 85vh;">
+                <p id="store-lightbox-caption" class="text-white fw-bold mt-2 mb-0"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Lightbox Function
+    window.openStoreLightbox = function(url, caption) {
+        var modalEl = document.getElementById('store-lightbox-modal');
+        var img = document.getElementById('store-lightbox-img');
+        var cap = document.getElementById('store-lightbox-caption');
+        if (modalEl && img) {
+            img.src = url;
+            if (cap) cap.textContent = caption || '';
+            var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        }
+    };
+
+    // Reviews Interactive Logic
+    document.addEventListener('DOMContentLoaded', function() {
+        var starPicker = document.getElementById('star-picker');
+        if (starPicker) {
+            var stars = starPicker.querySelectorAll('.interactive-star');
+            var input = document.getElementById('review-rating-value');
+            var label = document.getElementById('star-picker-label');
+            stars.forEach(function(s) {
+                s.addEventListener('mouseenter', function() {
+                    var r = parseInt(s.dataset.rating);
+                    stars.forEach(function(st, idx) {
+                        if (idx < r) {
+                            st.classList.remove('fa-star-o');
+                            st.classList.add('fa-star');
+                        } else {
+                            st.classList.remove('fa-star');
+                            st.classList.add('fa-star-o');
+                        }
+                    });
+                    if (label) label.textContent = r + '/5';
+                });
+                s.addEventListener('click', function() {
+                    var r = parseInt(s.dataset.rating);
+                    if (input) input.value = r;
+                    if (label) label.textContent = r + '/5';
+                });
+            });
+            starPicker.addEventListener('mouseleave', function() {
+                var current = parseInt(input ? input.value : 5);
+                stars.forEach(function(st, idx) {
+                    if (idx < current) {
+                        st.classList.remove('fa-star-o');
+                        st.classList.add('fa-star');
+                    } else {
+                        st.classList.remove('fa-star');
+                        st.classList.add('fa-star-o');
+                    }
+                });
+                if (label) label.textContent = current + '/5';
+            });
+        }
+
+        var reviewForm = document.getElementById('store-review-form');
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                var btn = document.getElementById('submit-review-btn');
+                var err = document.getElementById('review-form-error');
+                if (err) err.style.display = 'none';
+                if (btn) {
+                    btn.disabled = true;
+                    btn.querySelector('.btn-text')?.classList.add('d-none');
+                    btn.querySelector('.btn-spinner')?.classList.remove('d-none');
+                }
+
+                var ratingVal = document.getElementById('review-rating-value')?.value || 5;
+                var titleVal = document.getElementById('review-title-input')?.value || '';
+                var commentVal = document.getElementById('review-comment-input')?.value || '';
+                var csrf = typeof csrfToken !== 'undefined' ? csrfToken : (document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
+
+                fetch("{{ route('store.reviews.store', $product->id) }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrf,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        rating: ratingVal,
+                        title: titleVal,
+                        comment: commentVal
+                    })
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.querySelector('.btn-text')?.classList.remove('d-none');
+                        btn.querySelector('.btn-spinner')?.classList.add('d-none');
+                    }
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        if (err) {
+                            err.textContent = data.message || (data.errors ? Object.values(data.errors).flat().join(', ') : 'Error submitting review');
+                            err.style.display = 'block';
+                        }
+                    }
+                })
+                .catch(function() {
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.querySelector('.btn-text')?.classList.remove('d-none');
+                        btn.querySelector('.btn-spinner')?.classList.add('d-none');
+                    }
+                    if (err) {
+                        err.textContent = "{{ __('messages.network_error') ?? 'An error occurred. Please try again.' }}";
+                        err.style.display = 'block';
+                    }
+                });
+            });
+        }
+
+        window.deleteStoreReview = function(id) {
+            if (!confirm("{{ __('messages.confirm_delete') ?? 'Are you sure you want to delete this review?' }}")) return;
+            var csrf = typeof csrfToken !== 'undefined' ? csrfToken : (document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
+            fetch("{{ url('/store/reviews') }}/" + id, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrf,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.error || 'Failed to delete');
+                }
+            })
+            .catch(function() { alert('Network error'); });
+        };
+
+        var deleteMyRevBtn = document.querySelector('.delete-my-review-btn');
+        if (deleteMyRevBtn) {
+            deleteMyRevBtn.addEventListener('click', function() {
+                deleteStoreReview(this.dataset.id);
             });
         }
     });

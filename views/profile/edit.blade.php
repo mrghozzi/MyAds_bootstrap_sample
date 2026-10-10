@@ -189,10 +189,34 @@
 
                         <!-- Bio Section -->
                         <div class="mb-5">
-                            <h6 class="fw-black text-muted text-uppercase smaller letter-spacing-1 mb-4">
-                                <i class="fa fa-pencil-alt me-2 text-primary"></i>{{ __('messages.about_me') }}
-                            </h6>
+                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                <h6 class="fw-black text-muted text-uppercase smaller letter-spacing-1 mb-0">
+                                    <i class="fa fa-pencil-alt me-2 text-primary"></i>{{ __('messages.about_me') }}
+                                </h6>
+                                <div class="d-flex align-items-center gap-2">
+                                    <label for="about_visibility" class="form-label text-muted smaller mb-0 fw-bold">
+                                        <i class="fa fa-shield-alt text-primary me-1"></i>{{ __('messages.privacy') }}:
+                                    </label>
+                                    <select id="about_visibility" name="about_visibility" class="form-select form-select-sm rounded-pill fw-bold border border-light shadow-sm" style="width: auto; min-width: 140px;">
+                                        <option value="public" {{ old('about_visibility', $user->privacySetting('about_visibility', 'public')) === 'public' ? 'selected' : '' }}>
+                                            {{ __('messages.visibility_public') }}
+                                        </option>
+                                        <option value="followers" {{ old('about_visibility', $user->privacySetting('about_visibility', 'public')) === 'followers' ? 'selected' : '' }}>
+                                            {{ __('messages.visibility_followers') }}
+                                        </option>
+                                        <option value="private" {{ old('about_visibility', $user->privacySetting('about_visibility', 'public')) === 'private' ? 'selected' : '' }}>
+                                            {{ __('messages.visibility_private') }}
+                                        </option>
+                                    </select>
+                                    <a href="{{ route('profile.privacy') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-0" title="{{ __('messages.privacy_settings') }}">
+                                        <i class="fa fa-cog"></i>
+                                    </a>
+                                </div>
+                            </div>
                             <textarea id="about_me" name="about_me" class="form-control bg-light bg-opacity-50 rounded-4 p-4 border border-light shadow-none fw-bold" rows="6" placeholder="{{ __('messages.about_me_placeholder') }}">{{ old('about_me', $user->sig) }}</textarea>
+                            <small class="text-muted d-block mt-2">
+                                <i class="fa fa-info-circle me-1"></i> {{ __('messages.about_privacy_hint') ?? 'You can choose who can view your About tab & Bio.' }}
+                            </small>
                         </div>
 
                         <div class="d-flex justify-content-center gap-3 pt-5 border-top">

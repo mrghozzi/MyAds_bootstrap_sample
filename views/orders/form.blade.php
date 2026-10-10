@@ -38,7 +38,16 @@
                         <div class="alert alert-danger rounded-4 mb-4">{{ session('errMSG') }}</div>
                     @endif
 
-                    <form action="{{ $isEditing ? route('orders.update', $order) : route('orders.store') }}" method="POST">
+                    <!-- Platform Disclaimer Banner -->
+                    <div class="alert alert-info border-0 shadow-sm d-flex align-items-start gap-3 mb-4 rounded-4" style="background: rgba(13, 110, 253, 0.08);">
+                        <div class="fs-4 text-primary mt-1"><i class="fa fa-shield-alt"></i></div>
+                        <div>
+                            <h6 class="fw-bold text-primary mb-1">{{ __('messages.order_disclaimer_title') }}</h6>
+                            <p class="small text-muted mb-0">{{ __('messages.order_disclaimer_notice', ['site' => $site_settings->titer ?? config('app.name', 'MyAds')]) }}</p>
+                        </div>
+                    </div>
+
+                    <form action="{{ $isEditing ? route('orders.update', $order) : route('orders.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @if($isEditing)
                             @method('PATCH')
@@ -90,6 +99,20 @@
                             <div class="col-md-6">
                                 <label class="form-label fw-bold" for="delivery_window_days">{{ __('messages.delivery') }} ({{ __('messages.days') }})</label>
                                 <input class="form-control rounded-3" id="delivery_window_days" type="number" min="1" max="365" name="delivery_window_days" value="{{ old('delivery_window_days', $order->delivery_window_days) }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" for="attachment">{{ __('messages.order_attachment') }}</label>
+                                <input class="form-control rounded-3" id="attachment" type="file" name="attachment" accept=".pdf,.docx,.doc,.txt,.zip,.png,.jpg,.jpeg">
+                                <div class="form-text smaller text-muted">{{ __('messages.order_attachment_help') }}</div>
+                                @if($isEditing && $order->hasAttachment())
+                                    <div class="mt-2 small text-muted">
+                                        <i class="fa fa-paperclip text-primary me-1"></i>
+                                        <span>{{ $order->attachment_name }}</span>
+                                        <a href="{{ route('orders.attachment.download', $order) }}" class="btn btn-sm btn-link py-0 text-decoration-none">
+                                            <i class="fa fa-download"></i> {{ __('messages.order_download_attachment') }}
+                                        </a>
+                                    </div>
+                                @endif
                             </div>
                         </div>
 

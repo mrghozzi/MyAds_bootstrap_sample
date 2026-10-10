@@ -67,6 +67,66 @@
 
         <!-- Main Content -->
         <div class="col-lg-6">
+            <!-- Platform Disclaimer Banner -->
+            <div class="alert alert-info border-0 shadow-sm d-flex align-items-start gap-3 mb-4 rounded-4" style="background: rgba(13, 110, 253, 0.08);">
+                <div class="fs-4 text-primary mt-1"><i class="fa fa-shield-alt"></i></div>
+                <div>
+                    <h6 class="fw-bold text-primary mb-1">{{ __('messages.order_disclaimer_title') }}</h6>
+                    <p class="small text-muted mb-0">{{ __('messages.order_disclaimer_notice', ['site' => $site_settings->titer ?? config('app.name', 'MyAds')]) }}</p>
+                </div>
+            </div>
+
+            <!-- Milestone Stepper Card -->
+            @php
+                $currentStep = match($order->workflow_status) {
+                    \App\Models\OrderRequest::WORKFLOW_OPEN => 1,
+                    \App\Models\OrderRequest::WORKFLOW_AWARDED => 2,
+                    \App\Models\OrderRequest::WORKFLOW_IN_PROGRESS => 3,
+                    \App\Models\OrderRequest::WORKFLOW_DELIVERED => 4,
+                    \App\Models\OrderRequest::WORKFLOW_COMPLETED => 5,
+                    default => 1,
+                };
+            @endphp
+            <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0 text-dark"><i class="fa fa-tasks me-2 text-primary"></i> {{ __('messages.order_workroom_title') }}</h6>
+                        @if($order->contract && $order->contract->deadline)
+                            <span class="badge {{ $order->contract->isOverdue() ? 'bg-danger' : 'bg-info bg-opacity-10 text-info' }} rounded-pill px-3 py-2">
+                                <i class="fa fa-clock me-1"></i>
+                                {{ __('messages.order_deadline') }}: {{ $order->contract->deadline->format('Y-m-d') }}
+                                @if($order->contract->isOverdue())
+                                    ({{ __('messages.order_overdue') }})
+                                @endif
+                            </span>
+                        @endif
+                    </div>
+                    <div class="position-relative mx-2 my-4">
+                        <div class="progress" style="height: 4px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: {{ ($currentStep - 1) * 25 }}%;"></div>
+                        </div>
+                        <div class="d-flex justify-content-between position-absolute top-50 start-0 w-100 translate-middle-y">
+                            @foreach([
+                                1 => ['label' => __('messages.order_stepper_created'), 'icon' => 'fa-edit'],
+                                2 => ['label' => __('messages.order_stepper_awarded'), 'icon' => 'fa-handshake'],
+                                3 => ['label' => __('messages.order_stepper_in_progress'), 'icon' => 'fa-cogs'],
+                                4 => ['label' => __('messages.order_stepper_delivered'), 'icon' => 'fa-truck'],
+                                5 => ['label' => __('messages.order_stepper_completed'), 'icon' => 'fa-check'],
+                            ] as $stepIndex => $stepData)
+                                <div class="text-center">
+                                    <div class="btn btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center {{ $stepIndex <= $currentStep ? 'btn-primary text-white shadow-sm' : 'btn-light text-muted border' }}" style="width: 32px; height: 32px;">
+                                        <i class="fa {{ $stepData['icon'] }} small"></i>
+                                    </div>
+                                    <div class="small fw-bold mt-1 d-none d-md-block {{ $stepIndex <= $currentStep ? 'text-primary' : 'text-muted' }}" style="font-size: 11px;">
+                                        {{ $stepData['label'] }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Order Details Card -->
             <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
                 <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
@@ -98,6 +158,58 @@
                     <div class="order-description lh-lg p-4 bg-light rounded-4 mb-4 border-start border-4 border-primary shadow-sm fs-5 text-dark" style="white-space: pre-line;">
                         {{ $order->description }}
                     </div>
+
+                    @if($order->hasAttachment())
+                        <div class="alert alert-light border shadow-sm rounded-4 d-flex justify-content-between align-items-center p-3 mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-paperclip fs-4 text-primary me-3"></i>
+                                <div>
+                                    <div class="fw-bold text-dark">{{ __('messages.order_attachment') }}</div>
+                                    <div class="small text-muted">{{ $order->attachment_name }}</div>
+                                </div>
+                            </div>
+                            <a href="{{ route('orders.attachment.download', $order) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">
+                                <i class="fa fa-download me-1"></i> {{ __('messages.order_download_attachment') }}
+                            </a>
+                        </div>
+                    @endif
+
+                    @if($order->isRevisionRequested())
+                        <div class="alert alert-warning border-0 shadow-sm rounded-4 p-4 mb-4">
+                            <div class="d-flex align-items-start">
+                                <i class="fa fa-exclamation-triangle fs-3 text-warning me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-1">
+                                        {{ __('messages.order_revision_badge', ['count' => $order->contract->revision_count ?? 1]) }}
+                                    </h6>
+                                    <div class="small text-muted mb-2">
+                                        {{ __('messages.order_revision_requested_notification', ['title' => $order->title]) }}
+                                    </div>
+                                    @if($order->contract && $order->contract->revision_note)
+                                        <div class="p-3 bg-white bg-opacity-75 rounded-3 border small">
+                                            <strong>{{ __('messages.order_revision_note') }}:</strong>
+                                            <p class="mb-0 mt-1">{{ $order->contract->revision_note }}</p>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if($order->contract && $order->contract->hasDeliveryAttachment())
+                        <div class="alert alert-success border-0 shadow-sm rounded-4 d-flex justify-content-between align-items-center p-3 mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-box-open fs-4 text-success me-3"></i>
+                                <div>
+                                    <div class="fw-bold text-dark">{{ __('messages.order_deliverable_attachment') }}</div>
+                                    <div class="small text-muted">{{ $order->contract->delivery_attachment_name }}</div>
+                                </div>
+                            </div>
+                            <a href="{{ route('orders.deliverable.download', $order) }}" class="btn btn-sm btn-success text-white rounded-pill px-3 fw-bold shadow-sm">
+                                <i class="fa fa-download me-1"></i> {{ __('messages.order_download_deliverable') }}
+                            </a>
+                        </div>
+                    @endif
 
                     @if($order->contract)
                         <div class="card border-0 bg-primary bg-opacity-10 rounded-4 p-3 mb-4 border border-primary border-opacity-10 shadow-sm">
@@ -188,28 +300,46 @@
                     </div>
                 @endif
 
-                <!-- Completion/Delivery Forms -->
+                <!-- Completion and Revision Forms for Client -->
                 @if((int) auth()->id() === (int) $order->uid && (string) $order->workflow_status === \App\Models\OrderRequest::WORKFLOW_DELIVERED)
-                    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden border-start border-4 border-success">
-                        <div class="card-body p-4 p-md-5">
-                            <h4 class="fw-black mb-2 text-success">{{ __('messages.order_complete_action') }}</h4>
-                            <p class="text-muted smaller fw-bold mb-4">{{ __('messages.order_complete_help') }}</p>
-                            <form action="{{ route('orders.complete', $order) }}" method="POST">
-                                @csrf
-                                <div class="row g-4 mb-4">
-                                    <div class="col-md-6">
-                                        <label class="form-label smaller fw-black text-muted text-uppercase mb-2">{{ __('messages.rating') }}</label>
-                                        <select class="form-select bg-light border-0 rounded-3 py-2" name="rating">
-                                            @for($i = 5; $i >= 1; $i--) <option value="{{ $i }}">{{ $i }}/5 Stars</option> @endfor
-                                        </select>
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label smaller fw-black text-muted text-uppercase mb-2">{{ __('messages.review') }}</label>
-                                        <textarea class="form-control bg-light border-0 rounded-4 p-3" name="review" rows="4" placeholder="{{ __('messages.order_review_placeholder') ?? 'Share your experience...' }}"></textarea>
-                                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-success">
+                                <div class="card-body p-4">
+                                    <h5 class="fw-black mb-2 text-success"><i class="fa fa-check-circle me-1"></i> {{ __('messages.order_complete_action') }}</h5>
+                                    <p class="text-muted smaller fw-bold mb-3">{{ __('messages.order_complete_help') }}</p>
+                                    <form action="{{ route('orders.complete', $order) }}" method="POST">
+                                        @csrf
+                                        <div class="mb-3">
+                                            <label class="form-label smaller fw-black text-muted text-uppercase mb-1">{{ __('messages.rating') }}</label>
+                                            <select class="form-select form-select-sm bg-light border-0 rounded-3 py-2" name="rating">
+                                                @for($i = 5; $i >= 1; $i--) <option value="{{ $i }}">{{ $i }}/5 Stars</option> @endfor
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label smaller fw-black text-muted text-uppercase mb-1">{{ __('messages.review') }}</label>
+                                            <textarea class="form-control form-control-sm bg-light border-0 rounded-3 p-2" name="review" rows="3" placeholder="{{ __('messages.order_review_placeholder') ?? 'Share your experience...' }}"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-success text-white rounded-pill px-4 py-2 fw-black shadow-sm w-100 transition-all hover-translate-y">{{ __('messages.order_complete_action') }}</button>
+                                    </form>
                                 </div>
-                                <button type="submit" class="btn btn-success text-white rounded-pill px-5 fw-black shadow-sm transition-all hover-translate-y">{{ __('messages.order_complete_action') }}</button>
-                            </form>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-warning">
+                                <div class="card-body p-4">
+                                    <h5 class="fw-black mb-2 text-warning"><i class="fa fa-sync-alt me-1"></i> {{ __('messages.order_request_revision') }}</h5>
+                                    <p class="text-muted smaller fw-bold mb-3">{{ __('messages.order_revision_note') }}</p>
+                                    <form action="{{ route('orders.revision', $order) }}" method="POST">
+                                        @csrf
+                                        <div class="mb-3">
+                                            <label class="form-label smaller fw-black text-muted text-uppercase mb-1">{{ __('messages.order_revision_note') }}</label>
+                                            <textarea class="form-control form-control-sm bg-light border-0 rounded-3 p-2" name="revision_note" rows="5" required placeholder="{{ __('messages.order_revision_note') }}..."></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-warning text-dark rounded-pill px-4 py-2 fw-black shadow-sm w-100 transition-all hover-translate-y">{{ __('messages.order_revision_action') }}</button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -219,11 +349,16 @@
                         <div class="card-body p-4 p-md-5">
                             <h4 class="fw-black mb-2 text-primary">{{ __('messages.order_deliver_action') }}</h4>
                             <p class="text-muted smaller fw-bold mb-4">{{ __('messages.order_deliver_help') ?? 'Submit your work to the client.' }}</p>
-                            <form action="{{ route('orders.deliver', $order) }}" method="POST">
+                            <form action="{{ route('orders.deliver', $order) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="mb-4">
                                     <label class="form-label smaller fw-black text-muted text-uppercase mb-2">{{ __('messages.delivery_note') }}</label>
-                                    <textarea class="form-control bg-light border-0 rounded-4 p-3" name="delivery_note" rows="5" placeholder="{{ __('messages.order_delivery_note_placeholder') ?? 'Enter details about the delivery...' }}"></textarea>
+                                    <textarea class="form-control bg-light border-0 rounded-4 p-3" name="delivery_note" rows="4" placeholder="{{ __('messages.order_delivery_note_placeholder') ?? 'Enter details about the delivery...' }}"></textarea>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label smaller fw-black text-muted text-uppercase mb-2">{{ __('messages.order_deliverable_attachment') }}</label>
+                                    <input type="file" name="deliverable" class="form-control rounded-3" accept=".zip,.pdf,.png,.jpg,.jpeg,.doc,.docx,.txt">
+                                    <div class="form-text smaller text-muted">{{ __('messages.order_deliverable_help') }}</div>
                                 </div>
                                 <button type="submit" class="btn btn-primary rounded-pill px-5 fw-black shadow-sm transition-all hover-translate-y">{{ __('messages.order_deliver_action') }}</button>
                             </form>

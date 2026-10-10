@@ -9,6 +9,16 @@
                 <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill small fw-bold">
                     <i class="fa fa-coins me-1"></i> {{ $order->displayBudget() }}
                 </span>
+                @if($order->hasAttachment())
+                    <span class="badge bg-primary bg-opacity-10 text-primary border px-3 py-2 rounded-pill small fw-bold" title="{{ $order->attachment_name }}">
+                        <i class="fa fa-paperclip me-1"></i> {{ __('messages.order_attachment') }}
+                    </span>
+                @endif
+                @if($order->isRevisionRequested())
+                    <span class="badge bg-warning bg-opacity-10 text-warning border px-3 py-2 rounded-pill small fw-bold">
+                        <i class="fa fa-sync-alt me-1"></i> {{ __('messages.order_revision_badge', ['count' => $order->contract->revision_count ?? 1]) }}
+                    </span>
+                @endif
             </div>
             <span class="small text-muted fw-bold">
                 <i class="fa fa-handshake me-1"></i> {{ $order->offers_count ?? 0 }} {{ __('messages.offers') }}

@@ -2,6 +2,50 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.4.5] - 2026-10-10
+
+### Added
+- **True Threaded Comments & Nested Replies (`views/partials/activity/comments.blade.php` & `views/layouts/master.blade.php`):**
+  - Integrated full support for nested comments hierarchy with indented indentation (`post-comment-replies`) and dedicated replies tree rendering.
+  - Added inline "Reply" action button on parent and nested comments initiating reply context.
+  - Added visual "Replying to @user" contextual indicator banner with 1-click cancel button (`cancelReply`).
+  - Updated comment composer with hidden `parent_id` parameter input.
+  - Enhanced `postComment()` in `master.blade.php` to seamlessly append `parent_id` to `FormData` and automatically reset reply state upon successful submission.
+- **Standardized Violation Categories (`views/report/index.blade.php`):**
+  - Added violation category select dropdown with 7 standardized categories: Spam, Harassment, Inappropriate, Copyright, Misinformation, Scam, and Other.
+  - Full synchronization with MYADS core v4.6.3 moderation and automated quarantine engine.
+- **Comprehensive Profile About Tab & Privacy Engine (`views/profile/show.blade.php`, `views/profile/edit.blade.php`, `views/profile/partials/about_tab.blade.php`):**
+  - Added dedicated Bootstrap 5 About Tab Dossier partial (`about_tab.blade.php`) with 6 metrics cards (Member Since, Posts, Followers, Following, Views, Points) with privacy-aware masking.
+  - Added privacy lock card (`section_private`) preventing unauthorized exposure of private or followers-only bio content.
+  - Added Account Details & Credentials showcase (Public UID, Verification status badge, Admin/Role badge, Membership badge, and Forum Activity stats).
+  - Added Badges Showcase and Connected Social Networks with platform branding and external links.
+  - Added inline `about_visibility` dropdown selector (`public`, `followers`, `private`) in `edit.blade.php` with direct shortcut to privacy settings.
+  - Removed duplicate bio sidebar card when viewing the About tab in `show.blade.php`.
+
+### Metadata & Config
+- Bumped theme version to `2.4.5`.
+- Verified 100% compatibility with MYADS core `4.6.3`.
+
+## [2.4.4] - 2026-10-07
+
+### Added
+- **Store Product Ratings & Reviews System (`views/store/show.blade.php`):**
+  - Integrated 5-star customer ratings summary card with average rating score and total review counter.
+  - Added visual rating distribution progress bars showcasing percentages for 5, 4, 3, 2, and 1 star reviews.
+  - Added customer reviews feed with reviewer avatars, usernames, review dates, star badges, and formatted feedback text.
+  - Added Verified Buyer badge (`is_verified_buyer`) highlighting reviews left by confirmed purchasers with active digital licenses.
+  - Added interactive review submission modal with 5-star interactive picker, review title, and comments textarea.
+- **Store Media Gallery & Live Previews (`views/store/show.blade.php`):**
+  - Integrated multiple screenshots gallery with thumbnail cards and full-screen Bootstrap 5 modal lightbox.
+  - Added prominent "Live Demo" action button launching web applications and live demos in a new tab.
+  - Added Video Preview embed and launcher for video walkthroughs and screencasts.
+- **Arabic Titles & Unicode Slugs Parity:**
+  - Full compatibility with Arabic letters, spaces, and Unicode product slugs across store navigation, breadcrumbs, and social share links.
+
+### Metadata & Config
+- Bumped theme version to `2.4.4`.
+- Set minimum MYADS core compatibility `min_myads` to `4.6.3`.
+
 ## [2.4.3] - 2026-10-03
 
 ### Added

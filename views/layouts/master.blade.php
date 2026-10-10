@@ -459,6 +459,11 @@
                 formData.append('attachment', mediaFile);
             }
 
+            const parentInput = document.getElementById('parent_comment_id_' + id);
+            if (parentInput && parentInput.value) {
+                formData.append('parent_id', parentInput.value);
+            }
+
             fetch('{{ route("comment.store") }}', {
                 method: 'POST',
                 headers: {
@@ -491,6 +496,9 @@
                 if (window.clearCommentPendingMedia) {
                     window.clearCommentPendingMedia(id);
                 }
+                if (typeof window.cancelReply === 'function') {
+                    window.cancelReply(id);
+                }
                 input.dispatchEvent(new Event('input', { bubbles: true }));
                 input.focus();
             })
@@ -499,6 +507,40 @@
                 if (submitBtn) submitBtn.disabled = false;
             });
         }
+
+        window.replyToComment = window.replyToComment || function(username, postId, parentId = null) {
+            const parentInput = document.getElementById('parent_comment_id_' + postId);
+            const indicator = document.getElementById('reply_indicator_' + postId);
+            const userSpan = document.getElementById('reply_username_' + postId);
+            const textarea = document.getElementById('txt_comment' + postId);
+
+            if (parentInput && parentId) {
+                parentInput.value = parentId;
+            }
+            if (indicator && userSpan) {
+                userSpan.textContent = username;
+                indicator.classList.remove('d-none');
+                indicator.classList.add('d-flex');
+            }
+            if (textarea) {
+                const mention = '@' + username + ' ';
+                if (!textarea.value.includes(mention)) {
+                    textarea.value = mention + textarea.value;
+                }
+                textarea.focus();
+                textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        };
+
+        window.cancelReply = window.cancelReply || function(postId) {
+            const parentInput = document.getElementById('parent_comment_id_' + postId);
+            const indicator = document.getElementById('reply_indicator_' + postId);
+            if (parentInput) parentInput.value = '';
+            if (indicator) {
+                indicator.classList.remove('d-flex');
+                indicator.classList.add('d-none');
+            }
+        };
 
         function deleteComment(trashid, type) {
             if (!confirm('{{ __("messages.confirm_delete") }}')) return;

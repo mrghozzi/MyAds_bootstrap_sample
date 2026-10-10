@@ -145,6 +145,15 @@
 
             <!-- Comment Actions -->
             <div class="d-flex gap-3 align-items-center">
+                @auth
+                    @if($user && auth()->id() !== $user->id)
+                        <button type="button" class="btn btn-link p-0 text-decoration-none text-muted small fw-bold d-flex align-items-center gap-1 border-0 bg-transparent reply-comment-btn" onclick="replyToComment('{{ $user->username }}', {{ $id }}, {{ $comment->id }})" title="{{ __('messages.reply') }}">
+                            <i class="fa fa-reply"></i>
+                            <span>{{ __('messages.reply') }}</span>
+                        </button>
+                    @endif
+                @endauth
+
                 @if(auth()->check())
                     <button class="btn btn-link p-0 text-decoration-none text-muted small fw-bold d-flex align-items-center gap-1 border-0 bg-transparent" id="reaction-btn-comment-{{ $comment->id }}" onclick="toggleReaction({{ $comment->id }}, '{{ $reactionTypeString }}', 'like')">
                         @if($myCommentReactionOption)
@@ -166,6 +175,64 @@
             </div>
         </div>
     </div>
+
+    @if($type === 'forum' && $comment->replies && $comment->replies->count() > 0)
+        <div class="post-comment-replies ms-4 ps-3 border-start border-2 border-primary border-opacity-25 mb-3">
+            @foreach($comment->replies as $reply)
+                @php
+                    $replyUser = $reply->user;
+                    $replyDate = $reply->date;
+                    $replyFormatted = \App\Support\ForumCommentFormatter::format($reply->txt);
+                    $isReplyOwner = auth()->check() && $replyUser && (int) auth()->id() === (int) $replyUser->id;
+                    $canDeleteReply = auth()->check() && ($isReplyOwner || auth()->user()->isAdmin() || $canDeleteAsForumModerator);
+                @endphp
+                <div class="d-flex gap-2 mb-2 p-2 bg-light bg-opacity-75 rounded-3 coment{{ $reply->id }}" id="comment_{{ $reply->id }}">
+                    <div>
+                        @if($replyUser)
+                            <a href="{{ route('profile.show', $replyUser->username) }}" class="position-relative d-block">
+                                <img src="{{ $replyUser->avatarUrl() }}" class="rounded-circle border border-2 border-white shadow-sm" width="28" height="28" alt="{{ $replyUser->username }}">
+                            </a>
+                        @else
+                            <img src="{{ asset('upload/_avatar.png') }}" class="rounded-circle border border-2 border-white shadow-sm" width="28" height="28" alt="">
+                        @endif
+                    </div>
+                    <div class="flex-grow-1 min-width-0">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-1">
+                            <div>
+                                @if($replyUser)
+                                    <h6 class="fw-bold mb-0 smaller">
+                                        <a href="{{ route('profile.show', $replyUser->username) }}" class="text-dark text-decoration-none hover-primary">{{ $replyUser->username }}</a>
+                                    </h6>
+                                @else
+                                    <span class="text-muted smaller fw-bold">{{ __('messages.deleted_user') }}</span>
+                                @endif
+                            </div>
+                            <small class="text-muted smaller fw-bold">{{ \Carbon\Carbon::createFromTimestamp((int) $replyDate)->diffForHumans() }}</small>
+                        </div>
+                        <div class="small text-secondary lh-base mb-1 forum-rdx-comment-body">
+                            {!! $replyFormatted !!}
+                        </div>
+                        <div class="d-flex gap-3 align-items-center">
+                            @auth
+                                @if($replyUser && auth()->id() !== $replyUser->id)
+                                    <button type="button" class="btn btn-link p-0 text-decoration-none text-muted smaller fw-bold d-flex align-items-center gap-1 border-0 bg-transparent reply-comment-btn" onclick="replyToComment('{{ $replyUser->username }}', {{ $id }}, {{ $comment->id }})" title="{{ __('messages.reply') }}">
+                                        <i class="fa fa-reply"></i>
+                                        <span>{{ __('messages.reply') }}</span>
+                                    </button>
+                                @endif
+                            @endauth
+                            @if($canDeleteReply)
+                                <button class="btn btn-link p-0 text-decoration-none text-danger smaller fw-bold d-flex align-items-center gap-1 border-0 bg-transparent trash_comment{{ $reply->id }}" onclick="deleteComment({{ $reply->id }}, 'forum')">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                    <span>{{ __('messages.delete') }}</span>
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
 @endforeach
 
 @if(!isset($hide_form) || !$hide_form)
@@ -175,6 +242,11 @@
                 <img src="{{ auth()->user()->avatarUrl() }}" class="rounded-circle border" width="36" height="36" alt="">
                 <div class="flex-grow-1">
                     <div class="border rounded-3 p-2 bg-light bg-opacity-20 forum-rdx-comment-composer" id="comment_composer_{{ $id }}">
+                        <div id="reply_indicator_{{ $id }}" class="reply-indicator alert alert-info py-2 px-3 mb-2 rounded-3 d-none align-items-center justify-content-between">
+                            <span class="small"><i class="fa fa-reply me-1"></i> {{ __('messages.replying_to') ?? 'Replying to' }} <strong>@<span id="reply_username_{{ $id }}"></span></strong></span>
+                            <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold text-decoration-none" onclick="cancelReply({{ $id }})">&times; {{ __('messages.cancel') }}</button>
+                        </div>
+                        <input type="hidden" id="parent_comment_id_{{ $id }}" name="parent_id" value="">
                         <!-- Toolbar -->
                         <div class="d-flex gap-1 border-bottom pb-2 mb-2 flex-wrap forum-rdx-comment-toolbar">
                             <button type="button" class="btn btn-light btn-sm rounded-circle p-1 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;" data-md-action="bold" data-target="txt_comment{{ $id }}" title="{{ __('messages.markdown_bold') }}">
@@ -239,6 +311,40 @@
 </p>
 
 <script>
+    window.replyToComment = function(username, postId, parentId = null) {
+        const parentInput = document.getElementById('parent_comment_id_' + postId);
+        const indicator = document.getElementById('reply_indicator_' + postId);
+        const userSpan = document.getElementById('reply_username_' + postId);
+        const textarea = document.getElementById('txt_comment' + postId);
+
+        if (parentInput && parentId) {
+            parentInput.value = parentId;
+        }
+        if (indicator && userSpan) {
+            userSpan.textContent = username;
+            indicator.classList.remove('d-none');
+            indicator.classList.add('d-flex');
+        }
+        if (textarea) {
+            const mention = '@' + username + ' ';
+            if (!textarea.value.includes(mention)) {
+                textarea.value = mention + textarea.value;
+            }
+            textarea.focus();
+            textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    };
+
+    window.cancelReply = function(postId) {
+        const parentInput = document.getElementById('parent_comment_id_' + postId);
+        const indicator = document.getElementById('reply_indicator_' + postId);
+        if (parentInput) parentInput.value = '';
+        if (indicator) {
+            indicator.classList.remove('d-flex');
+            indicator.classList.add('d-none');
+        }
+    };
+
     window.pendingCommentMedia = window.pendingCommentMedia || {};
 
     if (typeof window.getCommentPendingMedia !== 'function') {

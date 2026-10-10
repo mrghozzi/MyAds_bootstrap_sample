@@ -22,6 +22,14 @@
         </div>
         <div class="position-absolute top-0 end-0 p-5 opacity-10 d-none d-lg-block">
             <i class="fa fa-handshake fa-10x"></i>
+    </div>
+
+    <!-- Platform Disclaimer Banner -->
+    <div class="alert alert-info border-0 shadow-sm d-flex align-items-start gap-3 mb-4 rounded-4" style="background: rgba(13, 110, 253, 0.08);">
+        <div class="fs-4 text-primary mt-1"><i class="fa fa-shield-alt"></i></div>
+        <div>
+            <h6 class="fw-bold text-primary mb-1">{{ __('messages.order_disclaimer_title') }}</h6>
+            <p class="small text-muted mb-0">{{ __('messages.order_disclaimer_notice', ['site' => $site_settings->titer ?? config('app.name', 'MyAds')]) }}</p>
         </div>
     </div>
 

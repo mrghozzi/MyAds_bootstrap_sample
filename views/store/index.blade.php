@@ -23,6 +23,9 @@
             </div>
             @auth
                 <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ route('store.my_purchases') }}" class="btn btn-outline-light btn-md fw-bold shadow-sm px-3.5 py-2 rounded-pill backdrop-blur hover-lift">
+                        <i class="fa fa-shopping-bag me-1.5"></i> {{ __('messages.my_purchases') }}
+                    </a>
                     <a href="{{ route('store.discounts.index') }}" class="btn btn-outline-light btn-md fw-bold shadow-sm px-3.5 py-2 rounded-pill backdrop-blur hover-lift">
                         <i class="fa fa-ticket me-1.5"></i> {{ __('messages.discount_codes') ?? 'Discount Codes' }}
                     </a>
@@ -161,7 +164,44 @@
                     <i class="fa fa-plus me-1.5"></i> {{ __('messages.add_product') }}
                 </a>
             @endauth
-        </div>
+    <!-- SEARCH & SORT CONTROLS -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-body">
+        <form action="{{ $isScriptSpecific ? route('store.script_category', [$scriptName, $category ?: 'all']) : route('store.index') }}" method="GET" class="row g-2 align-items-center">
+            @if($category && !$isScriptSpecific)
+                <input type="hidden" name="category" value="{{ $category }}">
+            @endif
+            <div class="col-md-7 col-lg-8">
+                <div class="input-group">
+                    <span class="input-group-text bg-body-tertiary border-end-0 rounded-start-pill ps-3 text-muted">
+                        <i class="fa fa-search"></i>
+                    </span>
+                    <input type="text" name="q" value="{{ $search ?? '' }}" class="form-control bg-body-tertiary border-start-0 border-end-0 py-2" placeholder="{{ __('messages.search_products_placeholder') }}">
+                    @if(!empty($search))
+                        <a href="{{ $isScriptSpecific ? route('store.script_category', [$scriptName, $category ?: 'all']) : route('store.index', array_filter(['category' => $category])) }}" class="input-group-text bg-body-tertiary border-start-0 text-muted">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    @endif
+                    <button class="btn btn-primary rounded-end-pill px-4 fw-bold" type="submit">
+                        {{ __('messages.search') }}
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-5 col-lg-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-body-tertiary rounded-start-pill ps-3 text-muted">
+                        <i class="fa fa-arrow-down-short-wide"></i>
+                    </span>
+                    <select name="sort" class="form-select bg-body-tertiary rounded-end-pill py-2" onchange="this.form.submit()">
+                        <option value="latest" {{ ($sort ?? 'latest') === 'latest' ? 'selected' : '' }}>{{ __('messages.sort_latest') }}</option>
+                        <option value="downloads" {{ ($sort ?? '') === 'downloads' ? 'selected' : '' }}>{{ __('messages.sort_most_downloaded') }}</option>
+                        <option value="price_asc" {{ ($sort ?? '') === 'price_asc' ? 'selected' : '' }}>{{ __('messages.sort_price_low_high') }}</option>
+                        <option value="price_desc" {{ ($sort ?? '') === 'price_desc' ? 'selected' : '' }}>{{ __('messages.sort_price_high_low') }}</option>
+                        <option value="free" {{ ($sort ?? '') === 'free' ? 'selected' : '' }}>{{ __('messages.sort_free_only') }}</option>
+                        <option value="paid" {{ ($sort ?? '') === 'paid' ? 'selected' : '' }}>{{ __('messages.sort_paid_only') }}</option>
+                    </select>
+                </div>
+            </div>
+        </form>
     </div>
 
     <!-- PRODUCTS GRID -->
@@ -211,6 +251,12 @@
                                 </span>
                             @endif
 
+                            @if($product->is_pending)
+                                <span class="badge bg-warning text-dark fw-black rounded-pill px-2.5 py-1.5 shadow-sm text-uppercase">
+                                    <i class="fa fa-clock me-1"></i> {{ __('messages.pending_approval') }}
+                                </span>
+                            @endif
+
                             @if($product->is_suspended)
                                 <span class="badge bg-dark text-white fw-black rounded-pill px-2.5 py-1.5 shadow-sm text-uppercase">
                                     {{ __('messages.suspended') }}
@@ -255,11 +301,18 @@
                                     @endif
                                 </span>
                             </div>
-                            @if($latestFile)
-                                <span class="badge bg-body-tertiary text-secondary border rounded-pill px-2 py-1 fw-bold smaller flex-shrink-0" title="Latest Version">
-                                    {{ $latestFile->name }}
-                                </span>
-                            @endif
+                            <div class="d-flex align-items-center gap-1.5 flex-shrink-0">
+                                @if($product->downloads_count > 0)
+                                    <span class="badge bg-body-tertiary text-muted border rounded-pill px-2 py-1 fw-bold smaller" title="{{ __('messages.downloads_count') }}">
+                                        <i class="fa fa-download me-1 text-primary"></i>{{ number_format($product->downloads_count) }}
+                                    </span>
+                                @endif
+                                @if($latestFile)
+                                    <span class="badge bg-body-tertiary text-secondary border rounded-pill px-2 py-1 fw-bold smaller flex-shrink-0" title="Latest Version">
+                                        {{ $latestFile->name }}
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>

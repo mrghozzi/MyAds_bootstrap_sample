@@ -128,7 +128,7 @@
     <div class="row g-4">
         <!-- Sidebar Left -->
         <div class="col-lg-4">
-            @if($canViewAbout)
+            @if($canViewAbout && $selectedTab !== 'about')
                 <div class="card border-0 shadow-sm rounded-4 mb-4 border border-light overflow-hidden">
                     <div class="card-header bg-white py-3 border-bottom">
                         <h6 class="fw-black mb-0 text-uppercase smaller text-muted letter-spacing-1 d-flex align-items-center">
@@ -224,13 +224,7 @@
             <div id="infinite-scroll-container">
                 <div id="timeline-content" class="d-grid gap-4">
                     @if($selectedTab === 'about')
-                        <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 border border-light">
-                            <h4 class="fw-black mb-4 text-dark d-flex align-items-center">
-                                <span class="bg-primary bg-opacity-10 text-primary p-2 rounded-circle me-3"><i class="fa fa-info-circle small"></i></span>
-                                {{ __('messages.about_me') }}
-                            </h4>
-                            <p class="mb-0 text-muted lh-lg fs-5" style="white-space: pre-line;">{{ trim((string) $user->sig) !== '' ? $user->sig : __('messages.about_me_empty') }}</p>
-                        </div>
+                        @include('theme::profile.partials.about_tab')
                     @elseif($selectedTab === 'photos')
                         <div class="row g-4">
                             @forelse($photoItems as $photo)

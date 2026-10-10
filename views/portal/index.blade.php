@@ -112,7 +112,7 @@
                             <div class="card border-0 shadow-sm rounded-4 overflow-hidden text-center h-100 transition-up">
                                 <div class="bg-primary bg-opacity-10 py-4">
                                     <a href="{{ route('profile.show', $sUser->username) }}" class="d-inline-block position-relative">
-                                        <img src="{{ $sUser->avatarUrl() }}" alt="" class="rounded-circle border border-4 border-white shadow-sm" width="80" height="80">
+                                        <img src="{{ $sUser->avatarUrl() }}" alt="" class="rounded-circle border border-4 border-white shadow-sm" width="80" height="80" onerror="this.onerror=null;this.src='{{ asset('upload/_avatar.png') }}';">
                                         @if($sUser->isOnline())
                                             <span class="position-absolute bottom-0 end-0 p-2 bg-success border border-2 border-white rounded-circle"></span>
                                         @endif
@@ -140,7 +140,7 @@
                                 <div style="height: 80px; background: url({{ $sGroup->coverUrl() }}) center center / cover no-repeat;"></div>
                                 <div class="card-body p-3 text-center position-relative">
                                     <div class="position-absolute top-0 start-50 translate-middle">
-                                        <img src="{{ $sGroup->avatarUrl() }}" alt="" class="rounded-circle border border-3 border-white shadow-sm" width="60" height="60">
+                                        <img src="{{ $sGroup->avatarUrl() }}" alt="" class="rounded-circle border border-3 border-white shadow-sm" width="60" height="60" onerror="this.onerror=null;this.src='{{ asset('upload/_avatar.png') }}';">
                                     </div>
                                     <div class="pt-4 mt-2">
                                         <h6 class="fw-bold mb-1 text-truncate">
@@ -173,47 +173,75 @@
                         <!-- Forum Comments -->
                         @if(isset($searchedCommentsForum))
                             @foreach($searchedCommentsForum as $fComment)
-                                <div class="list-group-item p-4">
+                                @php
+                                    $fCommentUrl = route('forum.topic', $fComment->tid) . '#comment_' . $fComment->id;
+                                    $fUser = $fComment->user;
+                                    $fAuthorName = $fUser ? $fUser->username : __('messages.member');
+                                    $fAuthorAvatar = $fUser ? $fUser->avatarUrl() : asset('upload/_avatar.png');
+                                    $fTopicTitle = $fComment->topic ? $fComment->topic->name : ('#' . $fComment->tid);
+                                @endphp
+                                <a href="{{ $fCommentUrl }}" class="list-group-item list-group-item-action p-4 text-decoration-none text-dark transition-up" title="{{ __('messages.view_comment') }}">
                                     <div class="d-flex gap-3">
-                                        <img src="{{ $fComment->user ? $fComment->user->avatarUrl() : asset('upload/_avatar.png') }}" class="rounded-circle" width="40" height="40">
-                                        <div class="flex-grow-1">
+                                        <img src="{{ $fAuthorAvatar }}" class="rounded-circle border border-2 border-white shadow-sm" width="44" height="44" style="object-fit: cover; min-width: 44px;" onerror="this.onerror=null;this.src='{{ asset('upload/_avatar.png') }}';">
+                                        <div class="flex-grow-1 min-width-0">
                                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <h6 class="fw-bold mb-0">{{ $fComment->user->username ?? 'Unknown' }}</h6>
+                                                <h6 class="fw-bold mb-0 text-dark">{{ $fAuthorName }}</h6>
                                                 <small class="text-muted smaller">{{ \Carbon\Carbon::createFromTimestamp($fComment->date)->diffForHumans() }}</small>
                                             </div>
                                             <p class="text-muted smaller mb-2">
-                                                <i class="fa fa-comments me-1"></i> {{ __('messages.on_forum_topic') ?? 'on Forum Topic' }} 
-                                                <a href="{{ route('forum.topic', $fComment->tid) }}" class="text-decoration-none">#{{ $fComment->tid }}</a>
+                                                <i class="fa fa-comments me-1 text-primary"></i> {{ __('messages.forum') }}: 
+                                                <strong class="text-dark">{{ \Illuminate\Support\Str::limit($fTopicTitle, 60) }}</strong>
                                             </p>
-                                            <div class="p-3 bg-light rounded-3 small text-secondary">
-                                                {{ \Illuminate\Support\Str::limit(strip_tags($fComment->txt), 250) }}
+                                            <div class="p-3 bg-light rounded-3 small text-secondary mb-2">
+                                                "{{ \Illuminate\Support\Str::limit(strip_tags($fComment->txt), 250) }}"
+                                            </div>
+                                            <div class="d-flex justify-content-end">
+                                                <span class="text-primary small fw-bold">
+                                                    {{ __('messages.view_comment') }} <i class="fas {{ app()->getLocale() == 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }} ms-1"></i>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             @endforeach
                         @endif
 
                         <!-- Directory Comments -->
                         @if(isset($searchedCommentsDir))
                             @foreach($searchedCommentsDir as $dComment)
-                                <div class="list-group-item p-4">
+                                @php
+                                    $dCommentUrl = route('directory.show', $dComment->o_parent) . '#comment_' . $dComment->id;
+                                    $dUser = $dComment->user;
+                                    $dAuthorName = $dUser ? $dUser->username : __('messages.member');
+                                    $dAuthorAvatar = $dUser ? $dUser->avatarUrl() : asset('upload/_avatar.png');
+                                    $dDirTitle = $dComment->directory ? $dComment->directory->name : ('#' . $dComment->o_parent);
+                                    $dDate = is_numeric($dComment->o_mode) ? \Carbon\Carbon::createFromTimestamp((int) $dComment->o_mode)->diffForHumans() : null;
+                                @endphp
+                                <a href="{{ $dCommentUrl }}" class="list-group-item list-group-item-action p-4 text-decoration-none text-dark transition-up" title="{{ __('messages.view_comment') }}">
                                     <div class="d-flex gap-3">
-                                        <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
-                                            <i class="fa fa-comment"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <h6 class="fw-bold mb-1">{{ __('messages.directory_comment') ?? 'Directory Comment' }}</h6>
+                                        <img src="{{ $dAuthorAvatar }}" class="rounded-circle border border-2 border-white shadow-sm" width="44" height="44" style="object-fit: cover; min-width: 44px;" onerror="this.onerror=null;this.src='{{ asset('upload/_avatar.png') }}';">
+                                        <div class="flex-grow-1 min-width-0">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <h6 class="fw-bold mb-0 text-dark">{{ $dAuthorName }}</h6>
+                                                @if($dDate)
+                                                    <small class="text-muted smaller">{{ $dDate }}</small>
+                                                @endif
+                                            </div>
                                             <p class="text-muted smaller mb-2">
-                                                <i class="fa fa-sitemap me-1"></i> {{ __('messages.on_directory') ?? 'on Directory' }} 
-                                                <a href="{{ route('directory.show', $dComment->o_parent) }}" class="text-decoration-none">#{{ $dComment->o_parent }}</a>
+                                                <i class="fa fa-sitemap me-1 text-info"></i> {{ __('messages.directory') }}: 
+                                                <strong class="text-dark">{{ \Illuminate\Support\Str::limit($dDirTitle, 60) }}</strong>
                                             </p>
-                                            <div class="p-3 bg-light rounded-3 small text-secondary">
-                                                {{ \Illuminate\Support\Str::limit(strip_tags($dComment->o_valuer), 250) }}
+                                            <div class="p-3 bg-light rounded-3 small text-secondary mb-2">
+                                                "{{ \Illuminate\Support\Str::limit(strip_tags($dComment->o_valuer), 250) }}"
+                                            </div>
+                                            <div class="d-flex justify-content-end">
+                                                <span class="text-info small fw-bold">
+                                                    {{ __('messages.view_comment') }} <i class="fas {{ app()->getLocale() == 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }} ms-1"></i>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             @endforeach
                         @endif
                     </div>

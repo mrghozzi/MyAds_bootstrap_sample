@@ -147,6 +147,70 @@
                         <input type="file" id="imgupload" accept=".jpg, .jpeg, .png, .gif" style="display:none">
                     </div>
                 </div>
+
+                <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                    <div class="card-header bg-white py-3 border-bottom-0 d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0 text-uppercase small text-muted">{{ __('messages.media_and_demo') }}</h6>
+                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill small fw-bold">{{ __('messages.optional') }}</span>
+                    </div>
+                    <div class="card-body p-4 pt-0">
+                        <p class="text-muted small fw-bold mb-3">{{ __('messages.screenshots_gallery') }} &amp; {{ __('messages.live_preview') }}</p>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="store-demo-url" class="form-label small fw-bold text-dark">
+                                    <i class="fa fa-external-link text-primary me-1"></i> {{ __('messages.live_preview_url') }}
+                                </label>
+                                <input
+                                    type="url"
+                                    id="store-demo-url"
+                                    name="demo_url"
+                                    class="form-control rounded-3 bg-light border-0"
+                                    value="{{ old('demo_url') }}"
+                                    placeholder="https://preview.example.com"
+                                >
+                            </div>
+                            <div class="col-md-6">
+                                <label for="store-video-url" class="form-label small fw-bold text-dark">
+                                    <i class="fa fa-video-camera text-danger me-1"></i> {{ __('messages.video_preview_url') }}
+                                </label>
+                                <input
+                                    type="url"
+                                    id="store-video-url"
+                                    name="video_url"
+                                    class="form-control rounded-3 bg-light border-0"
+                                    value="{{ old('video_url') }}"
+                                    placeholder="https://www.youtube.com/watch?v=..."
+                                >
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-dark mb-2">
+                                <i class="fa fa-picture-o text-primary me-1"></i> {{ __('messages.screenshots_gallery') }}
+                            </label>
+
+                            <div class="store-screenshots-dropzone p-4 rounded-4 bg-light border border-dashed text-center" style="cursor: pointer;">
+                                <i class="fa fa-cloud-upload fs-1 text-primary mb-2"></i>
+                                <h6 class="fw-bold mb-1">{{ __('messages.add_screenshot') }}</h6>
+                                <p class="small text-muted mb-3">PNG, JPG, WEBP &bull; Max 10MB</p>
+                                <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                    <button type="button" class="btn btn-primary btn-sm rounded-pill fw-bold px-3 shadow-sm" id="btn-browse-screenshots">
+                                        <i class="fa fa-folder-open me-1"></i> {{ __('messages.upload') }}
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill fw-bold px-3" id="btn-add-screenshot-url">
+                                        <i class="fa fa-link me-1"></i> {{ __('messages.ext_link') }}
+                                    </button>
+                                </div>
+                                <input type="file" id="screenshots-file-input" multiple accept="image/*" class="d-none">
+                            </div>
+
+                            <div id="screenshots-preview-grid" class="row g-3 mt-2">
+                                <!-- Uploaded screenshots preview items -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="col-lg-4">
@@ -203,6 +267,11 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            || document.querySelector('input[name="_token"]')?.value
+            || '';
+
+        // Cover Image Upload trigger
         var openImgUpload = document.getElementById('OpenImgUpload');
         var imguploadInput = document.getElementById('imgupload');
         if (openImgUpload && imguploadInput) {
@@ -210,56 +279,261 @@
                 imguploadInput.click();
             });
         }
-    });
-</script>
 
-<script>
-    window.triggerCategoryUpdate = function (selectElement) {
-        if (typeof jQuery === 'undefined') {
-            console.warn("jQuery is not yet loaded, retrying in 100ms...");
-            setTimeout(function() { window.triggerCategoryUpdate(selectElement); }, 100);
-            return;
+        var showImgUpload = document.getElementById('showImgUpload');
+        if (imguploadInput) {
+            imguploadInput.addEventListener('change', function () {
+                var file = this.files[0];
+                if (!file) return;
+
+                if (showImgUpload) {
+                    showImgUpload.innerHTML = '<div class="d-flex align-items-center justify-content-center text-primary"><div class="spinner-border spinner-border-sm me-2"></div><small>Uploading image...</small></div>';
+                }
+
+                var formData = new FormData();
+                formData.append('fimg', file);
+                formData.append('_token', csrfToken);
+
+                fetch("{{ route('status.upload_image') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: formData
+                })
+                .then(function (res) { return res.text(); })
+                .then(function (response) {
+                    if (showImgUpload) showImgUpload.innerHTML = response;
+                })
+                .catch(function () {
+                    if (showImgUpload) showImgUpload.innerHTML = '<span class="text-danger small fw-bold">{{ __('messages.error_occurred') }}</span>';
+                });
+            });
         }
 
-        var $ = jQuery;
-        var token = $('meta[name="csrf-token"]').attr('content');
-        var cat_s = $(selectElement).val();
-        var sc_cat = $('#sc_cat').val() || '';
-        
-        console.log("triggerCategoryUpdate running for: " + cat_s);
+        // Store Name Verification
+        var snameInputs = document.querySelectorAll('.sname');
+        var msgName = document.getElementById('msg_name');
+        snameInputs.forEach(function (inp) {
+            inp.addEventListener('change', function () {
+                var sname = this.value;
+                if (!sname || !sname.trim()) return;
 
-        if (!cat_s) {
-            $("#storecat").html($("#storecat").attr('data-original') || $("#storecat").html());
-            return;
+                if (msgName) msgName.innerHTML = '<div class="spinner-border spinner-border-sm text-primary"></div>';
+
+                var formData = new FormData();
+                formData.append('sname', sname);
+                formData.append('_token', csrfToken);
+
+                fetch("{{ route('store.verify_name') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: formData
+                })
+                .then(function (res) { return res.text(); })
+                .then(function (html) {
+                    if (msgName) msgName.innerHTML = html;
+                })
+                .catch(function () {
+                    if (msgName) msgName.innerHTML = '';
+                });
+            });
+        });
+
+        // Screenshots Gallery Uploader
+        var screenshotsGrid = document.getElementById('screenshots-preview-grid');
+        var btnBrowseScreenshots = document.getElementById('btn-browse-screenshots');
+        var screenshotsFileInput = document.getElementById('screenshots-file-input');
+        var btnAddScreenshotUrl = document.getElementById('btn-add-screenshot-url');
+        var dropzoneCreate = document.querySelector('.store-screenshots-dropzone');
+
+        function addScreenshotItem(url, fullUrl) {
+            if (!screenshotsGrid) return;
+            var col = document.createElement('div');
+            col.className = 'col-6 col-sm-4 col-md-3 screenshot-preview-item';
+            col.dataset.url = url;
+            col.innerHTML = '<div class="position-relative overflow-hidden rounded-4 border ratio ratio-16x9 bg-dark shadow-sm">' +
+                '<img src="' + fullUrl + '" class="object-fit-cover w-100 h-100" onerror="this.src=\'{{ theme_asset("img/error_plug.png") }}\'">' +
+                '<button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 m-2 p-0 d-flex align-items-center justify-content-center btn-remove-screenshot" style="width: 26px; height: 26px;" title="{{ __('messages.remove_screenshot') }}">' +
+                    '<i class="fa fa-times small"></i>' +
+                '</button>' +
+                '<input type="hidden" name="screenshots[]" value="' + url + '">' +
+            '</div>';
+            screenshotsGrid.appendChild(col);
         }
 
-        // Store original markup for error recovery if not already stored
-        if (!$("#storecat").attr('data-original')) {
-            $("#storecat").attr('data-original', $("#storecat").html());
+        if (btnBrowseScreenshots && screenshotsFileInput) {
+            btnBrowseScreenshots.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                screenshotsFileInput.click();
+            });
         }
 
-        $("#storecat").html('<div class="d-flex align-items-center text-primary"><div class="spinner-border spinner-border-sm me-2"></div><small>Loading categories...</small></div>');
+        function uploadScreenshotFiles(files) {
+            if (!files || !files.length) return;
+            for (var i = 0; i < files.length; i++) {
+                (function (file) {
+                    var tempId = 'ss-uploading-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+                    var col = document.createElement('div');
+                    col.className = 'col-6 col-sm-4 col-md-3';
+                    col.id = tempId;
+                    col.innerHTML = '<div class="rounded-4 border border-primary border-dashed bg-light d-flex align-items-center justify-content-center ratio ratio-16x9"><div class="spinner-border spinner-border-sm text-primary"></div></div>';
+                    if (screenshotsGrid) screenshotsGrid.appendChild(col);
 
-        $.ajax({
-            type: "POST",
-            url: "{{ route('store.categories') }}",
-            data: { cat_s: cat_s, sc_cat: sc_cat, _token: token },
-            cache: false,
-            success: function (html) {
-                console.log("AJAX Success for " + cat_s);
-                $("#storecat").html(html);
-                if (typeof syncCreateSummary === 'function') syncCreateSummary();
-            },
-            error: function (xhr, status, error) {
-                console.error("AJAX Error: " + error);
-                $("#storecat").html($("#storecat").attr('data-original'));
-                if (typeof syncCreateSummary === 'function') syncCreateSummary();
+                    var formData = new FormData();
+                    formData.append('image', file);
+                    formData.append('_token', csrfToken);
+
+                    fetch("{{ route('store.upload_screenshot') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: formData
+                    })
+                    .then(function (res) {
+                        return res.json().then(function (data) {
+                            return { ok: res.ok, data: data };
+                        });
+                    })
+                    .then(function (res) {
+                        var el = document.getElementById(tempId);
+                        if (el) el.remove();
+                        if (res.ok && res.data && res.data.success && res.data.url) {
+                            addScreenshotItem(res.data.url, res.data.full_url || res.data.url);
+                        } else {
+                            alert(res.data?.message || '{{ __('messages.error_occurred') }}');
+                        }
+                    })
+                    .catch(function () {
+                        var el = document.getElementById(tempId);
+                        if (el) el.remove();
+                        alert('{{ __('messages.error_occurred') }}');
+                    });
+                })(files[i]);
+            }
+        }
+
+        if (screenshotsFileInput) {
+            screenshotsFileInput.addEventListener('change', function () {
+                uploadScreenshotFiles(this.files);
+                this.value = '';
+            });
+        }
+
+        if (btnAddScreenshotUrl) {
+            btnAddScreenshotUrl.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var url = prompt('{{ __('messages.screenshot_url') }}:');
+                if (url && url.trim()) {
+                    url = url.trim();
+                    addScreenshotItem(url, url);
+                }
+            });
+        }
+
+        if (dropzoneCreate) {
+            ['dragenter', 'dragover'].forEach(function (ev) {
+                dropzoneCreate.addEventListener(ev, function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzoneCreate.classList.add('bg-white', 'border-primary');
+                }, false);
+            });
+            ['dragleave', 'drop'].forEach(function (ev) {
+                dropzoneCreate.addEventListener(ev, function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzoneCreate.classList.remove('bg-white', 'border-primary');
+                }, false);
+            });
+            dropzoneCreate.addEventListener('drop', function (e) {
+                if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+                    uploadScreenshotFiles(e.dataTransfer.files);
+                }
+            }, false);
+        }
+
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest('.btn-remove-screenshot');
+            if (btn) {
+                var item = btn.closest('.screenshot-preview-item');
+                if (item) {
+                    item.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+                    item.style.opacity = '0';
+                    item.style.transform = 'scale(0.85)';
+                    setTimeout(function () { item.remove(); }, 200);
+                }
             }
         });
-    };
-</script>
 
-<script>
+        // Summary sync
+        var storeVersion = document.getElementById('store-version');
+        var storePrice = document.getElementById('store-price');
+        if (storeVersion) storeVersion.addEventListener('input', syncCreateSummary);
+        if (storePrice) storePrice.addEventListener('input', syncCreateSummary);
+        document.addEventListener('click', function (event) {
+            if (event.target.closest('[data-store-source-tab]')) {
+                window.setTimeout(syncCreateSummary, 0);
+            }
+        });
+        syncCreateSummary();
+    });
+
+    window.triggerCategoryUpdate = function (selectElement) {
+        var token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            || document.querySelector('input[name="_token"]')?.value
+            || '';
+        var cat_s = selectElement ? selectElement.value : '';
+        var sc_cat = document.getElementById('sc_cat')?.value || '';
+        var storeCatEl = document.getElementById('storecat');
+
+        if (!storeCatEl) return;
+
+        if (!cat_s) {
+            storeCatEl.innerHTML = storeCatEl.getAttribute('data-original') || storeCatEl.innerHTML;
+            return;
+        }
+
+        if (!storeCatEl.getAttribute('data-original')) {
+            storeCatEl.setAttribute('data-original', storeCatEl.innerHTML);
+        }
+
+        storeCatEl.innerHTML = '<div class="d-flex align-items-center text-primary"><div class="spinner-border spinner-border-sm me-2"></div><small>Loading categories...</small></div>';
+
+        var formData = new FormData();
+        formData.append('cat_s', cat_s);
+        formData.append('sc_cat', sc_cat);
+        formData.append('_token', token);
+
+        fetch("{{ route('store.categories') }}", {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': token
+            },
+            body: formData
+        })
+        .then(function (res) { return res.text(); })
+        .then(function (html) {
+            storeCatEl.innerHTML = html;
+            if (typeof syncCreateSummary === 'function') syncCreateSummary();
+        })
+        .catch(function (err) {
+            console.error('Category load error:', err);
+            storeCatEl.innerHTML = storeCatEl.getAttribute('data-original');
+            if (typeof syncCreateSummary === 'function') syncCreateSummary();
+        });
+    };
+
     function syncCreateSummary() {
         var version = document.getElementById('store-version');
         var price = document.getElementById('store-price');
@@ -276,68 +550,18 @@
             sourceText = '{{ __('messages.ext_link') }}';
         }
 
-        document.querySelector('[data-store-create-version]').textContent = version && version.value ? version.value : 'v1.0';
-        document.querySelector('[data-store-create-price]').textContent = price && price.value ? price.value : '--';
-        document.querySelector('[data-store-create-category]').textContent = categoryText;
-        document.querySelector('[data-store-create-source]').textContent = sourceText;
+        var verEl = document.querySelector('[data-store-create-version]');
+        if (verEl) verEl.textContent = version && version.value ? version.value : 'v1.0';
+
+        var priceEl = document.querySelector('[data-store-create-price]');
+        if (priceEl) priceEl.textContent = price && price.value ? price.value : '--';
+
+        var catEl = document.querySelector('[data-store-create-category]');
+        if (catEl) catEl.textContent = categoryText;
+
+        var srcEl = document.querySelector('[data-store-create-source]');
+        if (srcEl) srcEl.textContent = sourceText;
     }
-
-    function initStoreReady() {
-        if (typeof jQuery === 'undefined') {
-            setTimeout(initStoreReady, 50);
-            return;
-        }
-
-        var $ = jQuery;
-        $(document).ready(function () {
-            var token = $('meta[name="csrf-token"]').attr('content');
-
-            $('#imgupload').change(function () {
-                $("#showImgUpload").html('<div class="d-flex align-items-center justify-content-center text-primary"><div class="spinner-border spinner-border-sm me-2"></div><small>Uploading image...</small></div>');
-                var file = this.files[0];
-                var form = new FormData();
-                form.append('fimg', file);
-                form.append('_token', token);
-                $.ajax({
-                    url: "{{ route('status.upload_image') }}",
-                    type: "POST",
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    data: form,
-                    success: function (response) {
-                        $('#showImgUpload').html(response);
-                    }
-                });
-            });
-
-            $('.sname').change(function () {
-                $("#msg_name").html('<div class="spinner-border spinner-border-sm text-primary"></div>');
-                var sname = $(this).val();
-
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('store.verify_name') }}",
-                    data: { sname: sname, _token: token },
-                    cache: false,
-                    success: function (html) {
-                        $("#msg_name").html(html);
-                    }
-                });
-            });
-
-            $('#store-version, #store-price').on('input', syncCreateSummary);
-            document.addEventListener('click', function (event) {
-                if (event.target.closest('[data-store-source-tab]')) {
-                    window.setTimeout(syncCreateSummary, 0);
-                }
-            });
-
-            syncCreateSummary();
-        });
-    }
-
-    initStoreReady();
 </script>
 
 <script src="https://unpkg.com/stackedit-js@1.0.7/docs/lib/stackedit.min.js"></script>

@@ -230,9 +230,12 @@
                     </div>
                     <div class="row g-3">
                         @foreach($screenshots as $ss)
+                            @php
+                                $ssUrl = Str::startsWith($ss->url, ['http://', 'https://']) ? $ss->url : asset($ss->url);
+                            @endphp
                             <div class="col-6 col-md-4">
-                                <div class="position-relative overflow-hidden rounded-4 shadow-sm border ratio ratio-16x9" style="cursor: pointer;" onclick="openStoreLightbox('{{ asset($ss->url) }}', '{{ addslashes($ss->caption ?? $product->name) }}')">
-                                    <img src="{{ asset($ss->url) }}" alt="{{ $ss->caption ?? $product->name }}" class="object-fit-cover w-100 h-100" loading="lazy">
+                                <div class="position-relative overflow-hidden rounded-4 shadow-sm border ratio ratio-16x9" style="cursor: pointer;" onclick="openStoreLightbox('{{ $ssUrl }}', '{{ addslashes($ss->caption ?? $product->name) }}')">
+                                    <img src="{{ $ssUrl }}" alt="{{ $ss->caption ?? $product->name }}" class="object-fit-cover w-100 h-100" loading="lazy" onerror="this.src='{{ theme_asset('img/error_plug.png') }}'">
                                     <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25 d-flex align-items-center justify-content-center opacity-0 hover-opacity-100 transition-all text-white">
                                         <i class="fa fa-search-plus fa-2x"></i>
                                     </div>

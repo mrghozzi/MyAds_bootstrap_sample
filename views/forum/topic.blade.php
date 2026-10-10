@@ -342,5 +342,12 @@
             }).then(() => alert('{{ __('messages.report_sent') }}'));
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof window.highlightCommentFromHash === 'function') {
+            window.highlightCommentFromHash();
+        }
+    });
 </script>
 @endsection
+

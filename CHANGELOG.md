@@ -2,6 +2,23 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.4.6] - 2026-10-10
+
+### Added
+- **Interactive Multi-Screenshot Uploader & Management (`views/store/create.blade.php` & `views/store/update.blade.php`):**
+  - Added drag & drop dropzone with multi-file selector and direct URL insertion modal for product screenshots.
+  - Implemented asynchronous batch image uploading with progress animations, CSRF authentication, and preview tiles.
+  - Added 1-click thumbnail removal, hover overlays, and dedicated AJAX save action (`btn-save-media`) with instant user feedback alerts.
+- **Deep-Linked Comment Anchor Highlighting (`views/layouts/master.blade.php` & `views/forum/topic.blade.php`):**
+  - Added automated scroll-and-highlight logic (`window.highlightCommentFromHash`) triggering glowing pulse animation (`comment-target-highlight`) when navigating to `#comment_{id}`.
+  - Added support across AJAX comment loader re-renders, `DOMContentLoaded`, `load`, and hashchange browser events.
+
+### Improved
+- **Portal Search & Activity Results Navigation (`views/portal/index.blade.php`):**
+  - Revamped forum and directory comment cards with author avatars, direct comment anchor links (`#comment_{id}`), contextual quotes, and localized view buttons.
+- **Store Screenshot Lightbox & External Media URLs (`views/store/show.blade.php`):**
+  - Added seamless protocol detection (`http://` / `https://`) vs local asset paths for product screenshots with fallback error image handling.
+
 ## [2.4.5] - 2026-10-10
 
 ### Added

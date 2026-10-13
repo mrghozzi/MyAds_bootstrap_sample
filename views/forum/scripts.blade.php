@@ -1,48 +1,4 @@
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        if(typeof initHexagons === 'function') {
-            initHexagons();
-        } else {
-            // Fallback if not defined globally
-            loadHexagons();
-        }
-    });
-
-    function loadHexagons() {
-         if (typeof app !== 'undefined' && app.plugins && app.plugins.createHexagon) {
-            app.plugins.createHexagon({
-                container: '.hexagon-image-30-32',
-                width: 30,
-                height: 32,
-                roundedCorners: true,
-                clip: true
-            });
-            app.plugins.createHexagon({
-                container: '.hexagon-border-40-44',
-                width: 40,
-                height: 44,
-                lineWidth: 3,
-                roundedCorners: true,
-                lineColor: '#e7e8ee'
-            });
-             app.plugins.createHexagon({
-                container: '.hexagon-22-24',
-                width: 22,
-                height: 24,
-                roundedCorners: true,
-                fill: true
-            });
-            app.plugins.createHexagon({
-                container: '.hexagon-dark-16-18',
-                width: 16,
-                height: 18,
-                roundedCorners: true,
-                fill: true,
-                lineColor: '#4e4ac8' // Approximation
-            });
-        }
-    }
-
     function postReaction(id, reaction) {
         // Use Fetch API
         fetch('{{ route('reaction.toggle') }}', {

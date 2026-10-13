@@ -1,6 +1,7 @@
 @extends('theme::layouts.master')
 
 @section('content')
+@include('theme::forum._assets')
 @php
     $group = $group ?? null;
     $showForumRoleBadges = (int) ($forumSettings['show_role_badges'] ?? 1) === 1;
@@ -219,6 +220,12 @@
                                             <i class="fab fa-{{ $social }} me-2 text-primary"></i> {{ ucfirst($social) }}
                                         </a></li>
                                     @endforeach
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <button type="button" class="dropdown-item py-2 small fw-bold" onclick="copyTopicLink('{{ url()->current() }}')">
+                                            <i class="fa fa-link me-2 text-primary"></i> {{ __('messages.copy_link') ?? 'Copy Link' }}
+                                        </button>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -244,9 +251,10 @@
                     <span class="badge bg-primary rounded-pill px-3">{{ $topic->replies_count ?? 0 }}</span>
                 </div>
                 
-                @include('theme::partials.activity.comments', [
-                    'comments' => $topic->comments()->orderBy('id', 'desc')->get(),
+                @include('theme::forum.partials.topic_comments', [
+                    'comments' => $topicComments ?? $topic->comments()->whereNull('parent_id')->with(['user', 'replies.user'])->orderByDesc('is_pinned')->orderByDesc('is_best_answer')->orderBy('id', 'asc')->get(),
                     'id' => $topic->id,
+                    'topic' => $topic,
                     'type' => 'forum',
                     'limit' => 100,
                     'hide_form' => $topic->is_locked && !$canCommentWhenLocked,
@@ -340,6 +348,18 @@
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                 body: JSON.stringify({ tp_id: id, s_type: type, txt: reason })
             }).then(() => alert('{{ __('messages.report_sent') }}'));
+        }
+    }
+
+    function copyTopicLink(url) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function() {
+                alert('{{ __('messages.link_copied') ?? 'Link copied to clipboard!' }}');
+            }).catch(function() {
+                prompt('Copy link:', url);
+            });
+        } else {
+            prompt('Copy link:', url);
         }
     }
 

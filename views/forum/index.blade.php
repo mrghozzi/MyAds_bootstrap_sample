@@ -1,8 +1,9 @@
 @extends('theme::layouts.master')
+@include('theme::forum._assets')
 
 @section('content')
-<div class="container py-4">
-    <!-- Page Header -->
+<div class="container py-4 forum-modern-forum-wrapper">
+    <!-- Hero Banner with Stats -->
     <div class="card border-0 shadow-sm mb-4 bg-primary bg-gradient text-white rounded-4 overflow-hidden">
         <div class="card-body p-4 p-md-5 d-flex justify-content-between align-items-center flex-wrap">
             <div class="d-flex align-items-center">
@@ -10,13 +11,17 @@
                     <i class="fa fa-comments fa-3x"></i>
                 </div>
                 <div>
-                    <h1 class="h2 fw-bold mb-1">{{ __('messages.forum') }}</h1>
-                    <p class="mb-0 text-white-50 small">{{ __('messages.forum_description') }}</p>
+                    <h1 class="h2 fw-bold mb-1">{{ __('messages.forum') ?? 'Community Discussions' }}</h1>
+                    <p class="mb-0 text-white-50 small">{{ __('messages.forum_description') ?? 'Browse discussions, participate with webmasters, and share knowledge across digital channels.' }}</p>
                 </div>
             </div>
             @auth
-                <a href="{{ route('forum.create') }}" class="btn btn-light btn-lg fw-bold shadow-sm mt-3 mt-md-0">
-                    <i class="fa fa-plus me-2"></i> {{ __('messages.add') }}
+                <button type="button" class="btn btn-light btn-lg fw-bold shadow-sm mt-3 mt-md-0 rounded-pill px-4" onclick="ForumComposer.open('topic')">
+                    <i class="fa fa-pencil me-2 text-primary"></i> {{ __('messages.w_new_tpc') ?? 'Start a Discussion' }}
+                </button>
+            @else
+                <a href="{{ route('login') }}" class="btn btn-light btn-lg fw-bold shadow-sm mt-3 mt-md-0 rounded-pill px-4">
+                    <i class="fa fa-sign-in me-2 text-primary"></i> {{ __('messages.login_to_participate') ?? 'Login to Participate' }}
                 </a>
             @endauth
         </div>
@@ -24,161 +29,236 @@
 
     @include('theme::partials.ads', ['id' => 4])
 
-    <div class="row g-4 mt-2">
-        <div class="col-lg-12">
-            <!-- Forum Categories -->
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mt-4">
-                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
-                    <h5 class="fw-bold mb-0 text-dark">{{ __('messages.cat_s') }}</h5>
-                    <span class="badge bg-light text-muted border fw-bold rounded-pill px-3">{{ $categories->count() }} {{ __('messages.categories') }}</span>
+    <!-- Two-Pane Modern Layout -->
+    <div class="row g-4 mt-1">
+        <!-- Left Sidebar: Categories Navigation -->
+        <aside class="col-lg-3">
+            @auth
+                <div class="d-grid mb-3">
+                    <button type="button" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm" onclick="ForumComposer.open('topic')">
+                        <i class="fa fa-plus me-2"></i> {{ __('messages.w_new_tpc') ?? 'Start a Discussion' }}
+                    </button>
                 </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="bg-light bg-opacity-50 border-bottom text-muted smaller text-uppercase fw-bold letter-spacing-1">
-                                <tr>
-                                    <th class="ps-4 py-3">{{ __('messages.forum_board') }}</th>
-                                    <th class="text-center py-3" style="width: 120px;">{{ __('messages.topics') }}</th>
-                                    <th class="text-center py-3" style="width: 120px;">{{ __('messages.replies') ?? 'المساهمات' }}</th>
-                                    <th class="pe-4 py-3" style="width: 350px;">{{ __('messages.latest_post') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($categories as $category)
-                                    @php
-                                        $topicCount = \App\Models\ForumTopic::where('cat', $category->id)->where('statu', 1)->count();
-                                        $commentsCount = \App\Models\ForumComment::whereHas('topic', function($q) use ($category) { $q->where('cat', $category->id); })->count();
-                                        $latestTopic = \App\Models\ForumTopic::where('cat', $category->id)->where('statu', 1)->orderBy('id', 'desc')->first();
-                                        $latestDate = "";
-                                        if ($latestTopic) {
-                                            $status = \App\Models\Status::where('tp_id', $latestTopic->id)->where('s_type', 2)->first();
-                                            if ($status) {
-                                                $latestDate = \Carbon\Carbon::createFromTimestamp($status->date)->diffForHumans();
-                                            }
-                                        }
-                                    @endphp
-                                    <tr class="transition-all">
-                                        <td class="ps-4 py-4">
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0 bg-primary bg-opacity-10 text-primary p-3 rounded-4 me-3 shadow-sm border border-primary border-opacity-10" style="width: 58px; height: 58px; display: flex; align-items: center; justify-content: center;">
-                                                    <i class="fa {{ $category->icons ?: 'fa-comments' }} fs-3"></i>
-                                                </div>
-                                                <div class="flex-grow-1 overflow-hidden">
-                                                    <h5 class="mb-1 fw-black">
-                                                        <a href="{{ route('forum.category', $category->id) }}" class="text-dark text-decoration-none hover-primary">
-                                                            {{ $category->name }}
-                                                        </a>
-                                                    </h5>
-                                                    <p class="text-muted smaller mb-0 text-truncate" style="max-width: 500px;">{!! strip_tags($category->txt) !!}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="bg-light bg-opacity-75 rounded-4 p-2 shadow-sm border border-white">
-                                                <div class="fw-black text-primary fs-5">{{ $topicCount }}</div>
-                                                <div class="smaller text-muted text-uppercase fw-bold">{{ __('messages.topics') }}</div>
-                                            </div>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="bg-light bg-opacity-75 rounded-4 p-2 shadow-sm border border-white">
-                                                <div class="fw-black text-info fs-5">{{ $commentsCount }}</div>
-                                                <div class="smaller text-muted text-uppercase fw-bold">{{ __('messages.replies') ?? 'المساهمات' }}</div>
-                                            </div>
-                                        </td>
-                                        <td class="pe-4">
-                                            @if($latestTopic)
-                                                <div class="card border-0 bg-light bg-opacity-25 p-2 rounded-3">
-                                                    <div class="d-flex align-items-center">
-                                                        @if($latestTopic->user)
-                                                            <img src="{{ $latestTopic->user->avatarUrl() }}" class="rounded-circle me-2 border border-2 border-white shadow-sm" width="32" height="32">
-                                                        @endif
-                                                        <div class="overflow-hidden">
-                                                            <a href="{{ route('forum.topic', $latestTopic->id) }}" class="text-dark fw-bold text-decoration-none text-truncate d-block smaller mb-0">
-                                                                {{ $latestTopic->name }}
-                                                            </a>
-                                                            <div class="d-flex align-items-center gap-2 smaller text-muted">
-                                                                <span class="text-primary fw-bold">{{ $latestTopic->user?->username ?? __('messages.unknown_user') }}</span>
-                                                                <span class="opacity-50">&middot;</span>
-                                                                <span>{{ $latestDate }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @else
-                                                <div class="text-center py-2">
-                                                    <span class="text-muted small opacity-50">-</span>
-                                                </div>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+            @endauth
+
+            <!-- Categories Card -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+                    <h6 class="fw-bold mb-0 text-dark">{{ __('messages.categories') ?? 'Categories' }}</h6>
+                    <span class="badge bg-light text-muted border fw-bold rounded-pill px-2">{{ $categories->count() }}</span>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ route('forum.index') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3 border-0 {{ !isset($category) ? 'bg-primary bg-opacity-10 text-primary fw-bold' : '' }}">
+                        <div class="d-flex align-items-center">
+                            <i class="fa fa-comments me-2 text-primary"></i>
+                            <span class="small">{{ __('messages.all_discussions') ?? 'All Discussions' }}</span>
+                        </div>
+                        <span class="badge bg-light text-muted border rounded-pill">{{ number_format($forumStats['topics'] ?? 0) }}</span>
+                    </a>
+                    @foreach($categories as $cat)
+                        @php
+                            $catColor = $cat->color ?: '#615dfa';
+                            $isActive = isset($category) && $category->id == $cat->id;
+                            $hasChildren = $cat->children && $cat->children->isNotEmpty();
+                        @endphp
+                        <a href="{{ route('forum.category', $cat->id) }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 border-0 {{ $isActive ? 'bg-primary bg-opacity-10 text-primary fw-bold' : '' }}">
+                            <div class="d-flex align-items-center overflow-hidden">
+                                <span class="rounded-circle me-2 flex-shrink-0" style="width: 10px; height: 10px; background-color: {{ $catColor }};"></span>
+                                <span class="small text-truncate">{{ $cat->name }}</span>
+                            </div>
+                            @if(isset($cat->topic_count))
+                                <span class="badge bg-light text-muted border rounded-pill smaller">{{ number_format($cat->topic_count) }}</span>
+                            @endif
+                        </a>
+                        @if($hasChildren)
+                            @foreach($cat->children as $sub)
+                                @php
+                                    $subColor = $sub->color ?: $catColor;
+                                    $isSubActive = isset($category) && $category->id == $sub->id;
+                                @endphp
+                                <a href="{{ route('forum.category', $sub->id) }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-1 ps-4 border-0 {{ $isSubActive ? 'bg-primary bg-opacity-10 text-primary fw-bold' : '' }}">
+                                    <div class="d-flex align-items-center overflow-hidden">
+                                        <span class="text-muted me-1 smaller">&rdsh;</span>
+                                        <span class="rounded-circle me-2 flex-shrink-0" style="width: 8px; height: 8px; background-color: {{ $subColor }};"></span>
+                                        <span class="smaller text-truncate">{{ $sub->name }}</span>
+                                    </div>
+                                    @if(isset($sub->topic_count))
+                                        <span class="badge bg-light text-muted border rounded-pill smaller">{{ number_format($sub->topic_count) }}</span>
+                                    @endif
+                                </a>
+                            @endforeach
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Community Stats Card -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark"><i class="fa fa-line-chart me-2 text-primary"></i> {{ __('messages.forum_statistics') ?? 'Community Stats' }}</h6>
+                </div>
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="small text-muted"><i class="fa fa-folder-open me-2 text-primary"></i> {{ __('messages.cat_s') }}</span>
+                        <strong class="text-dark">{{ $categories->count() }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="small text-muted"><i class="fa fa-comment me-2 text-info"></i> {{ __('messages.topics') }}</span>
+                        <strong class="text-dark">{{ number_format($forumStats['topics'] ?? 0) }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="small text-muted"><i class="fa fa-users me-2 text-success"></i> {{ __('messages.members') }}</span>
+                        <strong class="text-dark">{{ number_format($forumStats['members'] ?? 0) }}</strong>
+                    </div>
+                    @if(isset($forumStats['latest_member']) && $forumStats['latest_member'])
+                        <div class="d-flex justify-content-between align-items-center pt-2">
+                            <span class="small text-muted"><i class="fa fa-user-plus me-2 text-warning"></i> {{ __('messages.latest_member') ?? 'Newest Member' }}</span>
+                            <a href="{{ route('profile.show', $forumStats['latest_member']->username) }}" class="small fw-bold text-primary text-decoration-none text-truncate" style="max-width: 110px;">
+                                {{ $forumStats['latest_member']->username }}
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Pane: Discussion Stream & Filter Toolbar -->
+        <main class="col-lg-9">
+            <!-- Filter & Search Toolbar -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                <div class="card-body p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <!-- Filter Tabs -->
+                    <div class="btn-group rounded-pill p-1 bg-light border shadow-sm" role="group">
+                        <a href="?filter=latest" class="btn btn-sm rounded-pill fw-bold px-3 forum-modern-filter-btn {{ ($currentFilter ?? 'latest') === 'latest' ? 'btn-primary' : 'btn-light' }}" data-filter="latest">
+                            <i class="fa fa-clock-o me-1"></i> {{ __('messages.filter_latest') ?? 'Latest' }}
+                        </a>
+                        <a href="?filter=top" class="btn btn-sm rounded-pill fw-bold px-3 forum-modern-filter-btn {{ ($currentFilter ?? '') === 'top' ? 'btn-primary' : 'btn-light' }}" data-filter="top">
+                            <i class="fa fa-fire me-1"></i> {{ __('messages.filter_top') ?? 'Top' }}
+                        </a>
+                        <a href="?filter=newest" class="btn btn-sm rounded-pill fw-bold px-3 forum-modern-filter-btn {{ ($currentFilter ?? '') === 'newest' ? 'btn-primary' : 'btn-light' }}" data-filter="newest">
+                            <i class="fa fa-calendar me-1"></i> {{ __('messages.filter_newest') ?? 'Newest' }}
+                        </a>
+                        <a href="?filter=unanswered" class="btn btn-sm rounded-pill fw-bold px-3 forum-modern-filter-btn {{ ($currentFilter ?? '') === 'unanswered' ? 'btn-primary' : 'btn-light' }}" data-filter="unanswered">
+                            <i class="fa fa-comment-o me-1"></i> {{ __('messages.filter_unanswered') ?? 'Unanswered' }}
+                        </a>
+                    </div>
+
+                    <!-- Search Input -->
+                    <div class="input-group" style="max-width: 280px;">
+                        <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="fa fa-search text-muted"></i></span>
+                        <input type="search" id="forumSearchInput" class="form-control bg-light border-start-0 rounded-end-pill small" placeholder="{{ __('messages.search_forum') ?? 'Search discussions...' }}" autocomplete="off">
                     </div>
                 </div>
             </div>
+
+            <!-- Discussion Stream Content -->
+            <div id="forumStreamWrapper">
+                @include('theme::forum.partials.discussion_stream', ['topics' => $topics])
             </div>
-        </div>
+        </main>
     </div>
 
-    <!-- FORUM STATS SUPERDESIGN -->
-    @php
-        $totalTopics = \App\Models\ForumTopic::count();
-        $totalComments = \App\Models\ForumComment::count();
-        $totalMembers = \App\Models\User::count();
-        $latestMember = \App\Models\User::orderBy('id', 'desc')->first();
-    @endphp
-    <div class="d-flex align-items-center mt-5 mb-4">
-        <h4 class="fw-bold mb-0 text-dark"><i class="fa fa-line-chart me-2"></i> إحصائيات المنتدى</h4>
-    </div>
-    <div class="row g-4">
-        <div class="col-md-3">
-            <div class="card border-0 rounded-4 shadow-sm text-center p-4" style="background: linear-gradient(135deg, #615dfa, #23d2e2); color: white;">
-                <i class="fa fa-folder-open fa-3x mb-3 text-white opacity-75"></i>
-                <h3 class="fw-black mb-1">{{ $totalTopics }}</h3>
-                <div class="small fw-bold">عدد المواضيع</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 rounded-4 shadow-sm text-center p-4" style="background: linear-gradient(135deg, #fd4350, #ff8c42); color: white;">
-                <i class="fa fa-comments fa-3x mb-3 text-white opacity-75"></i>
-                <h3 class="fw-black mb-1">{{ $totalComments }}</h3>
-                <div class="small fw-bold">عدد المساهمات</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 rounded-4 shadow-sm text-center p-4" style="background: linear-gradient(135deg, #1bc8db, #00d2ff); color: white;">
-                <i class="fa fa-users fa-3x mb-3 text-white opacity-75"></i>
-                <h3 class="fw-black mb-1">{{ $totalMembers }}</h3>
-                <div class="small fw-bold">الأعضاء المسجلين</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 rounded-4 shadow-sm text-center p-4" style="background: linear-gradient(135deg, #44cc56, #28a745); color: white;">
-                <i class="fa fa-user-plus fa-3x mb-3 text-white opacity-75"></i>
-                <h3 class="fw-black mb-1 text-truncate">
-                    @if($latestMember)
-                        <a href="{{ route('profile.show', $latestMember->username) }}" class="text-white text-decoration-none hover-white">{{ $latestMember->username }}</a>
-                    @else
-                        -
-                    @endif
-                </h3>
-                <div class="small fw-bold">أحدث عضو مسجل</div>
-            </div>
-        </div>
-    </div>
-    <!-- /FORUM STATS SUPERDESIGN -->
+    <!-- Floating Forum Composer Drawer -->
+    @include('theme::forum.partials.discussion_composer', ['categories' => $categories])
 </div>
 
-<style>
-    .fw-black { font-weight: 900; }
-    .letter-spacing-1 { letter-spacing: 1px; }
-    .transition-all { transition: all 0.3s ease; }
-    .table-hover tbody tr:hover {
-        background-color: rgba(97, 93, 250, 0.03);
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentFilter = '{{ $currentFilter ?? "latest" }}';
+    let searchTimer = null;
+
+    // Filter switching via Ajax
+    document.querySelectorAll('.forum-modern-filter-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('.forum-modern-filter-btn').forEach(b => {
+                b.classList.remove('btn-primary');
+                b.classList.add('btn-light');
+            });
+            this.classList.remove('btn-light');
+            this.classList.add('btn-primary');
+            currentFilter = this.dataset.filter;
+            fetchDiscussions();
+        });
+    });
+
+    // Live search debounced
+    const searchInput = document.getElementById('forumSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                fetchDiscussions();
+            }, 300);
+        });
     }
-    .hover-primary:hover {
-        color: #615dfa !important;
+
+    function fetchDiscussions() {
+        const streamWrapper = document.getElementById('forumStreamWrapper');
+        if (!streamWrapper) return;
+        streamWrapper.style.opacity = '0.5';
+
+        const query = searchInput ? searchInput.value.trim() : '';
+        const params = new URLSearchParams();
+        if (currentFilter) params.set('filter', currentFilter);
+        if (query) params.set('q', query);
+
+        const url = window.location.pathname + '?' + params.toString();
+
+        fetch(url, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            streamWrapper.innerHTML = data.html;
+            streamWrapper.style.opacity = '1';
+            window.history.pushState({}, '', url);
+            bindLoadMore();
+        })
+        .catch(err => {
+            streamWrapper.style.opacity = '1';
+            console.error('Failed to load discussions:', err);
+        });
     }
-</style>
+
+    function bindLoadMore() {
+        const loadMoreBtn = document.getElementById('forumLoadMoreBtn');
+        if (!loadMoreBtn) return;
+
+        loadMoreBtn.addEventListener('click', function() {
+            const nextUrl = this.dataset.nextUrl;
+            if (!nextUrl) return;
+
+            loadMoreBtn.disabled = true;
+            loadMoreBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Loading...';
+
+            fetch(nextUrl, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = data.html;
+                const newItems = tempDiv.querySelectorAll('.forum-modern-discussion-card');
+                const list = document.getElementById('forumDiscussionList');
+                newItems.forEach(item => list.appendChild(item));
+
+                if (data.has_more) {
+                    loadMoreBtn.dataset.nextUrl = data.next_page_url;
+                    loadMoreBtn.disabled = false;
+                    loadMoreBtn.innerHTML = '<i class="fa fa-chevron-down me-1"></i> Load More Discussions';
+                } else {
+                    loadMoreBtn.remove();
+                }
+            })
+            .catch(err => {
+                loadMoreBtn.disabled = false;
+                loadMoreBtn.innerHTML = '<i class="fa fa-exclamation-triangle me-1"></i> Try Again';
+            });
+        });
+    }
+
+    bindLoadMore();
+});
+</script>
 @endsection

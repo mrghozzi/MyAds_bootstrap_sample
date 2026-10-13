@@ -1,12 +1,25 @@
 @extends('theme::layouts.master')
+@include('theme::forum._assets')
+
+@php
+    $activeEditor = \App\Services\RichTextEditorService::getActiveEditor();
+@endphp
 
 @section('content')
 <div class="container py-4">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sceditor@3/minified/themes/default.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/sceditor@3/minified/sceditor.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sceditor@3/minified/formats/xhtml.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sceditor@3/minified/jquery.sceditor.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sceditor@3/languages/{{ app()->getLocale() }}.js"></script>
+    @if($activeEditor === 'quill')
+        <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+        <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    @elseif($activeEditor === 'sceditor')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sceditor@3/minified/themes/default.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/sceditor@3/minified/sceditor.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sceditor@3/minified/formats/xhtml.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sceditor@3/minified/jquery.sceditor.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sceditor@3/languages/{{ app()->getLocale() }}.js"></script>
+    @endif
+    @php
+        \App\Helpers\Hooks::do_action('render_custom_editor_assets', $activeEditor);
+    @endphp
 
     <!-- Page Header -->
     <div class="card border-0 shadow-sm mb-4 bg-primary text-white rounded-4 overflow-hidden">
@@ -52,19 +65,67 @@
                         @endif
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold">{{ __('messages.content') }}</label>
-                            <textarea id="editor1" name="txt" rows="16" class="form-control">{{ old('txt', $topic->txt ?? '') }}</textarea>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <label class="form-label fw-bold mb-0">{{ __('messages.content') }}</label>
+                                <span class="badge bg-light text-muted border text-uppercase smaller">{{ strtoupper($activeEditor) }}</span>
+                            </div>
+                            @if($activeEditor === 'myads_markdown')
+                                <div class="forum-modern-editor-box">
+                                    <div class="forum-modern-editor-toolbar">
+                                        <button type="button" class="forum-modern-tool-btn" onclick="ForumEditor.wrap(document.getElementById('editor1'), '**', '**', 'bold text')" title="Bold"><i class="fa fa-bold"></i></button>
+                                        <button type="button" class="forum-modern-tool-btn" onclick="ForumEditor.wrap(document.getElementById('editor1'), '*', '*', 'italic text')" title="Italic"><i class="fa fa-italic"></i></button>
+                                        <button type="button" class="forum-modern-tool-btn" onclick="ForumEditor.wrap(document.getElementById('editor1'), '~~', '~~', 'strikethrough')" title="Strike"><i class="fa fa-strikethrough"></i></button>
+                                        <div class="forum-modern-tool-separator"></div>
+                                        <button type="button" class="forum-modern-tool-btn" onclick="ForumEditor.wrap(document.getElementById('editor1'), '# ', '', 'Heading')" title="Heading"><i class="fa fa-header"></i></button>
+                                        <button type="button" class="forum-modern-tool-btn" onclick="ForumEditor.wrap(document.getElementById('editor1'), '`', '`', 'code')" title="Code"><i class="fa fa-code"></i></button>
+                                        <button type="button" class="forum-modern-tool-btn" onclick="ForumEditor.wrap(document.getElementById('editor1'), '\n```\n', '\n```\n', 'code block')" title="Code block"><i class="fa fa-file-code-o"></i></button>
+                                        <button type="button" class="forum-modern-tool-btn" onclick="ForumEditor.wrap(document.getElementById('editor1'), '> ', '', 'quote text')" title="Quote"><i class="fa fa-quote-left"></i></button>
+                                        <div class="forum-modern-tool-separator"></div>
+                                        <button type="button" class="forum-modern-tool-btn" onclick="ForumEditor.wrap(document.getElementById('editor1'), '[', '](https://)', 'link title')" title="Link"><i class="fa fa-link"></i></button>
+                                        <button type="button" class="forum-modern-tool-btn" onclick="ForumEditor.wrap(document.getElementById('editor1'), '![alt](', ')', 'https://')" title="Image"><i class="fa fa-image"></i></button>
+                                        <button type="button" class="forum-modern-tool-btn" onclick="ForumEditor.insert(document.getElementById('editor1'), '\n- Item 1\n- Item 2\n')" title="List"><i class="fa fa-list-ul"></i></button>
+                                        <button type="button" class="forum-modern-tool-btn" onclick="ForumEditor.insert(document.getElementById('editor1'), ' 😊 ')" title="Emoji"><i class="fa fa-smile-o"></i></button>
+                                        <button type="button" class="forum-modern-tool-btn ms-auto" onclick="toggleSplitPreview()" title="{{ __('messages.preview') ?? 'Preview' }}"><i class="fa fa-eye"></i> <span class="smaller ms-1 d-none d-sm-inline">{{ __('messages.preview') ?? 'Preview' }}</span></button>
+                                    </div>
+                                    <div class="forum-modern-editor-split">
+                                        <textarea id="editor1" name="txt" rows="14" class="form-control rounded-0" placeholder="{{ __('messages.forum_post_composer_placeholder') ?? 'Write your discussion content using Markdown...' }}" required>{{ old('txt', $topic->txt ?? '') }}</textarea>
+                                        <div id="editorPreview" class="forum-modern-editor-preview"></div>
+                                    </div>
+                                </div>
+                            @elseif($activeEditor === 'quill')
+                                <div id="quill-editor" style="min-height: 250px;">{!! old('txt', $topic->txt ?? '') !!}</div>
+                                <input type="hidden" name="txt" id="editor1" value="{{ old('txt', $topic->txt ?? '') }}">
+                            @else
+                                <textarea id="editor1" name="txt" rows="16" class="form-control">{{ old('txt', $topic->txt ?? '') }}</textarea>
+                            @endif
                         </div>
 
                         <div class="row g-4 mb-4">
                             @if(!isset($editType) || $editType != 7867)
                                 <div class="col-md-6">
                                     <label for="categ" class="form-label fw-bold">{{ __('messages.category_fallback') ?? 'Category' }}</label>
-                                    <select id="categ" name="categ" class="form-select rounded-3">
-                                        @foreach($categories as $category)
-                                            <option value="{{ $category->id }}" {{ (old('categ', $topic->cat ?? ($currentCategory->id ?? '')) == $category->id) ? 'selected' : '' }}>
+                                    <select id="categ" name="categ" class="form-select rounded-3" required>
+                                        @php
+                                            $rootCategories = $categories->whereNull('parent_id');
+                                            if ($rootCategories->isEmpty()) {
+                                                $rootCategories = $categories->where('parent_id', 0);
+                                            }
+                                            if ($rootCategories->isEmpty()) {
+                                                $rootCategories = $categories;
+                                            }
+                                            $selectedCatId = (int) old('categ', $topic->cat ?? ($currentCategory->id ?? ''));
+                                        @endphp
+                                        @foreach($rootCategories as $category)
+                                            <option value="{{ $category->id }}" class="fw-bold" {{ $selectedCatId === (int) $category->id ? 'selected' : '' }}>
                                                 {{ $category->name }}
                                             </option>
+                                            @if($category->children && $category->children->isNotEmpty())
+                                                @foreach($category->children as $sub)
+                                                    <option value="{{ $sub->id }}" {{ $selectedCatId === (int) $sub->id ? 'selected' : '' }}>
+                                                        &nbsp;&nbsp;&nbsp;↳ {{ $sub->name }}
+                                                    </option>
+                                                @endforeach
+                                            @endif
                                         @endforeach
                                     </select>
                                 </div>
@@ -121,30 +182,69 @@
 @endphp
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var textarea = document.getElementById('editor1');
-    if (!textarea || typeof sceditor === 'undefined') {
-        return;
+function toggleSplitPreview() {
+    const preview = document.getElementById('editorPreview');
+    const textarea = document.getElementById('editor1');
+    if (!preview || !textarea) return;
+    if (preview.classList.contains('is-visible')) {
+        preview.classList.remove('is-visible');
+    } else {
+        preview.classList.add('is-visible');
+        if (typeof ForumEditor !== 'undefined') {
+            preview.innerHTML = ForumEditor.toHtml(textarea.value);
+        }
     }
-    sceditor.create(textarea, {
-        format: 'xhtml',
-        locale: '{{ app()->getLocale() }}',
-        emoticons: {
-            dropdown: {
-                @foreach($dropdownEmojis as $emoji)
-                    '{{ $emoji->name }}': '{{ asset($emoji->img) }}',
-                @endforeach
-            }@if($moreEmojis->isNotEmpty()),
-            more: {
-                @foreach($moreEmojis as $emoji)
-                    '{{ $emoji->name }}': '{{ asset($emoji->img) }}',
-                @endforeach
-            }@endif
-        },
-        style: 'https://cdn.jsdelivr.net/npm/sceditor@3/minified/themes/content/default.min.css',
-        width: '100%',
-        height: '400px'
-    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var activeEditor = '{{ $activeEditor }}';
+    var textarea = document.getElementById('editor1');
+
+    if (activeEditor === 'myads_markdown') {
+        const preview = document.getElementById('editorPreview');
+        if (textarea && preview) {
+            textarea.addEventListener('input', function() {
+                if (preview.classList.contains('is-visible') && typeof ForumEditor !== 'undefined') {
+                    preview.innerHTML = ForumEditor.toHtml(this.value);
+                }
+            });
+        }
+    } else if (activeEditor === 'quill' && typeof Quill !== 'undefined') {
+        var quill = new Quill('#quill-editor', {
+            theme: 'snow',
+            placeholder: '{{ __('messages.content') }}...'
+        });
+        quill.on('text-change', function() {
+            var hiddenInput = document.getElementById('editor1');
+            if (hiddenInput) {
+                hiddenInput.value = quill.root.innerHTML;
+            }
+        });
+    } else if (activeEditor === 'sceditor' && typeof sceditor !== 'undefined' && textarea) {
+        sceditor.create(textarea, {
+            format: 'xhtml',
+            locale: '{{ app()->getLocale() }}',
+            emoticons: {
+                dropdown: {
+                    @foreach($dropdownEmojis as $emoji)
+                        '{{ $emoji->name }}': '{{ asset($emoji->img) }}',
+                    @endforeach
+                }@if($moreEmojis->isNotEmpty()),
+                more: {
+                    @foreach($moreEmojis as $emoji)
+                        '{{ $emoji->name }}': '{{ asset($emoji->img) }}',
+                    @endforeach
+                }@endif
+            },
+            style: 'https://cdn.jsdelivr.net/npm/sceditor@3/minified/themes/content/default.min.css',
+            width: '100%',
+            height: '400px'
+        });
+    }
+
+    @php
+        \App\Helpers\Hooks::do_action('render_custom_editor_js', 'editor1', $activeEditor);
+    @endphp
 });
 </script>
 @endsection

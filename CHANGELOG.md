@@ -2,6 +2,24 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.4.7] - 2026-10-13
+
+### Added
+- **Modern Forum Architecture & Compatibility with MyAds Core v4.6.3:**
+  - Integrated dynamic discussion streams (`views/forum/partials/discussion_stream.blade.php` and `views/forum/partials/discussion_item.blade.php`) with live filter tabs (Latest, Top, Newest, Unanswered) and debounced live search.
+  - Added floating discussion composer drawer (`views/forum/partials/discussion_composer.blade.php`) featuring Markdown toolbar, live split preview, and hierarchical category selection.
+  - Added hierarchical sub-forums and category navigation with custom category color badges in `views/forum/index.blade.php` and `views/forum/category.blade.php`.
+  - Added modern discussion replies engine (`views/forum/partials/topic_comments.blade.php`) with pinned comments, best answer showcase, threaded replies tree, inline reply targeting, and Markdown composer.
+  - Enhanced topic detail view (`views/forum/topic.blade.php`) with threaded discussion comments and 1-click "Copy Topic Link" clipboard action.
+  - Full `$activeEditor` integration in `views/forum/create.blade.php` and `views/forum/edit.blade.php` supporting `myads_markdown` toolbar with live preview, Quill, and SCEditor.
+  - Added dedicated styling and JavaScript assets (`assets/css/forum-modern.css`, `assets/css_d/forum-modern.css`, `assets/js/forum-modern.js`).
+
+### Fixed & Improved
+- **Strict Circular Avatars Enforcement:**
+  - Removed all legacy Vikinger hexagonal avatar elements and clip-path styles across forum video, post, and script views.
+  - Standardized all user and author avatars to native Bootstrap 5 circular avatars (`rounded-circle`).
+- Bumped minimum MyAds core version requirement to `4.6.3`.
+
 ## [2.4.6] - 2026-10-10
 
 ### Added

@@ -201,30 +201,15 @@
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                     <!-- PUBLISHER IDENTITY -->
                     <div class="d-flex align-items-center gap-3">
-                        <!-- HEXAGON AVATAR (HEXAGON CLIP-PATH FALLBACK) -->
-                        <a class="user-status-avatar flex-shrink-0" href="{{ route('profile.show', $topic->user->username) }}">
-                            <div class="user-avatar small no-outline {{ $topic->user->isOnline() ? 'online' : 'offline' }}">
-                                <div class="user-avatar-content">
-                                    <div class="hexagon-image-30-32" data-src="{{ $topic->user ? $topic->user->avatarUrl() : asset('upload/_avatar.png') }}" style="width: 30px; height: 32px; position: relative;">
-                                        <canvas style="position: absolute; top: 0px; left: 0px;" width="30" height="32"></canvas>
-                                    </div>
-                                </div>
-                                <div class="user-avatar-progress-border">
-                                    <div class="hexagon-border-40-44" data-line-color="{{ $topic->user->profileBadgeColor() }}" style="width: 40px; height: 44px; position: relative;"></div>
-                                </div>
-                                @if($topic->user->hasVerifiedBadge())
-                                    <div class="user-avatar-badge">
-                                        <div class="user-avatar-badge-border">
-                                            <div class="hexagon-22-24" style="width: 22px; height: 24px; position: relative;"></div>
-                                        </div>
-                                        <div class="user-avatar-badge-content">
-                                            <div class="hexagon-dark-16-18" style="width: 16px; height: 18px; position: relative;"></div>
-                                        </div>
-                                        <p class="user-avatar-badge-text"><i class="fa fa-fw fa-check"></i></p>
-                                    </div>
-                                @endif
-                            </div>
-                        </a>
+                        <!-- CIRCULAR AVATAR -->
+                        <div class="position-relative flex-shrink-0" style="width: 44px; height: 44px;">
+                            <a href="{{ route('profile.short', $topic->user ? $topic->user->publicRouteIdentifier() : '#') }}">
+                                <img src="{{ $topic->user ? $topic->user->avatarUrl() : asset('upload/_avatar.png') }}" alt="{{ $topic->user ? $topic->user->username : '' }}" class="rounded-circle border border-2 border-white shadow-sm" width="44" height="44" style="object-fit: cover;">
+                            </a>
+                            @if($topic->user && $topic->user->isOnline())
+                                <span class="position-absolute bottom-0 end-0 bg-success border border-2 border-white rounded-circle" style="width: 12px; height: 12px;" title="Online"></span>
+                            @endif
+                        </div>
 
                         <!-- USER NAME & ROLE -->
                         <div>
@@ -459,13 +444,6 @@
     overflow: visible !important;
     position: relative;
     z-index: 25;
-}
-.user-avatar .hexagon-image-30-32,
-.user-avatar .hexagon-image-40-44 {
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    background-size: cover;
-    background-position: center;
 }
 .video-stage-card {
     background: #000;

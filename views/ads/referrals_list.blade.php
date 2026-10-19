@@ -2,7 +2,7 @@
 
 @section('content')
 @php
-    $refUrl = url('/') . '?ref=' . $user->id;
+    $refUrl = url('/') . '?ref=' . $user->publicRouteIdentifier();
 @endphp
 
 <div class="promotion-shell superdesign-post-container">
@@ -73,17 +73,11 @@
                                 </td>
                                 <td style="padding: 14px 12px;">
                                     <div style="display: flex; align-items: center; gap: 12px;">
-                                        <a href="{{ route('profile.show', $refUser->username) }}" style="text-decoration: none;">
-                                            <div class="user-avatar small no-outline {{ $refUser->online > time() - 240 ? 'online' : 'offline' }}">
-                                                <div class="user-avatar-content">
-                                                    <div class="hexagon-image-30-32" data-src="{{ $refUser->avatar ? asset($refUser->avatar) : theme_asset('img/avatar.png') }}" style="width: 34px; height: 36px; position: relative; border-radius: 8px;"></div>
-                                                </div>
-                                                @if($refUser->hasVerifiedBadge())
-                                                <div class="user-avatar-badge" style="position: absolute; bottom: -2px; {{ is_locale_rtl() ? 'left: -2px;' : 'right: -2px;' }}">
-                                                    <span style="background: #17c666; color: #fff; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px;"><i class="fa fa-check"></i></span>
-                                                </div>
-                                                @endif
-                                            </div>
+                                        <a href="{{ route('profile.show', $refUser->username) }}" style="text-decoration: none; position: relative;">
+                                            <img class="rounded-circle border border-2 border-primary" src="{{ $refUser->avatar ? asset($refUser->avatar) : theme_asset('img/avatar.png') }}" width="38" height="38" style="object-fit: cover;" alt="{{ $refUser->username }}">
+                                            @if($refUser->hasVerifiedBadge())
+                                                <span style="position: absolute; bottom: -2px; {{ is_locale_rtl() ? 'left: -2px;' : 'right: -2px;' }} background: #17c666; color: #fff; width: 15px; height: 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px;"><i class="fa fa-check"></i></span>
+                                            @endif
                                         </a>
                                         <div>
                                             <a class="bold" href="{{ route('profile.show', $refUser->username) }}" style="color: var(--text-color); font-weight: 700; text-decoration: none; font-size: 14px;">

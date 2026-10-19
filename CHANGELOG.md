@@ -2,6 +2,29 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.4.8] - 2026-10-19
+
+### Added
+- **Clips 2.0 Discovery Experience & Short-Form Video Upgrades:**
+  - Integrated multi-tab discovery filter (`views/clips/index.blade.php`) supporting **Latest**, **Trending**, and **Following** clips streams.
+  - Added quick "Create Clip" modal dialog for uploading short-form clips directly from the stream.
+  - Added double-tap heart pop micro-interaction (`@keyframes heartPop`) and full keyboard navigation shortcuts (`↑`/`k`, `↓`/`j`, `Space`, `m`, `l`).
+  - Added automated 2.5-second view registration AJAX call (`POST /clips/view`) with session/cache deduplication.
+  - Synchronized all clip links (`views/clips/partials/clips_list.blade.php`, `views/clips/partials/clips_grid.blade.php`, `views/profile/partials/clips_grid_items.blade.php`) to use canonical route `route('clips.show', $id)`.
+- **Standalone Cinema Video Watch Page (`views/video/watch.blade.php`):**
+  - Built full cinema watch interface with ambient lighting effect, responsive theater mode, speed controls, PiP, and custom video controls bar.
+  - Integrated comments stream, author engagement stats, 1-click share modal, and an up-next suggested videos queue.
+  - Updated video grid cards and links (`views/video/index.blade.php`, `views/video/partials/video_grid.blade.php`, `views/forum/video.blade.php`) to direct to the dedicated watch page.
+- **Directory 2.0 Upvoting, Claiming & Showcase:**
+  - Added live debounced search, sort selector (`trending`, `latest`, `popular`, `featured`), and pricing filter chips in `views/directory/index.blade.php`.
+  - Added AJAX upvote actions (`data-directory-upvote`) across listing cards (`views/directory/partials/listing_card.blade.php`) and detail view (`views/directory/show.blade.php`).
+  - Added Schema.org JSON-LD structured data for rich search engine snippets.
+  - Added "Embed Badge" modal with copyable HTML/Markdown code and "Claim Listing" verification modal.
+- **Referrals Growth Engine & Milestone Badges:**
+  - Standardized all referral URLs in `views/ads/referrals.blade.php` and `views/ads/referrals_list.blade.php` to use `$user->publicRouteIdentifier()`.
+  - Added Referral Badges & Milestone Achievements section with progress bars and unlocked status.
+  - Standardized all referral avatar displays to native Bootstrap circular avatars (`rounded-circle`).
+
 ## [2.4.7] - 2026-10-13
 
 ### Added

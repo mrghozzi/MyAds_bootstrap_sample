@@ -2,14 +2,16 @@
 
 @section('content')
 <div class="video-hub-container py-3">
-    <!-- ADS Placement -->
+    <!-- ADS placement -->
     @include('theme::partials.ads', ['id' => 5])
 
     <!-- 1. HERO & SEARCH BANNER (.superdesign) -->
-    <div class="yt-hero-card rounded-4 p-4 p-md-5 mb-4 position-relative overflow-hidden shadow-sm border">
-        <div class="row align-items-center g-4">
+    <div class="yt-hero-card rounded-4 p-4 p-md-5 mb-4 position-relative overflow-hidden shadow-sm">
+        <div class="yt-hero-ambient-glow position-absolute"></div>
+        <div class="row align-items-center g-4 position-relative" style="z-index: 2;">
             <div class="col-lg-7">
                 <div class="badge bg-primary text-white rounded-pill px-3 py-2 mb-3 fw-bold fs-7 shadow-xs d-inline-flex align-items-center gap-2">
+                    <span class="pulse-dot"></span>
                     <i class="fa-solid fa-play"></i> {{ __('messages.video_hub') }}
                 </div>
                 <h1 class="display-6 fw-extrabold mb-2 text-gradient-primary">
@@ -19,29 +21,36 @@
                     {{ __('messages.video_hub_subtitle') }}
                 </p>
 
-                <!-- Search Bar -->
-                <form action="{{ route('video.index') }}" method="GET" class="yt-search-form d-flex gap-2 max-w-lg">
-                    <div class="input-group input-group-lg shadow-xs rounded-pill overflow-hidden border">
-                        <span class="input-group-text bg-body-tertiary border-0 ps-3 text-muted">
+                <!-- Search Bar with Live Debounce and Clear Option -->
+                <form action="{{ route('video.index') }}" method="GET" class="yt-search-form d-flex gap-2 max-w-lg" id="videoSearchForm">
+                    @if(request('cat'))
+                        <input type="hidden" name="cat" value="{{ request('cat') }}">
+                    @endif
+                    @if(request('sort'))
+                        <input type="hidden" name="sort" value="{{ request('sort') }}">
+                    @endif
+                    <div class="input-group input-group-lg shadow-xs rounded-pill overflow-hidden border yt-search-input-group">
+                        <span class="input-group-text bg-surface border-0 ps-3 text-muted">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </span>
-                        <input type="text" name="q" value="{{ $searchQuery }}" class="form-control bg-body-tertiary border-0 fs-6 shadow-none" placeholder="{{ __('messages.search_videos_placeholder') }}" autocomplete="off">
+                        <input type="text" name="q" id="videoSearchInput" value="{{ $searchQuery }}" class="form-control bg-surface border-0 fs-6 shadow-none" placeholder="{{ __('messages.search_videos_placeholder') }}" autocomplete="off">
                         @if($searchQuery !== '')
-                            <a href="{{ route('video.index') }}" class="input-group-text bg-body-tertiary border-0 text-muted" title="{{ __('messages.clear_filter') }}">
+                            <a href="{{ route('video.index') }}" class="input-group-text bg-surface border-0 text-muted" title="{{ __('messages.clear_filter') }}">
                                 <i class="fa-solid fa-xmark"></i>
                             </a>
                         @endif
-                        <button type="submit" class="btn btn-primary px-4 fw-bold">
+                        <button type="submit" class="btn btn-primary px-4 fw-bold" aria-label="Search">
                             <i class="fa-solid fa-arrow-left dir-rtl-icon"></i>
                         </button>
                     </div>
                 </form>
             </div>
 
-            <!-- Upload CTA Buttons pointing to /share -->
+            <!-- Upload Quick Actions -->
             <div class="col-lg-5 text-lg-end">
                 <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
                     @auth
+                        <!-- Post Video button pointing to /share as required -->
                         <a href="{{ url('/share') }}" class="btn btn-post-video btn-lg rounded-pill px-4 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
                             <i class="fa-solid fa-cloud-arrow-up"></i> {{ __('messages.create_video') }}
                         </a>
@@ -49,7 +58,7 @@
                             <i class="fa-solid fa-bolt"></i> {{ __('messages.create_clip') }}
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="btn btn-primary btn-lg rounded-pill px-4 fw-bold">
+                        <a href="{{ route('login') }}" class="btn btn-primary btn-lg rounded-pill px-4 fw-bold shadow-sm">
                             <i class="fa-solid fa-right-to-bracket me-2"></i> {{ __('messages.login') }}
                         </a>
                     @endauth
@@ -58,43 +67,89 @@
         </div>
     </div>
 
-    <!-- 2. YOUTUBE CATEGORY FILTER CHIPS -->
-    <div class="yt-filter-chips-wrap mb-4 overflow-x-auto pb-2 scrollbar-none">
-        <div class="d-flex gap-2 align-items-center flex-nowrap">
-            <a href="{{ route('video.index') }}" class="btn btn-sm rounded-pill px-3 py-2 fw-semibold text-nowrap {{ $filter === 'all' ? 'btn-primary shadow-xs' : 'btn-outline-secondary' }}">
-                <i class="fa-solid fa-border-all me-1"></i> {{ __('messages.all_videos') }}
-            </a>
-            <a href="{{ route('video.filter', 'clips') }}" class="btn btn-sm rounded-pill px-3 py-2 fw-semibold text-nowrap {{ $filter === 'clips' ? 'btn-danger text-white shadow-xs' : 'btn-outline-danger' }}">
-                <i class="fa-solid fa-bolt me-1"></i> {{ __('messages.shorts_clips') }}
-            </a>
-            <a href="{{ route('video.filter', 'videos') }}" class="btn btn-sm rounded-pill px-3 py-2 fw-semibold text-nowrap {{ $filter === 'videos' ? 'btn-primary shadow-xs' : 'btn-outline-secondary' }}">
-                <i class="fa-solid fa-video me-1"></i> {{ __('messages.only_videos') }}
-            </a>
-            <a href="{{ route('video.filter', 'trending') }}" class="btn btn-sm rounded-pill px-3 py-2 fw-semibold text-nowrap {{ $filter === 'trending' ? 'btn-warning text-dark fw-bold shadow-xs' : 'btn-outline-warning' }}">
-                <i class="fa-solid fa-fire me-1"></i> {{ __('messages.trending_videos') }}
-            </a>
-            <a href="{{ route('video.filter', 'latest') }}" class="btn btn-sm rounded-pill px-3 py-2 fw-semibold text-nowrap {{ $filter === 'latest' ? 'btn-primary shadow-xs' : 'btn-outline-secondary' }}">
-                <i class="fa-solid fa-clock me-1"></i> {{ __('messages.latest_videos') }}
-            </a>
+    <!-- 2. FILTER NAVIGATION STRIP (Type Filters, Categories, Sorting) -->
+    <div class="yt-filter-bar mb-4">
+        <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+            <!-- Scrollable Filter Pills -->
+            <div class="yt-filter-chips-wrap overflow-x-auto pb-2 scrollbar-none flex-grow-1">
+                <div class="d-flex gap-2 align-items-center flex-nowrap" id="videoFilterPills">
+                    <a href="{{ route('video.index') }}" class="btn btn-sm rounded-pill px-3 py-2 fw-semibold text-nowrap {{ $filter === 'all' && !request('cat') ? 'btn-primary shadow-xs' : 'btn-outline-secondary' }}">
+                        <i class="fa-solid fa-border-all me-1"></i> {{ __('messages.all_videos') }}
+                    </a>
+                    <a href="{{ route('video.filter', 'clips') }}" class="btn btn-sm rounded-pill px-3 py-2 fw-semibold text-nowrap {{ in_array($filter, ['clips', 'shorts'], true) ? 'btn-danger text-white shadow-xs' : 'btn-outline-danger' }}">
+                        <i class="fa-solid fa-bolt me-1"></i> {{ __('messages.shorts_clips') }}
+                    </a>
+                    <a href="{{ route('video.filter', 'videos') }}" class="btn btn-sm rounded-pill px-3 py-2 fw-semibold text-nowrap {{ $filter === 'videos' ? 'btn-primary shadow-xs' : 'btn-outline-secondary' }}">
+                        <i class="fa-solid fa-video me-1"></i> {{ __('messages.only_videos') }}
+                    </a>
+                    <a href="{{ route('video.filter', 'trending') }}" class="btn btn-sm rounded-pill px-3 py-2 fw-semibold text-nowrap {{ $filter === 'trending' ? 'btn-warning text-dark fw-bold shadow-xs' : 'btn-outline-warning' }}">
+                        <i class="fa-solid fa-fire me-1"></i> {{ __('messages.trending_videos') }}
+                    </a>
+                    <a href="{{ route('video.filter', 'latest') }}" class="btn btn-sm rounded-pill px-3 py-2 fw-semibold text-nowrap {{ $filter === 'latest' ? 'btn-primary shadow-xs' : 'btn-outline-secondary' }}">
+                        <i class="fa-solid fa-clock me-1"></i> {{ __('messages.latest_videos') }}
+                    </a>
+
+                    <!-- Category Pills -->
+                    @if(isset($categories) && $categories->isNotEmpty())
+                        <div class="vr mx-1 opacity-25"></div>
+                        @foreach($categories as $category)
+                            @php
+                                $isCatActive = (string) request('cat') === (string) $category->id || (string) request('category') === (string) $category->slug;
+                            @endphp
+                            <a href="{{ route('video.index', ['cat' => $category->id]) }}" class="btn btn-sm rounded-pill px-3 py-2 fw-semibold text-nowrap {{ $isCatActive ? 'btn-primary shadow-xs' : 'btn-outline-secondary' }}">
+                                @if($category->color)
+                                    <span class="d-inline-block rounded-circle me-1" style="width: 8px; height: 8px; background-color: {{ $category->color }};"></span>
+                                @endif
+                                {{ $category->name }}
+                            </a>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
+
+            <!-- Sort By Dropdown -->
+            <div class="dropdown flex-shrink-0">
+                <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-2 fw-semibold dropdown-toggle d-inline-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-solid fa-arrow-down-short-wide"></i>
+                    <span>{{ __('messages.sort_by') }}</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border rounded-3 fs-7 py-1">
+                    <li>
+                        <a class="dropdown-item py-2 {{ empty($sort) || $sort === 'latest' ? 'active fw-bold' : '' }}" href="{{ request()->fullUrlWithQuery(['sort' => 'latest']) }}">
+                            <i class="fa-solid fa-clock me-2"></i> {{ __('messages.sort_newest') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item py-2 {{ $sort === 'views' ? 'active fw-bold' : '' }}" href="{{ request()->fullUrlWithQuery(['sort' => 'views']) }}">
+                            <i class="fa-solid fa-fire me-2"></i> {{ __('messages.sort_most_viewed') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item py-2 {{ $sort === 'reactions' ? 'active fw-bold' : '' }}" href="{{ request()->fullUrlWithQuery(['sort' => 'reactions']) }}">
+                            <i class="fa-solid fa-heart me-2 text-danger"></i> {{ __('messages.sort_top_rated') }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
-    <!-- 3. YOUTUBE SHORTS / CLIPS SHELF (مقاطع الـ Clips) -->
-    @if($clips->isNotEmpty() && in_array($filter, ['all', 'clips'], true))
-        <div class="yt-shorts-shelf-card rounded-4 p-4 mb-5 shadow-sm border position-relative">
-            <div class="d-flex align-items-center justify-content-between mb-4">
+    <!-- 3. YOUTUBE SHORTS / CLIPS SHELF (9:16 Vertical Video Carousel) -->
+    @if($clips->isNotEmpty() && in_array($filter, ['all', 'clips', 'shorts'], true))
+        <div class="yt-shorts-shelf-card rounded-4 p-4 mb-5 shadow-sm position-relative">
+            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-2">
                     <span class="yt-shorts-badge d-flex align-items-center justify-content-center rounded-3 px-3 py-2 text-white fw-bold shadow-xs">
                         <i class="fa-solid fa-bolt fs-5 me-1"></i> {{ __('messages.shorts_clips') }}
                     </span>
                     <span class="text-muted small ms-2 d-none d-sm-inline-block">9:16 Vertical Video Feed</span>
                 </div>
-                <a href="{{ route('clips.index') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold">
+                <a href="{{ route('clips.index') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold shadow-xs">
                     {{ __('messages.view_all_clips') }} <i class="fa-solid fa-arrow-left dir-rtl-icon ms-1"></i>
                 </a>
             </div>
 
-            <!-- Vertical Clips Grid -->
+            <!-- Vertical Clips Carousel Grid -->
             <div class="row g-3 row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6">
                 @foreach($clips as $clip)
                     @php
@@ -102,19 +157,26 @@
                         $clipUser = $clip->user;
                         $clipUrl = route('clips.index') . '#' . $clip->id;
                         
-                        // Resolved Thumbnail & Title
                         $clipThumb = $clip->resolved_thumbnail ?: \App\Http\Controllers\VideoHubController::resolveVideoThumbnailUrl($clip);
+                        $clipVideoUrl = $clip->resolved_video_url ?: \App\Http\Controllers\VideoHubController::resolveVideoUrl($clip);
                         $clipTitle = \Illuminate\Support\Str::limit($clip->resolved_title ?: \App\Http\Controllers\VideoHubController::resolveVideoTitle($clip), 40);
                         $clipViews = $clipTopic ? (int) ($clipTopic->vu ?? 0) : (int) ($clip->views_count ?? 0);
+                        $hasClipCustomThumb = $clipThumb && !str_contains($clipThumb, 'video-placeholder');
                     @endphp
 
                     <div class="col">
-                        <div class="yt-shorts-card rounded-4 position-relative overflow-hidden shadow-xs h-100 bg-dark" style="aspect-ratio: 9/16;">
+                        <div class="yt-shorts-card rounded-4 position-relative overflow-hidden shadow-xs h-100 bg-dark" style="aspect-ratio: 9/16;" @if($clipVideoUrl) data-video-url="{{ $clipVideoUrl }}" @endif>
                             <a href="{{ $clipUrl }}" class="d-block w-100 h-100 text-decoration-none">
-                                <img src="{{ $clipThumb }}" alt="{{ $clipTitle }}" class="w-100 h-100 object-fit-cover opacity-90 lazyload" onError="this.onerror=null;this.src='{{ theme_asset('img/avatar.jpg') }}';">
+                                @if($hasClipCustomThumb)
+                                    <img src="{{ $clipThumb }}" alt="{{ $clipTitle }}" class="w-100 h-100 object-fit-cover opacity-90 lazyload" onError="this.onerror=null;this.src='{{ theme_asset('img/video-placeholder.svg') }}';">
+                                @elseif($clipVideoUrl)
+                                    <video src="{{ $clipVideoUrl }}#t=0.5" preload="metadata" muted playsinline class="w-100 h-100 object-fit-cover opacity-90 pointer-events-none"></video>
+                                @else
+                                    <img src="{{ theme_asset('img/video-placeholder.svg') }}" alt="{{ $clipTitle }}" class="w-100 h-100 object-fit-cover opacity-90">
+                                @endif
                                 
                                 <!-- Dark Gradient Scrim -->
-                                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-between p-3" style="background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.85) 100%);">
+                                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-between p-3" style="background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.9) 100%);">
                                     <!-- Top Shorts Icon -->
                                     <div class="d-flex justify-content-end">
                                         <span class="badge bg-danger rounded-circle p-2 shadow-xs">
@@ -126,11 +188,7 @@
                                     <div class="yt-shorts-info text-white">
                                         @if($clipUser)
                                             <div class="d-flex align-items-center gap-2 mb-1">
-                                                <div class="user-avatar small no-outline flex-shrink-0" style="width: 24px; height: 26px;">
-                                                    <div class="user-avatar-content">
-                                                        <div class="hexagon-image-30-32" data-src="{{ $clipUser->img ? url($clipUser->img) : theme_asset('img/avatar.jpg') }}"></div>
-                                                    </div>
-                                                </div>
+                                                <img src="{{ $clipUser->avatarUrl() }}" alt="{{ $clipUser->username }}" class="rounded-circle border border-1 border-white flex-shrink-0" width="22" height="22" style="object-fit: cover;">
                                                 <span class="small fw-semibold text-truncate text-white-50" style="max-width: 100px;">
                                                     {{ $clipUser->username }}
                                                 </span>
@@ -139,8 +197,8 @@
                                         <p class="clip-title small fw-bold mb-1 line-clamp-2 text-white" style="line-height: 1.3;">
                                             {{ $clipTitle }}
                                         </p>
-                                        <div class="small text-white-50 fs-8">
-                                            <i class="fa-solid fa-eye me-1"></i> {{ number_format($clipViews) }}
+                                        <div class="small text-white-50 fs-8 d-flex align-items-center gap-1">
+                                            <i class="fa-solid fa-eye"></i> {{ number_format($clipViews) }}
                                         </div>
                                     </div>
                                 </div>
@@ -152,66 +210,80 @@
         </div>
     @endif
 
-    <!-- 4. SPOTLIGHT HERO VIDEO BANNER (IF AVAILABLE) -->
+    <!-- 4. SPOTLIGHT HERO VIDEO BANNER (Featured Widescreen Marquee) -->
     @if($spotlightVideo && $searchQuery === '')
         @php
             $spTopic = $spotlightVideo->forumTopic;
             $spUser = $spotlightVideo->user;
             $spWatchUrl = $spTopic ? route('forum.topic', $spTopic->id) : url('/portal');
             
-            // Resolved Thumbnail & Title
             $spThumb = $spotlightVideo->resolved_thumbnail ?: \App\Http\Controllers\VideoHubController::resolveVideoThumbnailUrl($spotlightVideo);
+            $spVideoUrl = $spotlightVideo->resolved_video_url ?: \App\Http\Controllers\VideoHubController::resolveVideoUrl($spotlightVideo);
             $spTitle = $spotlightVideo->resolved_title ?: \App\Http\Controllers\VideoHubController::resolveVideoTitle($spotlightVideo);
             $spViews = $spTopic ? (int) ($spTopic->vu ?? 0) : (int) ($spotlightVideo->views_count ?? 0);
+            $hasSpCustomThumb = $spThumb && !str_contains($spThumb, 'video-placeholder');
+            $spYtId = \App\Http\Controllers\VideoHubController::extractYoutubeId($spVideoUrl);
         @endphp
 
-        <div class="yt-spotlight-card rounded-4 p-4 mb-5 shadow-sm border">
+        <div class="yt-spotlight-card rounded-4 p-4 p-md-5 mb-5 shadow-sm position-relative overflow-hidden">
             <div class="row align-items-center g-4">
                 <div class="col-lg-7">
-                    <a href="{{ $spWatchUrl }}" class="d-block ratio ratio-16x9 rounded-4 overflow-hidden shadow-lg position-relative group">
-                        <img src="{{ $spThumb }}" alt="{{ $spTitle }}" class="w-100 h-100 object-fit-cover lazyload" onError="this.onerror=null;this.src='{{ theme_asset('img/avatar.jpg') }}';">
-                        <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-40 d-flex align-items-center justify-content-center">
-                            <span class="btn btn-light rounded-circle p-4 shadow-lg text-primary scale-on-hover">
-                                <i class="fa-solid fa-play fs-2 ms-1"></i>
+                    <a href="{{ $spWatchUrl }}" class="d-block ratio ratio-16x9 rounded-4 overflow-hidden shadow-lg position-relative group yt-spotlight-thumb-wrap" @if($spVideoUrl) data-video-url="{{ $spVideoUrl }}" @endif @if($spYtId) data-yt-id="{{ $spYtId }}" @endif>
+                        @if($hasSpCustomThumb)
+                            <img src="{{ $spThumb }}" alt="{{ $spTitle }}" class="w-100 h-100 object-fit-cover lazyload" onError="this.onerror=null;this.src='{{ theme_asset('img/video-placeholder.svg') }}';">
+                        @elseif($spVideoUrl)
+                            <video src="{{ $spVideoUrl }}#t=0.5" preload="metadata" muted playsinline class="w-100 h-100 object-fit-cover pointer-events-none"></video>
+                        @else
+                            <img src="{{ theme_asset('img/video-placeholder.svg') }}" alt="{{ $spTitle }}" class="w-100 h-100 object-fit-cover">
+                        @endif
+                        <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-40 d-flex align-items-center justify-content-center transition-all">
+                            <span class="btn btn-primary rounded-circle p-4 shadow-lg scale-on-hover d-flex align-items-center justify-content-center" style="width: 72px; height: 72px;">
+                                <i class="fa-solid fa-play fs-3 text-white ms-1"></i>
                             </span>
                         </div>
                     </a>
                 </div>
 
                 <div class="col-lg-5">
-                    <span class="badge bg-primary text-white px-3 py-2 rounded-pill fw-bold mb-3 shadow-xs">
-                        <i class="fa-solid fa-star me-1"></i> {{ __('messages.trending_videos') }}
+                    <span class="badge bg-primary px-3 py-2 rounded-pill fw-bold mb-3 shadow-xs d-inline-flex align-items-center gap-1">
+                        <i class="fa-solid fa-star"></i> {{ __('messages.trending_videos') }}
                     </span>
-                    <h2 class="h3 fw-bold mb-3">
-                        <a href="{{ $spWatchUrl }}" class="text-reset text-decoration-none hover-primary">
+                    <h2 class="h3 fw-extrabold mb-3 line-clamp-2">
+                        <a href="{{ $spWatchUrl }}" class="text-reset text-decoration-none">
                             {{ $spTitle }}
                         </a>
                     </h2>
 
                     @if($spUser)
-                        <div class="d-flex align-items-center gap-3 mb-4 p-2 rounded-3 bg-body-tertiary border">
-                            <a href="{{ route('profile.short', $spUser->publicRouteIdentifier()) }}" class="user-avatar small no-outline flex-shrink-0" style="width: 38px; height: 42px;">
-                                <div class="user-avatar-content">
-                                    <div class="hexagon-image-30-32" data-src="{{ $spUser->img ? url($spUser->img) : theme_asset('img/avatar.jpg') }}"></div>
-                                </div>
-                                <div class="user-avatar-progress-border">
-                                    <div class="hexagon-border-40-44" data-line-color="{{ $spUser->profileBadgeColor() }}"></div>
-                                </div>
+                        <div class="d-flex align-items-center gap-3 mb-4 p-2 rounded-3 bg-surface border">
+                            <a href="{{ route('profile.short', $spUser->publicRouteIdentifier()) }}" class="position-relative flex-shrink-0 text-decoration-none" title="{{ $spUser->username }}">
+                                <img src="{{ $spUser->avatarUrl() }}" alt="{{ $spUser->username }}" class="rounded-circle border border-2 border-white shadow-xs" width="42" height="42" style="object-fit: cover;">
+                                @if($spUser->isOnline())
+                                    <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-white rounded-circle" style="width: 10px; height: 10px;" title="{{ __('messages.online') }}"></span>
+                                @endif
                             </a>
-                            <div>
-                                <h4 class="h6 mb-0 fw-bold">
+                            <div class="flex-grow-1 min-w-0">
+                                <h4 class="h6 mb-0 fw-bold text-truncate">
                                     <a href="{{ route('profile.short', $spUser->publicRouteIdentifier()) }}" class="text-reset text-decoration-none">
                                         {{ $spUser->username }}
                                     </a>
+                                    @if($spUser->verified)
+                                        <i class="fa-solid fa-circle-check text-primary fs-7 ms-1"></i>
+                                    @endif
                                 </h4>
                                 <span class="small text-muted">{{ number_format($spViews) }} {{ __('messages.views') }}</span>
                             </div>
                         </div>
                     @endif
 
-                    <a href="{{ $spWatchUrl }}" class="btn btn-primary btn-lg rounded-pill px-4 fw-bold">
-                        <i class="fa-solid fa-play me-2"></i> {{ __('messages.watch_now') }}
-                    </a>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <a href="{{ $spWatchUrl }}" class="btn btn-primary btn-lg rounded-pill px-4 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+                            <i class="fa-solid fa-play"></i> {{ __('messages.watch_now') }}
+                        </a>
+                        <button type="button" class="btn btn-outline-secondary btn-lg rounded-pill px-3 shadow-xs" onclick="navigator.clipboard.writeText('{{ $spWatchUrl }}'); if(typeof showToast === 'function') { showToast('{{ __('messages.link_copied') }}'); }">
+                            <i class="fa-solid fa-share-nodes"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -219,7 +291,7 @@
 
     <!-- 5. MAIN VIDEOS GRID -->
     <div class="yt-main-videos-section">
-        <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
             <h2 class="h4 fw-extrabold mb-0 d-flex align-items-center gap-2">
                 <i class="fa-solid fa-film text-primary"></i> {{ __('messages.main_videos') }}
             </h2>
@@ -229,20 +301,46 @@
         </div>
 
         <!-- Injected Partial Grid -->
-        @include('theme::video.partials.video_grid', ['videos' => $videos])
+        <div id="videoGridContainer">
+            @include('theme::video.partials.video_grid', ['videos' => $videos])
+        </div>
     </div>
 </div>
 
 <style>
-/* Modern YouTube Video Hub Superdesign Styling for Bootstrap Sample Theme */
+/* Modern YouTube Hub Superdesign Styling */
 .text-gradient-primary {
     background: linear-gradient(135deg, #615dfa 0%, #23d2e2 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 .yt-hero-card {
-    background: linear-gradient(135deg, rgba(97, 93, 250, 0.12) 0%, rgba(35, 210, 226, 0.08) 100%), var(--bs-body-bg, #ffffff);
-    border-color: rgba(97, 93, 250, 0.25) !important;
+    background: linear-gradient(135deg, rgba(97, 93, 250, 0.16) 0%, rgba(35, 210, 226, 0.12) 100%), var(--notification-ui-card-bg);
+    border: 1px solid var(--notification-ui-card-border);
+    backdrop-filter: blur(14px);
+}
+.yt-hero-ambient-glow {
+    top: -50px;
+    inset-inline-end: -50px;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(97, 93, 250, 0.35) 0%, rgba(35, 210, 226, 0.1) 70%, transparent 100%);
+    filter: blur(50px);
+    pointer-events: none;
+    z-index: 1;
+}
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: #00ff88;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 10px #00ff88;
+    animation: pulseAnimation 2s infinite ease-in-out;
+}
+@keyframes pulseAnimation {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
 }
 .btn-post-video {
     background: linear-gradient(135deg, #615dfa 0%, #4b45e4 100%);
@@ -256,14 +354,20 @@
     box-shadow: 0 8px 26px rgba(97, 93, 250, 0.55);
 }
 .yt-shorts-shelf-card {
-    background: linear-gradient(135deg, rgba(255, 0, 51, 0.05) 0%, rgba(255, 0, 51, 0.02) 100%), var(--bs-body-bg, #ffffff);
-    border-color: rgba(255, 0, 51, 0.2) !important;
+    background: linear-gradient(135deg, rgba(255, 0, 51, 0.05) 0%, rgba(255, 0, 51, 0.02) 100%), var(--notification-ui-card-bg);
+    border: 1px solid rgba(255, 0, 51, 0.2) !important;
 }
 .yt-shorts-badge {
     background: linear-gradient(135deg, #ff0033 0%, #f03355 100%);
 }
 .yt-spotlight-card {
-    background: linear-gradient(135deg, rgba(97, 93, 250, 0.06) 0%, rgba(15, 17, 26, 0.03) 100%), var(--bs-body-bg, #ffffff);
+    background: linear-gradient(135deg, rgba(97, 93, 250, 0.08) 0%, rgba(15, 17, 26, 0.95) 100%), var(--notification-ui-card-bg);
+    border: 1px solid var(--notification-ui-card-border);
+}
+.yt-thumb-stage {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
 }
 .yt-thumb-stage .yt-play-btn-circle {
     width: 48px;
@@ -291,26 +395,26 @@
     opacity: 1;
 }
 .yt-video-card {
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+    border-radius: 18px;
+    padding: 12px;
+    background: var(--notification-ui-card-bg);
+    border: 1px solid var(--notification-ui-card-border);
 }
 .yt-video-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 16px 32px rgba(0,0,0,0.12), 0 0 20px rgba(97, 93, 250, 0.15) !important;
+    box-shadow: 0 16px 32px rgba(0,0,0,0.18), 0 0 20px rgba(97, 93, 250, 0.15) !important;
+    border-color: rgba(97, 93, 250, 0.45);
 }
 .yt-shorts-card {
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
 }
 .yt-shorts-card:hover {
     transform: scale(1.04);
-    box-shadow: 0 14px 30px rgba(255, 0, 51, 0.3);
+    box-shadow: 0 14px 30px rgba(255, 0, 51, 0.35);
+    border: 1px solid rgba(255, 0, 51, 0.6);
 }
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-.text-truncate-2 {
+.text-truncate-2, .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -329,5 +433,168 @@
 html[dir="rtl"] .dir-rtl-icon {
     transform: scaleX(-1);
 }
+.scale-on-hover {
+    transition: transform 0.25s ease;
+}
+.scale-on-hover:hover {
+    transform: scale(1.1);
+}
 </style>
+
+<script>
+/**
+ * Modern High-Performance Video Hover Preview Engine
+ */
+function initVideoHoverPreviews() {
+    const selector = '.yt-video-card, .yt-thumb-wrapper, .yt-shorts-card, .profile-yt-video-card, .profile-yt-shorts-card, .yt-spotlight-thumb-wrap';
+    const cards = document.querySelectorAll(selector);
+    
+    cards.forEach(card => {
+        if (card.dataset.hoverPreviewBound === 'true') return;
+        card.dataset.hoverPreviewBound = 'true';
+
+        const stage = card.querySelector('.yt-thumb-wrapper') || card.querySelector('.ratio') || card;
+        const imgEl = stage.querySelector('img');
+        const overlayEl = stage.querySelector('.yt-thumb-overlay');
+        let videoEl = stage.querySelector('video');
+        const ytId = stage.dataset.ytId || card.dataset.ytId;
+        const rawUrl = stage.dataset.videoUrl || card.dataset.videoUrl || (videoEl ? videoEl.getAttribute('src') : null);
+
+        if (!rawUrl && !videoEl && !ytId) return;
+
+        let hoverTimer = null;
+        let iframeEl = null;
+
+        card.addEventListener('mouseenter', function() {
+            hoverTimer = setTimeout(() => {
+                if (ytId) {
+                    if (!stage.querySelector('.yt-hover-iframe')) {
+                        iframeEl = document.createElement('iframe');
+                        iframeEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&controls=0&modestbranding=1&loop=1&playlist=${ytId}&enablejsapi=1`;
+                        iframeEl.className = 'yt-hover-iframe position-absolute top-0 start-0 w-100 h-100 border-0 pointer-events-none';
+                        iframeEl.style.zIndex = '4';
+                        iframeEl.style.opacity = '0';
+                        iframeEl.style.transition = 'opacity 0.25s ease';
+                        iframeEl.onload = function() {
+                            if (imgEl) imgEl.style.opacity = '0';
+                            if (overlayEl) overlayEl.style.opacity = '0';
+                            iframeEl.style.opacity = '1';
+                        };
+                        stage.appendChild(iframeEl);
+                    }
+                } else {
+                    if (!videoEl && rawUrl) {
+                        const cleanUrl = rawUrl.split('#')[0];
+                        videoEl = document.createElement('video');
+                        videoEl.src = cleanUrl + '#t=0.1';
+                        videoEl.muted = true;
+                        videoEl.loop = true;
+                        videoEl.playsInline = true;
+                        videoEl.setAttribute('muted', '');
+                        videoEl.setAttribute('playsinline', '');
+                        videoEl.className = 'yt-preview-video position-absolute top-0 start-0 w-100 h-100 object-fit-cover pointer-events-none';
+                        videoEl.style.zIndex = '4';
+                        videoEl.style.opacity = '0';
+                        videoEl.style.transition = 'opacity 0.25s ease';
+                        stage.appendChild(videoEl);
+                    }
+
+                    if (videoEl) {
+                        videoEl.muted = true;
+                        try { videoEl.currentTime = 0.1; } catch(e) {}
+                        const playPromise = videoEl.play();
+                        if (playPromise !== undefined) {
+                            playPromise.then(() => {
+                                if (imgEl) imgEl.style.opacity = '0';
+                                if (overlayEl) overlayEl.style.opacity = '0';
+                                videoEl.style.opacity = '1';
+                            }).catch(() => {});
+                        }
+                    }
+                }
+            }, 180);
+        });
+
+        card.addEventListener('mouseleave', function() {
+            if (hoverTimer) {
+                clearTimeout(hoverTimer);
+                hoverTimer = null;
+            }
+
+            if (imgEl) imgEl.style.opacity = '1';
+            if (overlayEl) overlayEl.style.opacity = '';
+
+            if (ytId) {
+                const iframe = stage.querySelector('.yt-hover-iframe');
+                if (iframe) iframe.remove();
+            } else if (videoEl) {
+                videoEl.pause();
+                try { videoEl.currentTime = 0.5; } catch(e) {}
+                videoEl.style.opacity = '0';
+            }
+        });
+    });
+}
+
+/**
+ * AJAX Load More Videos Pagination
+ */
+function initLoadMoreVideos() {
+    const btn = document.getElementById('btnLoadMoreVideos');
+    if (!btn) return;
+
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const nextUrl = btn.dataset.nextUrl;
+        if (!nextUrl) return;
+
+        const spinner = document.getElementById('loadMoreSpinner');
+        const icon = document.getElementById('loadMoreIcon');
+        if (spinner) spinner.classList.remove('d-none');
+        if (icon) icon.classList.add('d-none');
+        btn.disabled = true;
+
+        fetch(nextUrl, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.html) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = data.html;
+                const newItems = tempDiv.querySelectorAll('#videoGridItems > .video-grid-col');
+                const targetGrid = document.querySelector('#videoGridItems');
+
+                if (targetGrid && newItems.length > 0) {
+                    newItems.forEach(item => targetGrid.appendChild(item));
+                    initVideoHoverPreviews();
+                }
+
+                if (data.next_page_url) {
+                    btn.dataset.nextUrl = data.next_page_url;
+                    btn.disabled = false;
+                } else {
+                    btn.remove();
+                }
+            }
+        })
+        .catch(err => {
+            console.error('Error loading videos:', err);
+            btn.disabled = false;
+        })
+        .finally(() => {
+            if (spinner) spinner.classList.add('d-none');
+            if (icon) icon.classList.remove('d-none');
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initVideoHoverPreviews();
+    initLoadMoreVideos();
+});
+</script>
 @endsection

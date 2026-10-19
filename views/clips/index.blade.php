@@ -65,11 +65,37 @@
     .reel-overlay {
         position: absolute;
         inset: 0;
-        pointer-events: none; /* Let clicks pass to video */
+        pointer-events: none;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 30%, rgba(0,0,0,0.2) 70%, rgba(0,0,0,0.5) 100%);
+    }
+
+    /* Double Tap Pop Heart Animation */
+    .reel-heart-pop-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 25;
+        opacity: 0;
+    }
+    .reel-heart-pop-container.animate-pop {
+        animation: heartPop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    .pop-heart-icon {
+        width: 100px;
+        height: 100px;
+        fill: #ff3366;
+        filter: drop-shadow(0 0 15px rgba(255,51,102,0.8));
+    }
+    @keyframes heartPop {
+        0% { opacity: 0; transform: scale(0.3) rotate(-15deg); }
+        40% { opacity: 1; transform: scale(1.2) rotate(0deg); }
+        70% { opacity: 0.9; transform: scale(1) rotate(5deg); }
+        100% { opacity: 0; transform: scale(1.4) translateY(-40px); }
     }
     
     /* Play/Pause indicator fades out */
@@ -188,7 +214,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 20px;
+        gap: 16px;
         pointer-events: auto;
         z-index: 10;
     }
@@ -202,8 +228,8 @@
         background: rgba(0,0,0,0.4);
         border: 1px solid rgba(255,255,255,0.08);
         padding: 10px;
-        width: 50px;
-        height: 50px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         justify-content: center;
         backdrop-filter: blur(5px);
@@ -217,8 +243,8 @@
     }
     
     .reel-action-btn .icon {
-        width: 24px;
-        height: 24px;
+        width: 22px;
+        height: 22px;
         fill: #fff;
         transition: fill 0.3s, transform 0.3s;
     }
@@ -228,7 +254,7 @@
         font-weight: 700;
         margin-top: 4px;
         text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-        color: rgba(255, 255, 255, 0.8);
+        color: rgba(255, 255, 255, 0.85);
         pointer-events: none;
     }
     
@@ -239,8 +265,8 @@
     }
     
     .reel-action-btn.active.toggle-reaction {
-        background: rgba(255, 51, 102, 0.15);
-        border-color: rgba(255, 51, 102, 0.3);
+        background: rgba(255, 51, 102, 0.2);
+        border-color: rgba(255, 51, 102, 0.4);
     }
     
     .reel-action-btn.active.toggle-reaction .icon {
@@ -249,12 +275,24 @@
     }
     
     .reel-action-btn.active.toggle-save {
-        background: rgba(35, 210, 226, 0.15);
-        border-color: rgba(35, 210, 226, 0.3);
+        background: rgba(35, 210, 226, 0.2);
+        border-color: rgba(35, 210, 226, 0.4);
     }
     
     .reel-action-btn.active.toggle-save .icon {
         fill: #23d2e2;
+    }
+
+    .clip-views-badge {
+        cursor: default;
+        opacity: 0.9;
+    }
+    .clip-views-badge:hover {
+        transform: none;
+    }
+    .clip-views-badge .icon {
+        width: 20px;
+        height: 20px;
     }
     
     @keyframes heartBeat {
@@ -262,18 +300,56 @@
         50% { transform: scale(1.3); }
         100% { transform: scale(1); }
     }
+
+    /* Floating Navigation Tabs (Latest | Trending | Following) */
+    .clips-nav-tabs {
+        position: absolute;
+        top: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        padding: 4px 6px;
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .clip-tab-link {
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        padding: 5px 12px;
+        border-radius: 20px;
+        transition: all 0.2s ease;
+    }
+
+    .clip-tab-link:hover {
+        color: #fff;
+    }
+
+    .clip-tab-link.active {
+        background: rgba(255, 255, 255, 0.25);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
     
     /* Floating Header Actions */
     .clips-header-actions {
         position: absolute;
-        top: 20px;
-        right: 20px;
+        top: 15px;
+        right: 15px;
         z-index: 20;
         display: flex;
         gap: 8px;
         align-items: center;
     }
-    
+
+    .btn-create-clip,
     .btn-saved-clips,
     .btn-report-clip {
         background: rgba(0,0,0,0.5);
@@ -281,12 +357,12 @@
         color: #fff;
         border: 1px solid rgba(255,255,255,0.15);
         border-radius: 30px;
-        padding: 8px 18px;
-        font-size: 13px;
+        padding: 6px 14px;
+        font-size: 12px;
         font-weight: 700;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         text-decoration: none;
         transition: all 0.2s;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -294,7 +370,19 @@
         text-transform: uppercase;
         cursor: pointer;
     }
+
+    .btn-create-clip {
+        background: linear-gradient(135deg, #ff3366 0%, #ff5e3a 100%);
+        border: none;
+        box-shadow: 0 4px 12px rgba(255, 51, 102, 0.4);
+    }
     
+    .btn-create-clip:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(255, 51, 102, 0.6);
+        color: #fff;
+    }
+
     .btn-saved-clips:hover,
     .btn-report-clip:hover {
         background: #fff;
@@ -303,6 +391,7 @@
         transform: translateY(-2px);
     }
     
+    .btn-create-clip svg,
     .btn-saved-clips svg,
     .btn-report-clip svg {
         width: 14px;
@@ -313,11 +402,11 @@
     /* Mute and Progress */
     .reel-mute-toggle {
         position: absolute;
-        top: 20px;
-        left: 20px;
+        top: 15px;
+        left: 15px;
         z-index: 100;
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
         background: rgba(0,0,0,0.5);
         border-radius: 50%;
         display: flex;
@@ -332,7 +421,7 @@
     
     .reel-mute-toggle:hover {
         background: rgba(0,0,0,0.7);
-        transform: scale(1.05);
+        transform: scale(1.08);
     }
     
     .reel-mute-toggle svg {
@@ -347,12 +436,17 @@
         height: 4px;
         background: rgba(255, 255, 255, 0.15);
         z-index: 100;
+        cursor: pointer;
+        transition: height 0.15s ease;
+    }
+    .reel-progress:hover {
+        height: 7px;
     }
     
     .reel-progress-filled {
         height: 100%;
         width: 0%;
-        background: linear-gradient(to right, #23d2e2, #23d2e2);
+        background: linear-gradient(to right, #ff3366, #23d2e2);
         transition: width 0.1s linear;
     }
 
@@ -420,11 +514,67 @@
         padding: 10px 15px 20px 15px;
     }
 
+    /* Quick keyboard shortcut reminder hint */
+    .clips-keyboard-hint {
+        position: absolute;
+        bottom: -28px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: var(--bs-secondary, #6c757d);
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0.8;
+    }
+
+    /* Upload Clip Modal */
+    .clip-upload-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(8px);
+        z-index: 2000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .clip-upload-modal-backdrop.is-open {
+        display: flex;
+    }
+    .clip-upload-modal {
+        background: #18191a;
+        color: #fff;
+        border-radius: 20px;
+        max-width: 480px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 24px;
+        position: relative;
+    }
+    .clip-upload-modal h4 {
+        margin: 0 0 8px 0;
+        font-weight: 800;
+        font-size: 18px;
+        color: #fff;
+    }
+
     @media (max-width: 991px) {
         .clips-layout-container {
             flex-direction: column;
             align-items: center;
             height: calc(100vh - 70px);
+        }
+
+        .clips-nav-tabs {
+            top: 10px;
+            padding: 3px 4px;
+        }
+        .clip-tab-link {
+            font-size: 12px;
+            padding: 4px 8px;
         }
 
         .clips-comments-sidebar {
@@ -438,29 +588,76 @@
             box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
             z-index: 100;
         }
+
+        .clips-keyboard-hint {
+            display: none;
+        }
     }
 </style>
 
-<div class="container py-4">
+<div class="container py-3">
     <div class="clips-layout-container">
         <div class="clips-wrapper">
+            <!-- Navigation Tabs (Latest | Trending | Following) -->
+            <div class="clips-nav-tabs">
+                <a href="{{ route('clips.index', ['tab' => 'latest']) }}" class="clip-tab-link {{ ($tab ?? 'latest') === 'latest' ? 'active' : '' }}">
+                    {{ __('messages.latest_clips') ?? 'Latest' }}
+                </a>
+                <a href="{{ route('clips.index', ['tab' => 'trending']) }}" class="clip-tab-link {{ ($tab ?? '') === 'trending' ? 'active' : '' }}">
+                    <i class="fa fa-fire text-warning me-1"></i> {{ __('messages.trending_clips') ?? 'Trending' }}
+                </a>
+                <a href="{{ route('clips.index', ['tab' => 'following']) }}" class="clip-tab-link {{ ($tab ?? '') === 'following' ? 'active' : '' }}">
+                    {{ __('messages.following_clips') ?? 'Following' }}
+                </a>
+            </div>
+
             <!-- Floating Actions -->
             <div class="clips-header-actions">
                 @auth
+                <button type="button" class="btn-create-clip" id="btn-open-clip-upload">
+                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    <span class="d-none d-sm-inline">{{ __('messages.create_clip') ?? 'Create' }}</span>
+                </button>
                 <button class="btn-report-clip" id="btn-report-clip" title="{{ __('messages.report') ?? 'Report' }}">
                     <svg viewBox="0 0 24 24"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
-                    <span class="d-none d-md-inline">{{ __('messages.report') ?? 'Report' }}</span>
                 </button>
+                @else
+                <a href="{{ route('login') }}" class="btn-create-clip">
+                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    <span class="d-none d-sm-inline">{{ __('messages.create_clip') ?? 'Create' }}</span>
+                </a>
                 @endauth
-                <a href="{{ route('clips.saved') }}" class="btn-saved-clips">
+                <a href="{{ route('clips.saved') }}" class="btn-saved-clips" title="{{ __('messages.saved') ?? 'Saved' }}">
                     <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
-                    <span class="d-none d-md-inline">{{ __('messages.saved') ?? 'Saved' }}</span>
                 </a>
             </div>
             
             <!-- Video Container -->
             <div class="clips-container" id="clips-container">
-                @include('theme::clips.partials.clips_list', ['activities' => $activities])
+                @if($activities->isEmpty())
+                    <div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; padding: 30px; text-align: center;">
+                        <i class="fa fa-film" style="font-size: 48px; color: #ff3366; margin-bottom: 16px;"></i>
+                        <h4 style="color: #fff; font-weight: 700;">{{ __('messages.no_videos_found') ?? 'No clips found' }}</h4>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 14px; max-width: 300px; margin-bottom: 20px;">
+                            @if(($tab ?? '') === 'following')
+                                {{ __('messages.no_following_clips_desc') ?? 'None of the creators you follow have published clips yet. Explore Latest or Trending clips!' }}
+                            @else
+                                {{ __('messages.no_clips_desc') ?? 'Be the first to share a vertical clip with the community!' }}
+                            @endif
+                        </p>
+                        @auth
+                            <button type="button" class="btn btn-danger rounded-pill px-4" onclick="document.getElementById('btn-open-clip-upload')?.click();">
+                                <i class="fa fa-plus me-1"></i> {{ __('messages.create_clip') ?? 'Create Clip' }}
+                            </button>
+                        @else
+                            <a href="{{ route('clips.index', ['tab' => 'latest']) }}" class="btn btn-outline-light rounded-pill px-4">
+                                {{ __('messages.view_all_clips') ?? 'View All Clips' }}
+                            </a>
+                        @endauth
+                    </div>
+                @else
+                    @include('theme::clips.partials.clips_list', ['activities' => $activities])
+                @endif
             </div>
             
             <!-- Loading Indicator for Infinite Scroll -->
@@ -488,23 +685,199 @@
         
         <!-- Centralized container for the report modal -->
         <div id="reportclips-modal-container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1050; width: 90%; max-width: 400px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"></div>
+
+        <!-- Quick Keyboard Hint -->
+        <div class="clips-keyboard-hint">
+            <i class="fa fa-keyboard me-1"></i> {{ __('messages.press_keys_hint') ?? 'Keys: ↑/↓ Scroll • Space Play/Pause • M Mute • L Like' }}
+        </div>
     </div>
 </div>
+
+<!-- Upload Clip Modal Dialog -->
+@auth
+<div class="clip-upload-modal-backdrop" id="clip-upload-modal-backdrop">
+    <div class="clip-upload-modal">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4><i class="fa fa-bolt text-danger me-2"></i> {{ __('messages.upload_clip_modal_title') ?? 'Post New Clip' }}</h4>
+            <button type="button" class="close-sidebar-btn text-white" id="close-clip-upload">&times;</button>
+        </div>
+        <p class="text-white-50 small mb-4">{{ __('messages.upload_clip_desc') ?? 'Share a short vertical video (up to 3 minutes) with the community.' }}</p>
+
+        <form action="{{ route('status.create') }}" method="POST" enctype="multipart/form-data" id="clip-upload-form">
+            @csrf
+            <input type="hidden" name="post_kind" value="clips">
+            
+            <!-- Video File Input -->
+            <div class="mb-3">
+                <label class="form-label text-white small fw-bold">{{ __('messages.select_clip_file') ?? 'Choose Video File' }} *</label>
+                <input type="file" name="videos[]" id="modal-clip-video-input" accept="video/mp4,video/webm,video/quicktime,video/mov" class="form-control bg-dark text-white border-secondary" required>
+                <div id="modal-video-preview-wrap" class="mt-2 text-center" style="display: none;">
+                    <video id="modal-video-preview" style="max-height: 180px; max-width: 100%; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);" controls playsinline muted></video>
+                    <p class="text-white-50 small mt-1" id="modal-video-duration"></p>
+                </div>
+            </div>
+
+            <!-- Caption Textarea -->
+            <div class="mb-3">
+                <label class="form-label text-white small fw-bold">{{ __('messages.clip_caption') ?? 'Clip Caption' }} *</label>
+                <textarea name="text" id="modal-clip-caption" class="form-control bg-dark text-white border-secondary" rows="3" placeholder="{{ __('messages.video_title_placeholder') ?? 'Write a short engaging caption with #hashtags...' }}" required></textarea>
+            </div>
+
+            <!-- Sound Title (Optional) -->
+            <div class="mb-3">
+                <label class="form-label text-white small fw-bold">{{ __('messages.clip_sound_title') ?? 'Sound / Music Title (Optional)' }}</label>
+                <input type="text" name="sound_title" class="form-control bg-dark text-white border-secondary" placeholder="e.g. Original Audio • Artist / Track">
+            </div>
+
+            <!-- Custom Cover Thumbnail (Optional) -->
+            <div class="mb-4">
+                <label class="form-label text-white small fw-bold">{{ __('messages.clip_thumbnail_optional') ?? 'Custom Cover Thumbnail (Optional)' }}</label>
+                <input type="file" name="video_thumbnail" accept="image/*" class="form-control bg-dark text-white border-secondary">
+            </div>
+
+            <!-- Submit Button & Spinner -->
+            <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-3" id="cancel-clip-upload">{{ __('messages.cancel') ?? 'Cancel' }}</button>
+                <button type="submit" class="btn btn-sm btn-danger rounded-pill px-4 fw-bold" id="submit-clip-btn">
+                    <span class="normal-text"><i class="fa fa-cloud-upload-alt me-1"></i> {{ __('messages.publish') ?? 'Publish Clip' }}</span>
+                    <span class="loading-text" style="display: none;"><i class="fa fa-spinner fa-spin me-1"></i> Uploading...</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endauth
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const container = document.getElementById('clips-container');
+    if (!container) return;
+
     const loadingEl = document.getElementById('clips-loading');
     let nextPageUrl = '{{ $activities->nextPageUrl() }}';
     let isLoading = false;
+    const CSRF_TOKEN = '{{ csrf_token() }}';
 
-    // Intersection Observer for playing/pausing videos
+    // Track viewed clips in this session to prevent spamming view counters
+    const viewedClipsInSession = new Set();
+    let currentActiveClipTimer = null;
+
+    // LocalStorage Mute Preference
+    let isGlobalMuted = localStorage.getItem('clips_muted') !== 'false';
+
+    function applyMuteState(isMuted) {
+        isGlobalMuted = isMuted;
+        localStorage.setItem('clips_muted', isMuted ? 'true' : 'false');
+        
+        document.querySelectorAll('.reel-video').forEach(v => {
+            v.muted = isMuted;
+        });
+
+        document.querySelectorAll('.reel-item').forEach(el => {
+            const iconMute = el.querySelector('.icon-mute');
+            const iconUnmute = el.querySelector('.icon-unmute');
+            if (iconMute && iconUnmute) {
+                if (isMuted) {
+                    iconMute.style.display = 'block';
+                    iconUnmute.style.display = 'none';
+                } else {
+                    iconMute.style.display = 'none';
+                    iconUnmute.style.display = 'block';
+                }
+            }
+        });
+    }
+
+    // View Tracking API caller (fires after 2.5s)
+    function recordClipView(statusId, itemElement) {
+        if (!statusId || viewedClipsInSession.has(statusId)) return;
+        viewedClipsInSession.add(statusId);
+
+        fetch('{{ route('clips.view') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': CSRF_TOKEN,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ status_id: statusId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.views_count !== undefined && itemElement) {
+                const countEl = itemElement.querySelector('.view-count-text');
+                if (countEl) {
+                    countEl.textContent = Number(data.views_count).toLocaleString();
+                }
+            }
+        })
+        .catch(err => console.debug('View record err:', err));
+    }
+
+    // Smart Preload Helper: Only preload current and immediate next sibling
+    function updateVideoPreloads(activeItem) {
+        if (!activeItem) return;
+        
+        const activeVideo = activeItem.querySelector('.reel-video');
+        if (activeVideo && activeVideo.getAttribute('preload') !== 'auto') {
+            activeVideo.setAttribute('preload', 'auto');
+        }
+
+        const nextItem = activeItem.nextElementSibling;
+        if (nextItem) {
+            const nextVideo = nextItem.querySelector('.reel-video');
+            if (nextVideo && nextVideo.getAttribute('preload') !== 'auto') {
+                nextVideo.setAttribute('preload', 'auto');
+            }
+        }
+    }
+
+    function triggerHeartPop(item) {
+        const popContainer = item.querySelector('.reel-heart-pop-container');
+        if (popContainer) {
+            popContainer.classList.remove('animate-pop');
+            void popContainer.offsetWidth; // Trigger reflow
+            popContainer.classList.add('animate-pop');
+        }
+    }
+
+    function toggleClipLike(statusId, type, item) {
+        const btn = item.querySelector('.toggle-reaction');
+        if (!btn) return;
+
+        const countSpan = btn.closest('.reel-action-wrapper')?.querySelector('.reaction-count');
+        let currentCount = countSpan ? (parseInt(countSpan.textContent) || 0) : 0;
+        const isActive = btn.classList.contains('active');
+
+        if (isActive) {
+            btn.classList.remove('active');
+            if (countSpan) countSpan.textContent = Math.max(0, currentCount - 1);
+        } else {
+            btn.classList.add('active');
+            if (countSpan) countSpan.textContent = currentCount + 1;
+        }
+
+        fetch('{{ route('reaction.toggle') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': CSRF_TOKEN
+            },
+            body: JSON.stringify({
+                id: btn.dataset.id,
+                type: type || 'clips',
+                reaction: 'like'
+            })
+        }).catch(err => console.error(err));
+    }
+
+    // Intersection Observer for playing/pausing videos and triggering view counter
     const videoObserverOptions = {
         root: container,
         rootMargin: '0px',
-        threshold: 0.6 // 60% of the video must be visible
+        threshold: 0.6
     };
 
     const videoObserver = new IntersectionObserver((entries) => {
@@ -515,26 +888,45 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!video) return;
 
             if (entry.isIntersecting) {
+                video.muted = isGlobalMuted;
                 video.play().then(() => {
                     item.classList.remove('is-paused');
                 }).catch(e => {
-                    // Autoplay prevented, show paused state
-                    item.classList.add('is-paused');
-                    console.log('Autoplay prevented:', e);
+                    // Fallback to muted autoplay if unmuted was blocked
+                    video.muted = true;
+                    video.play().then(() => {
+                        item.classList.remove('is-paused');
+                        applyMuteState(true);
+                    }).catch(err => {
+                        item.classList.add('is-paused');
+                    });
                 });
 
-                // Track active reel details!
+                // Track active reel details
                 const activeTpId = item.dataset.tpId;
+                const statusId = item.dataset.id;
                 container.dataset.activeTpId = activeTpId;
-                container.dataset.activeStatusId = item.dataset.id;
+                container.dataset.activeStatusId = statusId;
                 
-                // Update URL hash to reflect the active clip
-                const clipId = item.dataset.id;
-                if (clipId && window.location.hash !== '#' + clipId) {
-                    history.replaceState(null, '', '/clips#' + clipId);
+                // Update URL hash without jumping
+                if (statusId && window.location.hash !== '#' + statusId) {
+                    history.replaceState(null, '', '/clips#' + statusId);
                 }
 
-                // If comments sidebar is active, dynamically load comments for the newly active clip!
+                // Preload current & next video
+                updateVideoPreloads(item);
+
+                // View Counter Timer: Trigger view after 2.5s of continuous watching
+                if (currentActiveClipTimer) {
+                    clearTimeout(currentActiveClipTimer);
+                }
+                currentActiveClipTimer = setTimeout(() => {
+                    if (container.dataset.activeStatusId === statusId) {
+                        recordClipView(statusId, item);
+                    }
+                }, 2500);
+
+                // Sync comments sidebar if open
                 const sidebar = document.getElementById('clips-comments-sidebar');
                 if (sidebar && sidebar.classList.contains('active')) {
                     loadClipsComments(activeTpId);
@@ -548,16 +940,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function observeVideos() {
         document.querySelectorAll('.reel-item').forEach(item => {
-            // Unobserve first to prevent duplicates
             videoObserver.unobserve(item);
             videoObserver.observe(item);
             
             const video = item.querySelector('.reel-video');
-            if(video && !item.dataset.boundEvents) {
+            if (video && !item.dataset.boundEvents) {
                 item.dataset.boundEvents = 'true';
                 
-                // Add click to play/pause
-                video.addEventListener('click', () => {
+                // Click to play/pause
+                video.addEventListener('click', (e) => {
                     if (video.paused) {
                         video.play();
                         item.classList.remove('is-paused');
@@ -567,43 +958,57 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
 
+                // Double click / Double tap to Like
+                let lastTap = 0;
+                item.addEventListener('click', (e) => {
+                    const now = Date.now();
+                    const tapGap = now - lastTap;
+                    if (tapGap < 350 && tapGap > 0) {
+                        e.preventDefault();
+                        triggerHeartPop(item);
+                        const likeBtn = item.querySelector('.toggle-reaction');
+                        if (likeBtn && !likeBtn.classList.contains('active')) {
+                            toggleClipLike(item.dataset.id, 'clips', item);
+                        }
+                    }
+                    lastTap = now;
+                });
+
                 // Progress Bar Update
                 const progressBar = item.querySelector('.reel-progress-filled');
                 video.addEventListener('timeupdate', () => {
-                    if (video.duration) {
+                    if (video.duration && progressBar) {
                         const percent = (video.currentTime / video.duration) * 100;
                         progressBar.style.width = percent + '%';
                     }
                 });
 
+                // Seekable progress bar click
+                const progressContainer = item.querySelector('.reel-progress');
+                if (progressContainer) {
+                    progressContainer.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const rect = progressContainer.getBoundingClientRect();
+                        const clickX = e.clientX - rect.left;
+                        const percent = Math.max(0, Math.min(1, clickX / rect.width));
+                        if (video.duration) {
+                            video.currentTime = percent * video.duration;
+                        }
+                    });
+                }
+
                 // Mute Toggle Logic
                 const muteBtn = item.querySelector('.reel-mute-toggle');
                 if (muteBtn) {
                     muteBtn.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Prevent play/pause toggle
-                        
-                        // Toggle global mute state for all clips
-                        const isMuted = !video.muted;
-                        
-                        document.querySelectorAll('.reel-video').forEach(v => {
-                            v.muted = isMuted;
-                        });
-
-                        document.querySelectorAll('.reel-item').forEach(el => {
-                            const iconMute = el.querySelector('.icon-mute');
-                            const iconUnmute = el.querySelector('.icon-unmute');
-                            if (isMuted) {
-                                iconMute.style.display = 'block';
-                                iconUnmute.style.display = 'none';
-                            } else {
-                                iconMute.style.display = 'none';
-                                iconUnmute.style.display = 'block';
-                            }
-                        });
+                        e.stopPropagation();
+                        applyMuteState(!isGlobalMuted);
                     });
                 }
             }
         });
+
+        applyMuteState(isGlobalMuted);
     }
 
     observeVideos();
@@ -615,10 +1020,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const clipId = hash.substring(1);
             const targetItem = document.querySelector('.reel-item[data-id="' + clipId + '"]');
             if (targetItem) {
-                // Temporarily disable smooth scroll for instant jump
                 container.style.scrollBehavior = 'auto';
                 targetItem.scrollIntoView({ block: 'start' });
-                // Restore smooth scroll after a brief delay
                 setTimeout(() => {
                     container.style.scrollBehavior = 'smooth';
                 }, 100);
@@ -628,7 +1031,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return false;
     }
 
-    // Try to scroll to hash clip on initial load
     scrollToHashClip();
 
     // Infinite Scroll Observer
@@ -646,7 +1048,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function observeSentinel() {
         const items = document.querySelectorAll('.reel-item');
         if (items.length > 0) {
-            // Observe the last item
             sentinelObserver.disconnect();
             sentinelObserver.observe(items[items.length - 1]);
         }
@@ -658,7 +1059,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!nextPageUrl) return;
         
         isLoading = true;
-        loadingEl.style.display = 'block';
+        if (loadingEl) loadingEl.style.display = 'block';
 
         fetch(nextPageUrl, {
             headers: {
@@ -672,8 +1073,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 nextPageUrl = data.next_page_url;
                 observeVideos();
                 observeSentinel();
-
-                // After loading more clips, check if we need to scroll to hash target
                 scrollToHashClip();
             } else {
                 nextPageUrl = null;
@@ -682,77 +1081,51 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(err => console.error(err))
         .finally(() => {
             isLoading = false;
-            loadingEl.style.display = 'none';
+            if (loadingEl) loadingEl.style.display = 'none';
         });
     }
 
-    // Toggle Reaction Action
+    // Reaction Button Click Delegation
     container.addEventListener('click', function(e) {
         const btn = e.target.closest('.toggle-reaction');
         if (!btn) return;
         
-        const sid = btn.dataset.id;
-        const type = btn.dataset.type;
-        const countSpan = btn.closest('.reel-action-wrapper').querySelector('.reaction-count');
-        let currentCount = parseInt(countSpan.textContent) || 0;
-        
-        const isActive = btn.classList.contains('active');
-        
-        if (isActive) {
-            btn.classList.remove('active');
-            countSpan.textContent = Math.max(0, currentCount - 1);
-        } else {
-            btn.classList.add('active');
-            countSpan.textContent = currentCount + 1;
-        }
+        const item = btn.closest('.reel-item');
+        if (!item) return;
 
-        fetch('{{ route('reaction.toggle') }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                id: sid,
-                type: type,
-                reaction: 'like'
-            })
-        }).catch(err => console.error(err));
+        toggleClipLike(item.dataset.id, 'clips', item);
     });
 
-    // Toggle Save Action
+    // Save Button Click Delegation
     container.addEventListener('click', function(e) {
         const btn = e.target.closest('.toggle-save');
         if (!btn) return;
         
         const sid = btn.dataset.id;
-        const countSpan = btn.closest('.reel-action-wrapper').querySelector('.save-count');
-        let currentCount = parseInt(countSpan.textContent) || 0;
-        
+        const countSpan = btn.closest('.reel-action-wrapper')?.querySelector('.save-count');
+        let currentCount = countSpan ? (parseInt(countSpan.textContent) || 0) : 0;
         const isActive = btn.classList.contains('active');
         
         if (isActive) {
             btn.classList.remove('active');
-            countSpan.textContent = Math.max(0, currentCount - 1);
+            if (countSpan) countSpan.textContent = Math.max(0, currentCount - 1);
         } else {
             btn.classList.add('active');
-            countSpan.textContent = currentCount + 1;
+            if (countSpan) countSpan.textContent = currentCount + 1;
         }
 
         fetch('{{ route('clips.save.toggle') }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-CSRF-TOKEN': CSRF_TOKEN,
                 'Accept': 'application/json'
             },
-            body: JSON.stringify({
-                status_id: sid
-            })
+            body: JSON.stringify({ status_id: sid })
         }).catch(err => console.error(err));
     });
 
-    // Share Action
+    // Share Button Click Delegation
     container.addEventListener('click', function(e) {
         const btn = e.target.closest('.share-reel');
         if (!btn) return;
@@ -770,7 +1143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Report Button (top header)
+    // Report Clip Button
     const reportBtn = document.getElementById('btn-report-clip');
     if (reportBtn) {
         reportBtn.addEventListener('click', function() {
@@ -785,7 +1158,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Load comments helper
+    // Comments Sidebar Logic
+    const sidebar = document.getElementById('clips-comments-sidebar');
+    const closeBtn = document.getElementById('close-comments-sidebar');
+    
     function loadClipsComments(tpId) {
         const placeholder = document.getElementById('clips-comments-placeholder');
         if (!placeholder) return;
@@ -798,24 +1174,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Toggle comments sidebar
-    const sidebar = document.getElementById('clips-comments-sidebar');
-    const closeBtn = document.getElementById('close-comments-sidebar');
-    
     if (closeBtn && sidebar) {
         closeBtn.addEventListener('click', () => {
             sidebar.classList.remove('active');
         });
     }
 
-    // Comments click delegation
     container.addEventListener('click', function(e) {
         const btn = e.target.closest('.open-comments');
-        if (!btn) return;
+        if (!btn || !sidebar) return;
         
         e.preventDefault();
-        if (!sidebar) return;
-
         const tpId = btn.dataset.tpId;
         const isActive = sidebar.classList.contains('active');
         
@@ -828,24 +1197,103 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Observe comment list changes to update the count badge
-    const commentCountObserver = new MutationObserver(() => {
-        const activeTpId = container.dataset.activeTpId;
-        if (!activeTpId) return;
-        const item = document.querySelector(`.reel-item[data-tp-id="${activeTpId}"]`);
-        if (!item) return;
-        const placeholder = document.getElementById('clips-comments-placeholder');
-        if (!placeholder) return;
-        const commentElements = placeholder.querySelectorAll('[class*="coment"]');
-        const countSpan = item.querySelector('.open-comments').nextElementSibling;
-        if (countSpan) {
-            countSpan.textContent = commentElements.length;
+    // Keyboard Navigation: Up/Down arrows, Space, M, L
+    window.addEventListener('keydown', function(e) {
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
+
+        const currentActiveId = container.dataset.activeStatusId;
+        const currentItem = document.querySelector('.reel-item[data-id="' + currentActiveId + '"]');
+
+        if (e.key === 'ArrowDown' || e.key === 'j') {
+            e.preventDefault();
+            if (currentItem && currentItem.nextElementSibling) {
+                currentItem.nextElementSibling.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        } else if (e.key === 'ArrowUp' || e.key === 'k') {
+            e.preventDefault();
+            if (currentItem && currentItem.previousElementSibling) {
+                currentItem.previousElementSibling.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        } else if (e.key === ' ' || e.code === 'Space') {
+            e.preventDefault();
+            if (currentItem) {
+                const video = currentItem.querySelector('.reel-video');
+                if (video) {
+                    if (video.paused) {
+                        video.play();
+                        currentItem.classList.remove('is-paused');
+                    } else {
+                        video.pause();
+                        currentItem.classList.add('is-paused');
+                    }
+                }
+            }
+        } else if (e.key === 'm' || e.key === 'M') {
+            e.preventDefault();
+            applyMuteState(!isGlobalMuted);
+        } else if (e.key === 'l' || e.key === 'L') {
+            e.preventDefault();
+            if (currentItem) {
+                triggerHeartPop(currentItem);
+                toggleClipLike(currentItem.dataset.id, 'clips', currentItem);
+            }
         }
     });
 
-    const commentsPlaceholder = document.getElementById('clips-comments-placeholder');
-    if (commentsPlaceholder) {
-        commentCountObserver.observe(commentsPlaceholder, { childList: true, subtree: true });
+    // Upload Clip Modal Handlers
+    const uploadBtn = document.getElementById('btn-open-clip-upload');
+    const uploadModalBackdrop = document.getElementById('clip-upload-modal-backdrop');
+    const closeUploadBtn = document.getElementById('close-clip-upload');
+    const cancelUploadBtn = document.getElementById('cancel-clip-upload');
+    const videoFileInput = document.getElementById('modal-clip-video-input');
+    const videoPreviewWrap = document.getElementById('modal-video-preview-wrap');
+    const videoPreviewEl = document.getElementById('modal-video-preview');
+    const videoDurationEl = document.getElementById('modal-video-duration');
+    const uploadForm = document.getElementById('clip-upload-form');
+    const submitBtn = document.getElementById('submit-clip-btn');
+
+    if (uploadBtn && uploadModalBackdrop) {
+        uploadBtn.addEventListener('click', () => {
+            uploadModalBackdrop.classList.add('is-open');
+        });
+        const closeModal = () => uploadModalBackdrop.classList.remove('is-open');
+        if (closeUploadBtn) closeUploadBtn.addEventListener('click', closeModal);
+        if (cancelUploadBtn) cancelUploadBtn.addEventListener('click', closeModal);
+        uploadModalBackdrop.addEventListener('click', (e) => {
+            if (e.target === uploadModalBackdrop) closeModal();
+        });
+    }
+
+    if (videoFileInput && videoPreviewWrap && videoPreviewEl) {
+        videoFileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                const fileUrl = URL.createObjectURL(file);
+                videoPreviewEl.src = fileUrl;
+                videoPreviewWrap.style.display = 'block';
+
+                videoPreviewEl.onloadedmetadata = function() {
+                    const duration = Math.round(videoPreviewEl.duration);
+                    const mins = Math.floor(duration / 60);
+                    const secs = duration % 60;
+                    if (videoDurationEl) {
+                        videoDurationEl.textContent = `Duration: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                    }
+                };
+            } else {
+                videoPreviewWrap.style.display = 'none';
+            }
+        });
+    }
+
+    if (uploadForm && submitBtn) {
+        uploadForm.addEventListener('submit', function() {
+            submitBtn.disabled = true;
+            const normal = submitBtn.querySelector('.normal-text');
+            const loading = submitBtn.querySelector('.loading-text');
+            if (normal) normal.style.display = 'none';
+            if (loading) loading.style.display = 'inline-block';
+        });
     }
 });
 </script>

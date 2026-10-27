@@ -1,5 +1,21 @@
 @php
-    $topUsers = \App\Models\User::orderBy('pts', 'desc')->limit(5)->get();
+    $config = [];
+    if (!empty($widget?->o_valuer)) {
+        if (is_array($widget->o_valuer)) {
+            $config = $widget->o_valuer;
+        } else {
+            $decoded = json_decode((string) $widget->o_valuer, true);
+            $config = is_array($decoded) ? $decoded : [];
+        }
+    }
+
+    $limit = (int) ($config['limit'] ?? 5);
+    $showRanks = isset($config['show_ranks']) ? (bool) $config['show_ranks'] : true;
+    $showPoints = isset($config['show_points']) ? (bool) $config['show_points'] : true;
+    $showButton = !empty($config['show_button']);
+    $buttonText = !empty($config['button_text']) ? $config['button_text'] : (__('messages.leaderboard') ?? 'Leaderboard');
+
+    $topUsers = \App\Models\User::orderBy('pts', 'desc')->limit($limit)->get();
 @endphp
 
 <div class="card border-0 shadow-sm rounded-4 mb-4">
@@ -15,17 +31,19 @@
                 @endphp
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="d-flex align-items-center justify-content-center fw-bold text-muted" style="width: 20px;">
-                            @if($index === 0)
-                                <i class="fa fa-trophy text-warning fs-5" title="1st"></i>
-                            @elseif($index === 1)
-                                <i class="fa fa-trophy text-secondary" style="color: #c0c0c0 !important; font-size: 1.1rem;" title="2nd"></i>
-                            @elseif($index === 2)
-                                <i class="fa fa-trophy text-danger" style="color: #cd7f32 !important; font-size: 1.1rem;" title="3rd"></i>
-                            @else
-                                <span class="small">{{ $index + 1 }}</span>
-                            @endif
-                        </div>
+                        @if($showRanks)
+                            <div class="d-flex align-items-center justify-content-center fw-bold text-muted" style="width: 20px;">
+                                @if($index === 0)
+                                    <i class="fa fa-trophy text-warning fs-5" title="1st"></i>
+                                @elseif($index === 1)
+                                    <i class="fa fa-trophy text-secondary" style="color: #c0c0c0 !important; font-size: 1.1rem;" title="2nd"></i>
+                                @elseif($index === 2)
+                                    <i class="fa fa-trophy text-danger" style="color: #cd7f32 !important; font-size: 1.1rem;" title="3rd"></i>
+                                @else
+                                    <span class="small">{{ $index + 1 }}</span>
+                                @endif
+                            </div>
+                        @endif
                         <a href="{{ $userProfileUrl }}" class="position-relative">
                             <img src="{{ $user->avatarUrl() }}" class="rounded-circle border" width="38" height="38" alt="{{ $user->username }}">
                             @if($isOnline)
@@ -36,11 +54,18 @@
                             <h6 class="mb-0 fw-bold small">
                                 <a href="{{ $userProfileUrl }}" class="text-dark text-decoration-none hover-primary">{{ $user->username }}</a>
                             </h6>
-                            <small class="text-muted smaller">{{ number_format($user->pts) }} {{ __('messages.pts') }}</small>
+                            @if($showPoints)
+                                <small class="text-muted smaller">{{ number_format($user->pts) }} {{ __('messages.pts') }}</small>
+                            @endif
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
+        @if($showButton)
+            <a href="{{ url('/badges') }}" class="btn btn-outline-primary btn-sm rounded-pill w-100 mt-3 fw-bold">
+                {{ $buttonText }}
+            </a>
+        @endif
     </div>
 </div>

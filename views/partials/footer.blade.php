@@ -4,6 +4,9 @@
             <a href="{{ route('sitemap.xml') }}" class="text-decoration-none text-muted mx-3">
                 <i class="fa-solid fa-sitemap me-1"></i> {{ __('messages.sitemap') }}
             </a>
+            <a href="{{ route('help.index') }}" class="text-decoration-none text-muted mx-3">
+                <i class="fa-solid fa-circle-question me-1"></i> {{ __('help.help_center') ?? 'Help Center' }}
+            </a>
             <a href="{{ route('developer.index') }}" class="text-decoration-none text-muted mx-3">
                 <i class="fa-solid fa-code me-1"></i> {{ __('messages.developers') }}
             </a>
@@ -12,6 +15,9 @@
             </a>
             <a href="{{ route('terms') }}" class="text-decoration-none text-muted mx-3">
                 <i class="fa-solid fa-file-contract me-1"></i> {{ __('messages.terms_conditions') }}
+            </a>
+            <a href="{{ route('refund') }}" class="text-decoration-none text-muted mx-3">
+                <i class="fa-solid fa-rotate-left me-1"></i> {{ __('messages.refund_policy') }}
             </a>
         </div>
         <p class="text-muted small mb-1">&copy; {{ date('Y') }} {{ $site_settings->titer ?? 'MyAds' }}. {{ __('messages.all_rights_reserved') }}</p>

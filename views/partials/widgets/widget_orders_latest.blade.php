@@ -1,11 +1,28 @@
 @php
+    $config = [];
+    if (!empty($widget?->o_valuer)) {
+        if (is_array($widget->o_valuer)) {
+            $config = $widget->o_valuer;
+        } else {
+            $decoded = json_decode((string) $widget->o_valuer, true);
+            $config = is_array($decoded) ? $decoded : [];
+        }
+    }
+
+    $limit = (int) ($config['limit'] ?? 5);
+    $showBudget = isset($config['show_budget']) ? (bool) $config['show_budget'] : true;
+    $showOffers = isset($config['show_offers']) ? (bool) $config['show_offers'] : true;
+    $showDate = isset($config['show_date']) ? (bool) $config['show_date'] : true;
+    $showButton = isset($config['show_button']) ? (bool) $config['show_button'] : true;
+    $buttonText = !empty($config['button_text']) ? $config['button_text'] : __('messages.view_all_orders');
+
     $latestOrders = \App\Models\OrderRequest::query()
         ->with('user')
         ->withCount([
             'offers as offers_count' => fn ($query) => $query->marketplaceVisible(),
         ])
         ->orderBy('date', 'desc')
-        ->limit(5)
+        ->limit($limit)
         ->get();
 @endphp
 
@@ -34,7 +51,16 @@
                             <a href="{{ route('orders.show', $order) }}" class="text-dark text-decoration-none hover-primary">{{ $order->title }}</a>
                         </h6>
                         <small class="text-muted smaller d-block text-truncate">
-                            {{ $order->displayCategory() }} &bull; {{ $order->displayBudget() }} &bull; {{ __('messages.offers') }}: {{ $order->offers_count }}
+                            {{ $order->displayCategory() }}
+                            @if($showBudget)
+                                &bull; {{ $order->displayBudget() }}
+                            @endif
+                            @if($showOffers)
+                                &bull; {{ __('messages.offers') }}: {{ $order->offers_count }}
+                            @endif
+                            @if($showDate)
+                                &bull; {{ \Carbon\Carbon::createFromTimestamp($order->date)->diffForHumans() }}
+                            @endif
                         </small>
                     </div>
                 </div>
@@ -42,8 +68,10 @@
                 <p class="text-center text-muted small my-3">{{ __('messages.no_orders_found') }}</p>
             @endforelse
         </div>
-        <a href="{{ route('orders.index') }}" class="btn btn-outline-primary btn-sm rounded-pill w-100 mt-3 fw-bold">
-            {{ __('messages.view_all_orders') }}
-        </a>
+        @if($showButton)
+            <a href="{{ route('orders.index') }}" class="btn btn-outline-primary btn-sm rounded-pill w-100 mt-3 fw-bold">
+                {{ $buttonText }}
+            </a>
+        @endif
     </div>
 </div>

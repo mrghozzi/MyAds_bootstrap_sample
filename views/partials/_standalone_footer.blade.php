@@ -49,11 +49,12 @@
 <footer class="standalone-footer">
     <div class="footer-links">
         <a href="{{ url('/sitemap.xml') }}"><i class="fa-solid fa-sitemap"></i> {{ __('messages.sitemap') ?? 'Sitemap' }}</a>
+        <a href="{{ route('help.index') }}"><i class="fa-solid fa-circle-question"></i> {{ __('help.help_center') ?? 'Help Center' }}</a>
         <a href="{{ url('/developer') }}"><i class="fa-solid fa-code"></i> {{ __('messages.developers') ?? 'Developers' }}</a>
         <a href="{{ url('/privacy') }}"><i class="fa-solid fa-shield-halved"></i> {{ __('messages.privacy_policy') ?? 'Privacy Policy' }}</a>
         <a href="{{ url('/terms') }}"><i class="fa-solid fa-file-contract"></i> {{ __('messages.terms_conditions') ?? 'Terms & Conditions' }}</a>
         <a href="{{ url('/refund') }}"><i class="fa-solid fa-arrow-rotate-left"></i> {{ __('messages.refund_policy') ?? 'Refund Policy' }}</a>
     </div>
     <p>&copy; {{ date('Y') }} {{ $site_settings->titer ?? 'MyAds' }}. {{ __('messages.all_rights_reserved') ?? 'All rights reserved.' }}</p>
-    <p style="margin-top: 10px; font-size: 0.85rem; opacity: 0.7;">Powered by <strong>MyAds</strong> | v{{ \App\Support\SystemVersion::CURRENT ?? '4.3.8' }}</p>
+    <p style="margin-top: 10px; font-size: 0.85rem; opacity: 0.7;">Powered by <strong>MyAds</strong> | {{ \App\Support\SystemVersion::tag() }}</p>
 </footer>

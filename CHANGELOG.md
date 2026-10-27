@@ -2,6 +2,41 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.4.9] - 2026-10-27
+
+### Added
+- **Full Compatibility with MyAds Core v4.6.4 Release Ecosystem:**
+  - **Knowledge Base & Help Center (`views/help/*`):**
+    - Integrated complete `/help` views (`index.blade.php`, `category.blade.php`, `article.blade.php`, `search.blade.php`) with interactive helpfulness voting (`POST /help/vote`), progress bar animations, responsive sidebar navigation, breadcrumbs, and real-time query search.
+  - **Autonomous Dedicated Support Forum (`views/support/*`):**
+    - Added full `/support` views (`index.blade.php`, `category.blade.php`, `create.blade.php`, `show.blade.php`) featuring category showcase cards, live status filter tabs (All, Solved, Unsolved), debounced keyword search, staff badges (`is_staff`), and best answer verification.
+  - **Technical Support Tickets System (`views/tickets/*`):**
+    - Added direct member support ticketing views (`index.blade.php`, `create.blade.php`, `show.blade.php`) with department and urgency priority pills, secure attachment downloads, conversation history timeline, and self-service closure.
+  - **Modern Developer Platform & REST API Ecosystem (`views/developer/*`):**
+    - Integrated Personal Access Tokens management (`views/developer/tokens/index.blade.php`) with 1-click clipboard copy.
+    - Added interactive in-browser API Playground (`views/developer/playground.blade.php`) with pre-seeded endpoint collection and bearer token injection.
+    - Added Public App Directory views (`views/developer/directory/index.blade.php`, `views/developer/directory/show.blade.php`) with category filters.
+    - Added App Telemetry Analytics dashboard (`views/developer/apps/analytics.blade.php`), Live Telemetry Logs inspector (`views/developer/apps/logs.blade.php`), and Webhook event dispatcher manager (`views/developer/apps/webhooks.blade.php`).
+    - Integrated auto-resizing iframe embed widgets (`views/developer/widgets/follow.blade.php`, `views/developer/widgets/profile.blade.php`, `views/developer/widgets/content.blade.php`).
+    - Added Developer App Tabs navigation partial (`views/developer/partials/app_tabs.blade.php`) and updated developer sidebar (`views/developer/partials/nav.blade.php`).
+  - **Missing AJAX & Workspace Partials:**
+    - Added Portal Live Search Results partial (`views/portal/partials/search_results.blade.php`).
+    - Added Member Points History & Active Sessions partials (`views/profile/partials/history_list.blade.php`, `views/profile/partials/sessions_list.blade.php`).
+    - Added Digital Store Products Grid partial (`views/store/partials/products_grid.blade.php`).
+    - Added Unified Advertising Workspace scripts and styles (`views/ads/partials/workspace_scripts.blade.php`, `views/ads/partials/workspace_styles.blade.php`).
+
+### Fixed & Improved
+- **Universal Widget Customizer Engine Across All 12 Native Widgets:**
+  - Modernized `views/partials/widgets/widget_landing_footer.blade.php` to dynamically unpack `$widget->o_valuer` JSON config with toggles for Help Center, Sitemap, Developers, Privacy Policy, Terms, Refund Policy, social icons, and customizable copyright/tagline.
+  - Upgraded all 11 native widgets (`widget_members`, `widget_online_members`, `widget_forum_latest`, `widget_news_latest`, `widget_recent_comments`, `widget_stats_box`, `widget_points_leaderboard`, `widget_store_latest`, `widget_directory_latest`, `widget_orders_latest`, `widget_badges_showcase`, `widget_quests_daily`) to respect admin customizer options.
+- **Global Navigation & Footers Alignment:**
+  - Integrated Help Center (`route('help.index')`), Support Forum (`route('support.index')`), and Support Tickets (`route('tickets.index')`) into desktop sidebar (`sidemenu.blade.php`) and mobile sidebar (`mobile_sidebar.blade.php`).
+  - Standardized global footers (`footer.blade.php`, `_standalone_footer.blade.php`) with Help Center, Refund Policy, and dynamic system version tags.
+  - Updated `master.blade.php` to use the unified footer partial.
+- **Metadata & Versioning:**
+  - Bumped theme version to `2.4.9`.
+  - Bumped minimum MyAds core version requirement to `4.6.4`.
+
 ## [2.4.8] - 2026-10-19
 
 ### Added

@@ -411,11 +411,7 @@
         </div>
     </div>
 
-    <footer class="bg-body-tertiary border-top py-4 mt-auto">
-        <div class="container text-center text-muted">
-            <p class="mb-0 small">&copy; {{ date('Y') }} {{ $site_settings->titer ?? 'MyAds' }}. {{ __('messages.all_rights_reserved') }}</p>
-        </div>
-    </footer>
+    @include('theme::partials.footer')
 
     <!-- Bootstrap 5.3.3 Bundle JS -->
     <script src="{{ theme_asset('js/bootstrap5.bundle.min.js') }}"></script>

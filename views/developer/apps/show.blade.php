@@ -42,6 +42,8 @@
                 </div>
             @endif
 
+            @include('theme::developer.partials.app_tabs', ['app' => $app, 'activeTab' => 'general'])
+
             <div class="card border-0 shadow-sm rounded-4 dev-panel">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">

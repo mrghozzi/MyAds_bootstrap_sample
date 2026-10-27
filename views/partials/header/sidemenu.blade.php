@@ -90,6 +90,26 @@
                 </a>
             </li>
         @endauth
+        <li class="nav-item">
+            <a href="{{ route('help.index') }}" class="nav-link py-2.5 px-3 rounded-3 d-flex align-items-center gap-3 {{ Request::is('help*') ? 'active' : 'hover-bg-light' }}">
+                <i class="fa fa-circle-question fs-5 text-muted-icon"></i>
+                <span class="fw-semibold">{{ __('help.help_center') ?? 'Help Center' }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('support.index') }}" class="nav-link py-2.5 px-3 rounded-3 d-flex align-items-center gap-3 {{ Request::is('support*') ? 'active' : 'hover-bg-light' }}">
+                <i class="fa fa-life-ring fs-5 text-muted-icon"></i>
+                <span class="fw-semibold">{{ __('support.support_forum') ?? 'Support Forum' }}</span>
+            </a>
+        </li>
+        @auth
+            <li class="nav-item">
+                <a href="{{ route('tickets.index') }}" class="nav-link py-2.5 px-3 rounded-3 d-flex align-items-center gap-3 {{ Request::is('tickets*') ? 'active' : 'hover-bg-light' }}">
+                    <i class="fa fa-ticket fs-5 text-muted-icon"></i>
+                    <span class="fw-semibold">{{ __('support.support_tickets') ?? 'My Tickets' }}</span>
+                </a>
+            </li>
+        @endauth
 
         @if(isset($site_menus) && count($site_menus) > 0)
             <li class="my-3 border-top border-light-dark"></li>

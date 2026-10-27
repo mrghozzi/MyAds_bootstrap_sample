@@ -50,6 +50,11 @@
         @auth
         <li class="menu-item {{ Request::is('ads*', 'promote*') ? 'active' : '' }}"><a class="menu-item-link text-tooltip-tfr" href="{{ route('ads.index') }}">@include('theme::partials.header.menu_icon', ['icon' => 'megaphone']){{ __('messages.advertising') }}</a></li>
         @endauth
+        <li class="menu-item {{ Request::is('help*') ? 'active' : '' }}"><a class="menu-item-link text-tooltip-tfr" href="{{ route('help.index') }}"><i class="fa-solid fa-circle-question" style="font-size: 18px; width: 20px; text-align: center; color: #615dfa; margin-right: 10px;"></i>{{ __('help.help_center') ?? 'Help Center' }}</a></li>
+        <li class="menu-item {{ Request::is('support*') ? 'active' : '' }}"><a class="menu-item-link text-tooltip-tfr" href="{{ route('support.index') }}"><i class="fa-solid fa-life-ring" style="font-size: 18px; width: 20px; text-align: center; color: #23d2e2; margin-right: 10px;"></i>{{ __('support.support_forum') ?? 'Support Forum' }}</a></li>
+        @auth
+        <li class="menu-item {{ Request::is('tickets*') ? 'active' : '' }}"><a class="menu-item-link text-tooltip-tfr" href="{{ route('tickets.index') }}"><i class="fa-solid fa-ticket" style="font-size: 18px; width: 20px; text-align: center; color: #00c07f; margin-right: 10px;"></i>{{ __('support.support_tickets') ?? 'My Tickets' }}</a></li>
+        @endauth
 
     </ul>
 

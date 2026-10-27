@@ -1,5 +1,26 @@
 @php
-    $listings = \App\Models\Directory::where('statu', 1)->latest('id')->limit(5)->get();
+    $config = [];
+    if (!empty($widget?->o_valuer)) {
+        if (is_array($widget->o_valuer)) {
+            $config = $widget->o_valuer;
+        } else {
+            $decoded = json_decode((string) $widget->o_valuer, true);
+            $config = is_array($decoded) ? $decoded : [];
+        }
+    }
+
+    $limit = (int) ($config['limit'] ?? 5);
+    $categoryId = (int) ($config['category_id'] ?? 0);
+    $showCategory = isset($config['show_category']) ? (bool) $config['show_category'] : true;
+    $showDate = isset($config['show_date']) ? (bool) $config['show_date'] : true;
+    $showButton = isset($config['show_button']) ? (bool) $config['show_button'] : true;
+    $buttonText = !empty($config['button_text']) ? $config['button_text'] : __('messages.see_all');
+
+    $query = \App\Models\Directory::where('statu', 1)->latest('id');
+    if ($categoryId > 0) {
+        $query->where('cat', $categoryId);
+    }
+    $listings = $query->limit($limit)->get();
 @endphp
 
 <div class="card border-0 shadow-sm rounded-4 mb-4">
@@ -18,7 +39,13 @@
                             <a href="{{ route('directory.show', $listing->id) }}" class="text-dark text-decoration-none hover-primary">{{ $listing->name }}</a>
                         </h6>
                         <small class="text-muted smaller d-block text-truncate">
-                            {{ $listing->category?->name ?? __('messages.directory') }} &bull; {{ \Carbon\Carbon::createFromTimestamp($listing->date)->diffForHumans() }}
+                            @if($showCategory)
+                                {{ $listing->category?->name ?? __('messages.directory') }}
+                            @endif
+                            @if($showCategory && $showDate) &bull; @endif
+                            @if($showDate)
+                                {{ \Carbon\Carbon::createFromTimestamp($listing->date)->diffForHumans() }}
+                            @endif
                         </small>
                     </div>
                 </div>
@@ -26,8 +53,10 @@
                 <p class="text-center text-muted small my-3">{{ __('messages.no_listings_found') }}</p>
             @endforelse
         </div>
-        <a href="{{ route('directory.index') }}" class="btn btn-outline-primary btn-sm rounded-pill w-100 mt-3 fw-bold">
-            {{ __('messages.see_all') }}
-        </a>
+        @if($showButton)
+            <a href="{{ route('directory.index') }}" class="btn btn-outline-primary btn-sm rounded-pill w-100 mt-3 fw-bold">
+                {{ $buttonText }}
+            </a>
+        @endif
     </div>
 </div>

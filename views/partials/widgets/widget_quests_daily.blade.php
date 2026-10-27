@@ -1,10 +1,25 @@
 @php
+    $config = [];
+    if (!empty($widget?->o_valuer)) {
+        if (is_array($widget->o_valuer)) {
+            $config = $widget->o_valuer;
+        } else {
+            $decoded = json_decode((string) $widget->o_valuer, true);
+            $config = is_array($decoded) ? $decoded : [];
+        }
+    }
+
+    $period = $config['period'] ?? 'daily';
+    $showProgress = isset($config['show_progress']) ? (bool) $config['show_progress'] : true;
+    $showButtons = isset($config['show_buttons']) ? (bool) $config['show_buttons'] : true;
+
     $activeQuests = [];
     if (auth()->check()) {
-        $activeQuests = \App\Models\Quest::where('is_active', true)
-            ->where('period', 'daily')
-            ->orderBy('sort_order', 'asc')
-            ->get();
+        $query = \App\Models\Quest::where('is_active', true)->orderBy('sort_order', 'asc');
+        if ($period === 'daily') {
+            $query->where('period', 'daily');
+        }
+        $activeQuests = $query->get();
             
         $today = now()->format('Y-m-d');
         $progressMap = \App\Models\QuestProgress::where('user_id', auth()->id())
@@ -37,32 +52,32 @@
                             </span>
                             <span class="text-muted smaller fw-bold">{{ $current }}/{{ $target }}</span>
                         </div>
-                        <div class="progress" style="height: 6px;">
-                            <div class="progress-bar {{ $isCompleted ? 'bg-success' : 'bg-primary' }}" 
-                                 role="progressbar" 
-                                 style="width: {{ $percent }}%;" 
-                                 aria-valuenow="{{ $current }}" 
-                                 aria-valuemin="0" 
-                                 aria-valuemax="{{ $target }}"></div>
-                        </div>
+                        @if($showProgress)
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar {{ $isCompleted ? 'bg-success' : 'bg-primary' }}" 
+                                     role="progressbar" 
+                                     style="width: {{ $percent }}%;" 
+                                     aria-valuenow="{{ $current }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="{{ $target }}"></div>
+                            </div>
+                        @endif
                     </div>
                 @empty
-                    <p class="text-center text-muted small my-3">{{ __('messages.no_active_quests') ?? 'No active quests today.' }}</p>
+                    <p class="text-center text-muted small my-2">{{ __('messages.no_active_quests') }}</p>
                 @endforelse
             </div>
-            @if(count($activeQuests) > 0)
-                <div class="d-flex gap-2">
-                    <a class="btn btn-primary btn-sm rounded-pill flex-grow-1 fw-bold" href="/quests">
-                        {{ __('messages.all_quests') ?? 'All Quests' }}
-                    </a>
-                    <a class="btn btn-outline-secondary btn-sm rounded-pill flex-grow-1 fw-bold" href="{{ route('profile.show', ['username' => auth()->user()->username, 'tab' => 'history']) }}">
-                        {{ __('messages.history') ?? 'History' }}
-                    </a>
-                </div>
+            @if($showButtons)
+                <a class="btn btn-outline-primary btn-sm rounded-pill w-100 fw-bold" href="{{ url('/quests') }}">
+                    {{ __('messages.view_all_quests') ?? 'View All Quests' }}
+                </a>
             @endif
         @else
-            <p class="text-center text-muted small my-3">{{ __('messages.login_to_start_quests') ?? 'Login to start earning points from daily quests!' }}</p>
-            <a class="btn btn-primary btn-sm rounded-pill w-100 fw-bold" href="{{ route('login') }}">{{ __('messages.login') }}</a>
+            <div class="text-center py-3">
+                <i class="fa fa-trophy fs-2 text-warning mb-2"></i>
+                <p class="small text-muted mb-3">{{ __('messages.login_to_view_quests') ?? 'Login to complete quests and earn daily PTS points!' }}</p>
+                <a href="{{ route('login') }}" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold">{{ __('messages.login') }}</a>
+            </div>
         @endauth
     </div>
 </div>

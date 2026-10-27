@@ -1,20 +1,35 @@
+@php
+    $config = [];
+    if (!empty($widget?->o_valuer)) {
+        if (is_array($widget->o_valuer)) {
+            $config = $widget->o_valuer;
+        } else {
+            $decoded = json_decode((string) $widget->o_valuer, true);
+            $config = is_array($decoded) ? $decoded : [];
+        }
+    }
+
+    $limit = (int) ($config['limit'] ?? 5);
+    $thresholdMinutes = (int) ($config['active_threshold'] ?? 15);
+    $showStats = isset($config['show_stats']) ? (bool) $config['show_stats'] : true;
+    $showMessageBtn = isset($config['show_message_btn']) ? (bool) $config['show_message_btn'] : true;
+
+    $userId = auth()->id() ?? 0;
+    $activeThreshold = time() - ($thresholdMinutes * 60);
+    
+    $onlineUsers = \App\Models\User::where('online', '>', $activeThreshold)
+        ->where('id', '!=', $userId)
+        ->orderBy('online', 'desc')
+        ->limit($limit)
+        ->get();
+@endphp
+
 <div class="card border-0 shadow-sm rounded-4 mb-4">
     <div class="card-header bg-white py-3 border-bottom-0">
         <h6 class="fw-bold mb-0 text-dark">{{ $widget->name }}</h6>
     </div>
     <div class="card-body pt-0">
         <div class="d-flex flex-column gap-3">
-            @php
-                $userId = auth()->id() ?? 0;
-                $activeThreshold = time() - 900; // 15 minutes
-                
-                $onlineUsers = \App\Models\User::where('online', '>', $activeThreshold)
-                    ->where('id', '!=', $userId)
-                    ->orderBy('online', 'desc')
-                    ->limit(5)
-                    ->get();
-            @endphp
-
             @if($onlineUsers->isEmpty())
                 <p class="text-center text-muted mb-0"><small>{{ __('messages.no_users_online_right_now') ?? 'No users online right now.' }}</small></p>
             @else
@@ -38,13 +53,17 @@
                                         <i class="fa fa-check-circle text-primary small ms-1" title="Verified"></i>
                                     @endif
                                 </a>
-                                <a href="{{ route('messages.show', $user->username) }}" class="btn btn-light btn-sm rounded-circle shadow-sm" title="{{ __('messages.Message') }}">
-                                    <i class="fa-regular fa-envelope text-primary"></i>
-                                </a>
+                                @if($showMessageBtn)
+                                    <a href="{{ route('messages.show', $user->username) }}" class="btn btn-light btn-sm rounded-circle shadow-sm" title="{{ __('messages.Message') }}">
+                                        <i class="fa-regular fa-envelope text-primary"></i>
+                                    </a>
+                                @endif
                             </div>
-                            <div class="text-muted smaller fw-bold text-truncate">
-                                {{ __('messages.Followers') }} {{ $followersCount }} &bull; {{ __('messages.Posts') }} {{ $postsCount }}
-                            </div>
+                            @if($showStats)
+                                <div class="text-muted smaller fw-bold text-truncate">
+                                    {{ __('messages.Followers') }} {{ $followersCount }} &bull; {{ __('messages.Posts') }} {{ $postsCount }}
+                                </div>
+                            @endif
                         </div>
                     </div>
                 @endforeach

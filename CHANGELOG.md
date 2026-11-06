@@ -2,6 +2,28 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.5.0] - 2026-11-06
+
+### Added
+- **Full Compatibility with MyAds Core v4.7.0 Release Ecosystem:**
+  - **AI Support Deflection Engine:**
+    - Integrated reactive `@.superdesign` AI Support Deflection suggestion cards in `views/tickets/create.blade.php` and `views/support/create.blade.php` with 350ms debounced queries against verified Help Center guides and solved community support topics.
+  - **Cloudflare Turnstile CAPTCHA-Free Human Verification:**
+    - Added dedicated Turnstile partial `views/partials/turnstile.blade.php` with dynamic cryptographic CSP nonce injection.
+    - Integrated `<x-turnstile :form="..." />` protection across authentication and member forms:
+      - Member login (`views/auth/login.blade.php`) with `:form="'login'"`.
+      - Member registration (`views/auth/register.blade.php`) with `:form="'register'"`.
+      - Technical Support Ticket creation (`views/tickets/create.blade.php`) with `:form="'tickets'"`.
+      - Dedicated Support Forum topic creation (`views/support/create.blade.php`) with `:form="'support'"`.
+  - **Strict Nonce-Based Content-Security-Policy (CSP):**
+    - Standardized inline scripts in deflection and verification views with `nonce="{{ csp_nonce() }}"`.
+
+### Improved
+- **Theme Manifest & Versioning:**
+  - Bumped theme version to `2.5.0`.
+  - Updated minimum MyAds core version requirement to `4.7.0` (`min_myads: "4.7.0"`).
+  - Aligned maximum MyAds version boundary to `4.7.x` (`max_myads: "4.7.x"`).
+
 ## [2.4.9] - 2026-10-27
 
 ### Added

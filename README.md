@@ -1,6 +1,6 @@
 # MyAds Bootstrap Sample Theme
 
-A modern, responsive Bootstrap 5.3.3 theme designed for the **MyAds v4.6.4+** platform.
+A modern, responsive Bootstrap 5.3.3 theme designed for the **MyAds v4.7.0+** platform.
 
 ## Description
 
@@ -8,12 +8,15 @@ The Bootstrap Sample theme serves as a fully featured, clean, and highly customi
 
 ## Compatibility
 
-- **MyAds Platform:** Version `4.6.4` or higher (verified compatible with all v4.6.4 features).
+- **MyAds Platform:** Version `4.7.0` or higher (verified compatible with all v4.7.0 features).
 - **Frameworks/Libraries:** Bootstrap `5.3.3`, FontAwesome `6.x`, Vanilla JS.
 
 ## Key Features
 
-1. **Responsive Design & Dark Mode:** Fluid grids and utility classes that adapt perfectly to mobile, tablet, and desktop screens with full Light/Dark mode and Arabic RTL support.
+1. **AI Support Deflection & Cloudflare Turnstile Defense (v4.7.0):**
+   - Real-time AI support deflection suggestions on support topic (`/support/create`) and ticket creation (`/tickets/create`).
+   - Integrated Cloudflare Turnstile bot verification (`<x-turnstile :form="..." />`) with CSP nonces across login, registration, tickets, and support.
+2. **Responsive Design & Dark Mode:** Fluid grids and utility classes that adapt perfectly to mobile, tablet, and desktop screens with full Light/Dark mode and Arabic RTL support.
 2. **Superdesign Private Messaging Overhaul:**
    - Real-time chat workspace (`/messages`, `/messages/{id}`) with conversation rail, instant search, and unread badge pulse.
    - Rich message bubbles with inline image lightbox previews, formatted file chips, and encryption notice badges.

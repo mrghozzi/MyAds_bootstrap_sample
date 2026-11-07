@@ -2,6 +2,22 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.5.1] - 2026-11-07
+
+### Added
+- **Interactive Poll System (`s_type = 15` / `post_kind = 'poll'`):**
+  - Added dedicated poll template `views/partials/activity/types/poll.blade.php` with native Bootstrap 5 progress bars, vote percentages, real-time AJAX voting via `POST /polls/{poll}/vote`, and active/ended badges.
+  - Added interactive poll composer controls in `views/partials/status/add_post.blade.php` featuring dynamic options (2 to 6 options), duration selector, and validation.
+  - Added poll activity dispatching in `views/partials/activity/render.blade.php`.
+- **Portal Community Feed Navigation Tabs:**
+  - Added responsive filter tabs in `views/portal/index.blade.php` (`all`, `trending`, `me`, `my_posts`, `groups`, `saved`, `media`) for faceted feed exploration.
+
+### Fixed & Improved
+- **Null Safety in Shared Post Footer:**
+  - Hardened `$targetId` resolution in `views/partials/activity/post_footer_shared.blade.php` with null-safe operators (`$activity->related_content?->id ?? $activity->tp_id ?? $activity->id`) preventing 500 errors on member profiles for posts without forum bindings.
+- **Theme Manifest:**
+  - Bumped theme version to `2.5.1`.
+
 ## [2.5.0] - 2026-11-06
 
 ### Added

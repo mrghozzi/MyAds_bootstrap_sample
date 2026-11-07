@@ -24,10 +24,12 @@
         $type = 'audio'; // Music uses same player as audio
     } elseif ($activity->s_type == 14) {
         $type = 'video'; // Clips uses same player as video
+    } elseif ($activity->s_type == 15 || $activity->post_kind === 'poll') {
+        $type = 'poll';
     }
     
     // Check if related content exists before including
-    if (!$activity->related_content) {
+    if (!$activity->related_content && $type !== 'poll') {
         // If related content is missing, we might want to skip or show error.
         // For now, we'll try to render, but the partials assume related_content exists.
         // We can check inside partials or here.
@@ -35,7 +37,7 @@
     }
 @endphp
 
-@if($activity->related_content)
+@if($activity->related_content || $type === 'poll')
     @include('theme::partials.activity.types.' . $type, ['activity' => $activity, 'detailView' => $detailView ?? false])
 @endif
 

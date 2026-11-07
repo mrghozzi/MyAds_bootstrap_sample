@@ -5,7 +5,7 @@
     $commentType = $commentType ?? 'forum';
     $reactionType = $reactionType ?? 2;
     $reactionCategory = $reactionCategory ?? 'forum';
-    $targetId = $targetId ?? $activity->related_content->id;
+    $targetId = $targetId ?? ($activity->related_content?->id ?? $activity->tp_id ?? $activity->id);
 @endphp
 
 <!-- CONTENT ACTIONS -->

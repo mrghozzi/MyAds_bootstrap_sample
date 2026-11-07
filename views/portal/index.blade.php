@@ -267,15 +267,33 @@
             </div>
             
             <!-- TABS -->
-            @auth
             <div class="simple-tab-items">
-                <a href="{{ route('portal.index', ['filter' => 'all']) }}" class="simple-tab-item {{ $filter == 'all' ? 'active' : '' }} text-decoration-none">{{ __('messages.all_updates') }}</a>
-                <a href="{{ route('portal.index', ['filter' => 'me']) }}" class="simple-tab-item {{ $filter == 'me' ? 'active' : '' }} text-decoration-none">{{ __('messages.following') }}</a>
-                @if(\App\Support\GroupSettings::isEnabled())
-                <a href="{{ route('portal.index', ['filter' => 'groups']) }}" class="simple-tab-item {{ $filter == 'groups' ? 'active' : '' }} text-decoration-none">{{ __('messages.groups_title') }}</a>
-                @endif
+                <a href="{{ route('portal.index', ['filter' => 'all']) }}" class="simple-tab-item {{ ($filter ?? 'all') == 'all' ? 'active' : '' }} text-decoration-none">
+                    <i class="fa fa-globe me-1"></i> {{ __('messages.all_updates') }}
+                </a>
+                <a href="{{ route('portal.index', ['filter' => 'trending']) }}" class="simple-tab-item {{ ($filter ?? '') == 'trending' ? 'active' : '' }} text-decoration-none">
+                    <i class="fa fa-fire text-danger me-1"></i> {{ __('messages.trending') ?? 'Trending' }}
+                </a>
+                @auth
+                    <a href="{{ route('portal.index', ['filter' => 'me']) }}" class="simple-tab-item {{ ($filter ?? '') == 'me' ? 'active' : '' }} text-decoration-none">
+                        <i class="fa fa-user-friends me-1"></i> {{ __('messages.following') }}
+                    </a>
+                    <a href="{{ route('portal.index', ['filter' => 'my_posts']) }}" class="simple-tab-item {{ ($filter ?? '') == 'my_posts' ? 'active' : '' }} text-decoration-none">
+                        <i class="fa fa-user me-1"></i> {{ __('messages.my_posts') ?? 'My Posts' }}
+                    </a>
+                    @if(\App\Support\GroupSettings::isEnabled())
+                        <a href="{{ route('portal.index', ['filter' => 'groups']) }}" class="simple-tab-item {{ ($filter ?? '') == 'groups' ? 'active' : '' }} text-decoration-none">
+                            <i class="fa fa-users me-1"></i> {{ __('messages.groups_title') }}
+                        </a>
+                    @endif
+                    <a href="{{ route('portal.index', ['filter' => 'saved']) }}" class="simple-tab-item {{ ($filter ?? '') == 'saved' ? 'active' : '' }} text-decoration-none">
+                        <i class="fa fa-bookmark me-1"></i> {{ __('messages.saved') ?? 'Saved' }}
+                    </a>
+                @endauth
+                <a href="{{ route('portal.index', ['filter' => 'media']) }}" class="simple-tab-item {{ ($filter ?? '') == 'media' ? 'active' : '' }} text-decoration-none">
+                    <i class="fa fa-play-circle text-primary me-1"></i> {{ __('messages.media') ?? 'Media' }}
+                </a>
             </div>
-            @endauth
 
             <!-- ACTIVITY LIST -->
             <div id="infinite-scroll-container" class="d-grid gap-3">

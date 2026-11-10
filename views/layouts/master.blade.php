@@ -237,6 +237,7 @@
             </form>
 
             <ul class="navbar-nav align-items-center gap-1 gap-md-2 ms-auto">
+                @action('theme_header_nav_start')
                 <!-- Lang Switcher -->
                 @if(isset($available_languages) && count($available_languages) > 0)
                     <li class="nav-item dropdown">
@@ -361,6 +362,7 @@
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item py-2 rounded-3 small fw-bold text-primary" href="{{ route('admin.index') }}"><i class="fa fa-shield-halved me-2"></i> Admin Panel</a></li>
                             @endif
+                            @action('theme_header_user_menu')
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
@@ -378,6 +380,7 @@
                         <a class="btn btn-primary btn-sm rounded-pill px-3 fw-bold" href="{{ url('/register') }}">{{ __('messages.register') }}</a>
                     </li>
                 @endauth
+                @action('theme_header_nav_end')
             </ul>
         </div>
     </nav>

@@ -176,11 +176,6 @@
     </div>
 </div>
 
-@php
-    $dropdownEmojis = ($emojis ?? collect())->take(10);
-    $moreEmojis = ($emojis ?? collect())->slice(10);
-@endphp
-
 <script>
 function toggleSplitPreview() {
     const preview = document.getElementById('editorPreview');
@@ -224,18 +219,6 @@ document.addEventListener('DOMContentLoaded', function() {
         sceditor.create(textarea, {
             format: 'xhtml',
             locale: '{{ app()->getLocale() }}',
-            emoticons: {
-                dropdown: {
-                    @foreach($dropdownEmojis as $emoji)
-                        '{{ $emoji->name }}': '{{ asset($emoji->img) }}',
-                    @endforeach
-                }@if($moreEmojis->isNotEmpty()),
-                more: {
-                    @foreach($moreEmojis as $emoji)
-                        '{{ $emoji->name }}': '{{ asset($emoji->img) }}',
-                    @endforeach
-                }@endif
-            },
             style: 'https://cdn.jsdelivr.net/npm/sceditor@3/minified/themes/content/default.min.css',
             width: '100%',
             height: '400px'

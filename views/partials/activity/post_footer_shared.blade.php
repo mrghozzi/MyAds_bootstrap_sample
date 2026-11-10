@@ -25,6 +25,7 @@
                 <i class="fa fa-share-alt me-1"></i> {{ $activity->reposts_count }}
             </a>
         </div>
+        @action('post_card_actions', $activity)
     </div>
 </div>
 
@@ -103,6 +104,7 @@
             </li>
         </ul>
     </div>
+    @action('post_card_options', $activity)
 </div>
 
 <div class="post-comment-list post-comment-list-{{ $targetId }} mt-2"></div>

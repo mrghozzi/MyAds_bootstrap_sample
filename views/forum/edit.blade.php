@@ -255,14 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (activeEditor === 'sceditor' && typeof sceditor !== 'undefined' && textarea) {
         sceditor.create(textarea, {
             format: 'xhtml',
-            style: 'https://cdn.jsdelivr.net/npm/sceditor@3/minified/themes/content/default.min.css',
-            emoticons: {
-                dropdown: {
-                    @foreach(\App\Models\Emoji::limit(10)->get() as $emoji)
-                        '{{ $emoji->name }}': '{{ asset($emoji->img) }}',
-                    @endforeach
-                }
-            }
+            style: 'https://cdn.jsdelivr.net/npm/sceditor@3/minified/themes/content/default.min.css'
         });
     }
 

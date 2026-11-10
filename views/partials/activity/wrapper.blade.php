@@ -28,6 +28,8 @@
             </div>
         </div>
 
+        @action('post_card_header', $activity)
+
         <div class="dropdown">
             <button class="btn btn-link text-muted p-0" data-bs-toggle="dropdown"><i class="fa fa-ellipsis-v"></i></button>
             <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
@@ -85,6 +87,8 @@
         @endif
     </div>
 
+    @action('post_card_footer', $activity)
+
     <div class="card-footer bg-white py-3 border-top d-flex gap-4">
         <div class="d-flex align-items-center text-muted small fw-bold">
             <i class="fa fa-thumbs-up me-1 text-primary opacity-50"></i> {{ $activity->likes_count ?? 0 }}
@@ -95,5 +99,6 @@
         <div class="d-flex align-items-center text-muted small fw-bold">
             <i class="fa fa-share-alt me-1 text-primary opacity-50"></i> {{ $activity->reposts_count ?? 0 }}
         </div>
+        @action('post_card_actions', $activity)
     </div>
 </div>

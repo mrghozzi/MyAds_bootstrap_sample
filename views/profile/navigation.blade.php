@@ -73,6 +73,7 @@
                 <i class="fa fa-comments me-2"></i> {{ __('messages.forum') }}
             </a>
         </li>
+        @action('user_profile_navigation_tabs', $user, $selectedTab ?? request('tab', 'timeline'))
     </ul>
 </div>
 

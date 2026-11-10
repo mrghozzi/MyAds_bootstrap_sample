@@ -120,6 +120,7 @@
         </div>
         
         <!-- Profile Navigation -->
+        @action('user_profile_header', $user)
         <div class="card-footer bg-white border-top p-0">
             @include('theme::profile.navigation')
         </div>
@@ -274,4 +275,5 @@
         </div>
     </div>
 </div>
+@action('user_profile_content', $user)
 @endsection

@@ -2,6 +2,26 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.5.2] - 2026-11-11
+
+### Added
+- **Next-Gen Community Groups & Enterprise Moderation Suite (v4.7.0):**
+  - **Groups Directory (`views/groups/index.blade.php`):**
+    - Added scrollable category filter chips with active state indicators.
+    - Added multi-criteria sorting pills (Trending, Most Members, Most Active, Newest).
+    - Added dynamic category badges, VIP PTS join fee chips, and featured indicators on group cards.
+  - **Group Creation Wizard (`views/groups/create.blade.php`):**
+    - Added 2-column layout with category selector, posting permissions (`all_members` / `moderators_only`), and VIP PTS join fee inputs.
+    - Integrated an interactive, client-side Live Preview card dynamically rendering title, description, category, and PTS badges in real time.
+  - **Group Settings Editor (`views/groups/edit.blade.php`):**
+    - Added category selector, posting permissions, and VIP PTS join fee configuration.
+    - Added a danger zone panel with permanent group deletion confirmation for owners and administrators.
+  - **Group Showcase Hub (`views/groups/show.blade.php`):**
+    - Added category, privacy, and posting permission badges in the group hero header.
+    - Added a dedicated Pinned Announcement Hero Widget at the top of the feed with 1-click unpin controls for moderators.
+    - Added in-feed post moderation capabilities (Pin/Unpin, Delete post from group).
+    - Added member moderation actions (Role assignment, Member ban, Ownership transfer) and a dedicated Banned Members management section with unban controls.
+
 ## [2.5.1] - 2026-11-07
 
 ### Added

@@ -2,47 +2,72 @@
 
 @section('content')
 <div class="container py-4">
-    <!-- Group Header -->
+    <!-- Group Header Card -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
         <!-- Cover Image -->
-        <div class="position-relative" style="height: 250px;">
+        <div class="position-relative" style="height: 250px; background: linear-gradient(135deg, #615dfa 0%, #23d2e2 100%);">
             <img src="{{ asset($cover) }}" class="w-100 h-100 object-fit-cover">
             <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-25"></div>
             
-            @if($group->is_featured)
-                <div class="position-absolute top-0 end-0 m-3">
+            <div class="position-absolute top-0 end-0 m-3 d-flex gap-2">
+                @if($group->is_featured)
                     <span class="badge bg-warning text-dark rounded-pill px-3 py-2 fw-bold shadow-sm">
                         <i class="fa fa-star me-1"></i> {{ __('messages.groups_featured') }}
                     </span>
-                </div>
-            @endif
+                @endif
+                @if($group->join_fee_pts > 0)
+                    <span class="badge bg-warning text-dark rounded-pill px-3 py-2 fw-bold shadow-sm">
+                        <i class="fa fa-coins me-1"></i> {{ $group->join_fee_pts }} PTS
+                    </span>
+                @endif
+            </div>
         </div>
 
         <div class="card-body p-4 pt-0">
             <div class="d-flex flex-column flex-md-row align-items-center align-items-md-end mt-n5 position-relative" style="margin-top: -50px;">
                 <!-- Avatar -->
-                <div class="bg-white p-1 rounded-circle shadow-sm mb-3 mb-md-0">
-                    <img src="{{ asset($avatar) }}" class="rounded-circle border border-4 border-white" width="120" height="120" style="object-fit: cover;">
+                <div class="bg-white p-1 rounded-circle shadow-sm mb-3 mb-md-0 position-relative">
+                    <img src="{{ asset($avatar) }}" class="rounded-circle border border-4 border-white" width="120" height="120" style="object-fit: cover; background: #fff;">
                 </div>
                 
-                <!-- Group Title & Privacy -->
+                <!-- Group Title, Badges & Metadata -->
                 <div class="ms-md-4 flex-grow-1 text-center text-md-start mb-3 mb-md-0">
                     <h2 class="fw-black mb-1 text-dark">{{ $group->name }}</h2>
-                    <p class="text-muted mb-0 small fw-bold">
-                        <i class="fa {{ $group->privacy === \App\Models\Group::PRIVACY_PUBLIC ? 'fa-globe' : 'fa-lock' }} me-1"></i>
-                        {{ $group->privacy === \App\Models\Group::PRIVACY_PUBLIC ? __('messages.groups_public') : __('messages.groups_private') }}
-                        &middot; 
-                        <span class="text-primary">{{ $group->members_count }} {{ __('messages.members') }}</span>
-                    </p>
+                    
+                    <!-- Category & Status Badges Strip -->
+                    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-center justify-content-md-start my-2">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-1 small fw-bold">
+                            <i class="fa fa-tag me-1"></i> {{ \App\Models\Group::categoryLabel($group->category) }}
+                        </span>
+                        <span class="badge bg-secondary bg-opacity-10 text-secondary border rounded-pill px-3 py-1 small fw-bold">
+                            <i class="fa fa-pen me-1"></i> {{ $group->posting_permission === \App\Models\Group::POSTING_MODERATORS ? __('messages.groups_posting_moderators') : __('messages.groups_posting_all') }}
+                        </span>
+                        <span class="badge bg-light text-muted border rounded-pill px-3 py-1 small fw-bold">
+                            <i class="fa {{ $group->privacy === \App\Models\Group::PRIVACY_PUBLIC ? 'fa-globe' : 'fa-lock' }} me-1"></i>
+                            {{ $group->privacy === \App\Models\Group::PRIVACY_PUBLIC ? __('messages.groups_public') : __('messages.groups_private') }}
+                        </span>
+                        <span class="text-muted small fw-bold">
+                            <i class="fa fa-users me-1 text-primary"></i> {{ $group->members_count }} {{ __('messages.members') }}
+                        </span>
+                    </div>
                 </div>
 
                 <!-- Actions -->
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 flex-wrap justify-content-center">
                     @auth
                         @if($canManageGroup)
-                            <a href="{{ route('groups.edit', $group) }}" class="btn btn-light rounded-pill px-4 fw-bold border">
-                                <i class="fa fa-cog me-1 text-muted"></i> {{ __('messages.edit') }}
+                            <a href="{{ route('groups.edit', $group) }}" class="btn btn-light rounded-pill px-3 fw-bold border">
+                                <i class="fa fa-cog me-1 text-muted"></i> {{ __('messages.Settings') }}
                             </a>
+                            @if($group->owner_id === Auth::id() || Auth::user()?->isAdmin())
+                                <form method="POST" action="{{ route('groups.destroy', $group) }}" onsubmit="return confirm('{{ __('messages.groups_delete_confirm') }}')" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-outline-danger rounded-pill px-3 fw-bold" type="submit" title="{{ __('messages.groups_delete_group') }}">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </form>
+                            @endif
                         @endif
 
                         @if($membership?->status === \App\Models\GroupMembership::STATUS_ACTIVE)
@@ -97,6 +122,7 @@
                 <li class="nav-item">
                     <a class="nav-link rounded-pill fw-bold {{ $tab === 'members' ? 'active' : 'text-muted' }}" href="{{ route('groups.show', [$group, 'tab' => 'members']) }}">
                         <i class="fa fa-users me-2"></i> {{ __('messages.members') }}
+                        <span class="badge bg-light text-dark rounded-pill ms-1">{{ $group->members_count }}</span>
                     </a>
                 </li>
             </ul>
@@ -143,7 +169,7 @@
             <x-widget-column side="groups_left" />
         </div>
 
-        <!-- Main Content -->
+        <!-- Main Content Column -->
         <div class="col-lg-6">
             @if(!$canViewContent)
                 <div class="card border-0 shadow-sm rounded-4 p-5 text-center">
@@ -164,6 +190,28 @@
                     @endif
                 </div>
             @else
+                <!-- PINNED POST HERO WIDGET -->
+                @if($pinnedPost && in_array($tab, ['overview', 'feed'], true))
+                    <div class="card border border-2 border-primary shadow-sm rounded-4 mb-4 overflow-hidden">
+                        <div class="card-header bg-primary bg-opacity-10 py-2 px-3 border-bottom border-primary border-opacity-25 d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary text-white rounded-pill px-3 py-1 fw-bold">
+                                <i class="fa fa-thumbtack me-1"></i> {{ __('messages.groups_pinned_post') }}
+                            </span>
+                            @if($canManageGroup)
+                                <form method="POST" action="{{ route('groups.posts.pin', [$group, $pinnedPost->id]) }}" class="m-0">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill px-2 py-0 smaller fw-bold">
+                                        <i class="fa fa-times me-1"></i> {{ __('messages.groups_unpin_post') }}
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                        <div class="card-body p-3">
+                            @include('theme::partials.activity.render', ['activity' => $pinnedPost])
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Composer (Feed/Discussions) -->
                 @if(in_array($tab, ['overview', 'feed', 'discussions'], true) && $canPostToGroup)
                     @if($tab === 'discussions')
@@ -177,7 +225,7 @@
                                 <div class="mb-3">
                                     <textarea name="txt" rows="3" class="form-control bg-light border-0" placeholder="{{ __('messages.description') }}" required></textarea>
                                 </div>
-                                <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                     <div class="d-flex gap-3">
                                         <div class="form-check small">
                                             <input class="form-check-input" type="radio" name="type" id="type_text" value="2" checked>
@@ -248,7 +296,6 @@
                                             <img src="{{ $topic->user?->avatarUrl() ?? asset('upload/_avatar.png') }}" class="rounded-circle me-2" width="24" height="24">
                                             <span class="smaller fw-bold text-muted">{{ $topic->user?->username ?? __('messages.unknown_user') }}</span>
                                         </div>
-                                        <span class="badge bg-light text-muted border fw-bold smaller rounded-pill px-3">{{ $topic->replies_count ?? 0 }} {{ __('messages.replies') }}</span>
                                     </div>
                                 </div>
                             @empty
@@ -261,75 +308,120 @@
                 @endif
 
                 @if($tab === 'feed')
-                    <div class="d-grid gap-3 mb-4">
+                    <div class="d-grid gap-3">
                         @forelse($activities as $activity)
                             @include('theme::partials.activity.render', ['activity' => $activity])
                         @empty
                             <div class="card border-0 shadow-sm rounded-4 p-5 text-center">
-                                <i class="fa fa-rss fa-3x mb-3 text-muted opacity-25"></i>
-                                <p class="text-muted mb-0">{{ __('messages.groups_feed_empty') }}</p>
+                                <p class="text-muted small mb-0">{{ __('messages.groups_feed_empty') }}</p>
                             </div>
                         @endforelse
                     </div>
-                    {{ $activities->appends(['tab' => 'feed'])->links() }}
+                    <div class="mt-4 d-flex justify-content-center">
+                        {{ $activities->links() }}
+                    </div>
                 @endif
 
                 @if($tab === 'discussions')
-                    <div class="d-grid gap-3 mb-4">
+                    <div class="d-grid gap-3">
                         @forelse($discussions as $topic)
                             <div class="card border-0 shadow-sm rounded-4 p-4 transition-all hover-translate-y">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h6 class="fw-bold mb-0"><a href="{{ route('forum.topic', $topic->id) }}" class="text-dark text-decoration-none fs-5">{{ $topic->name }}</a></h6>
+                                    <h5 class="fw-bold mb-0"><a href="{{ route('forum.topic', $topic->id) }}" class="text-dark text-decoration-none">{{ $topic->name }}</a></h5>
                                     <span class="smaller text-muted">{{ $topic->date ? \Carbon\Carbon::createFromTimestamp($topic->date)->diffForHumans() : '' }}</span>
                                 </div>
-                                <p class="text-muted smaller mb-3">{{ \Illuminate\Support\Str::limit(strip_tags((string) $topic->txt), 300) }}</p>
+                                <p class="text-muted small mb-3">{{ \Illuminate\Support\Str::limit(strip_tags((string) $topic->txt), 220) }}</p>
                                 <div class="d-flex align-items-center justify-content-between mt-auto border-top pt-3">
                                     <div class="d-flex align-items-center">
-                                        <img src="{{ $topic->user?->avatarUrl() ?? asset('upload/_avatar.png') }}" class="rounded-circle me-2" width="30" height="30">
+                                        <img src="{{ $topic->user?->avatarUrl() ?? asset('upload/_avatar.png') }}" class="rounded-circle me-2" width="24" height="24">
                                         <span class="smaller fw-bold text-muted">{{ $topic->user?->username ?? __('messages.unknown_user') }}</span>
-                                    </div>
-                                    <div class="d-flex gap-2">
-                                        <span class="badge bg-light text-muted border fw-bold smaller rounded-pill px-3 py-2"><i class="fa fa-comment me-1"></i> {{ $topic->replies_count ?? 0 }}</span>
-                                        <span class="badge bg-light text-muted border fw-bold smaller rounded-pill px-3 py-2"><i class="fa fa-eye me-1"></i> {{ $topic->views ?? 0 }}</span>
                                     </div>
                                 </div>
                             </div>
                         @empty
                             <div class="card border-0 shadow-sm rounded-4 p-5 text-center">
-                                <i class="fa fa-comments fa-3x mb-3 text-muted opacity-25"></i>
-                                <p class="text-muted mb-0">{{ __('messages.groups_discussions_empty') }}</p>
+                                <p class="text-muted small mb-0">{{ __('messages.groups_discussions_empty') }}</p>
                             </div>
                         @endforelse
                     </div>
-                    {{ $discussions->appends(['tab' => 'discussions'])->links() }}
+                    <div class="mt-4 d-flex justify-content-center">
+                        {{ $discussions->links() }}
+                    </div>
                 @endif
 
                 @if($tab === 'members')
-                    <!-- Pending Requests (Moderators Only) -->
+                    <!-- Active Members List -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="fw-bold mb-3">{{ __('messages.groups_members_title') }} ({{ $members->total() }})</h5>
+                        <div class="d-grid gap-3">
+                            @forelse($members as $member)
+                                <div class="d-flex justify-content-between align-items-center p-3 rounded-3 bg-light">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="{{ $member->user?->avatarUrl() ?? asset('upload/_avatar.png') }}" class="rounded-circle shadow-xs" width="44" height="44" style="object-fit: cover;">
+                                        <div>
+                                            <h6 class="fw-bold mb-0 text-dark">{{ $member->user?->username ?? __('messages.unknown_user') }}</h6>
+                                            <span class="badge {{ $member->role === 'owner' ? 'bg-primary' : ($member->role === 'moderator' ? 'bg-info text-dark' : 'bg-secondary') }} rounded-pill smaller">
+                                                {{ __('messages.groups_role_' . $member->role) }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    @if($canManageGroup && $member->role !== \App\Models\GroupMembership::ROLE_OWNER)
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <form method="POST" action="{{ route('groups.members.role', [$group, $member]) }}" class="d-inline">
+                                                @csrf
+                                                <select name="role" onchange="this.form.submit()" class="form-select form-select-sm rounded-pill">
+                                                    <option value="member" {{ $member->role === 'member' ? 'selected' : '' }}>
+                                                        {{ __('messages.groups_role_member') }}
+                                                    </option>
+                                                    <option value="moderator" {{ $member->role === 'moderator' ? 'selected' : '' }}>
+                                                        {{ __('messages.groups_role_moderator') }}
+                                                    </option>
+                                                </select>
+                                            </form>
+
+                                            <form method="POST" action="{{ route('groups.members.ban', [$group, $member]) }}" onsubmit="return confirm('{{ __('messages.groups_ban_member') }}?')" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" title="{{ __('messages.groups_ban_member') }}">
+                                                    <i class="fa fa-ban"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @endif
+                                </div>
+                            @empty
+                                <p class="text-muted small text-center mb-0">{{ __('messages.groups_members_empty') }}</p>
+                            @endforelse
+                        </div>
+
+                        <div class="mt-4 d-flex justify-content-center">
+                            {{ $members->links() }}
+                        </div>
+                    </div>
+
+                    <!-- Pending Join Requests (For Moderators/Admins) -->
                     @if($canManageGroup && $pendingMemberships->isNotEmpty())
-                        <div class="mb-4">
-                            <h6 class="fw-bold mb-3 text-uppercase smaller text-muted letter-spacing-1">{{ __('messages.groups_pending_requests') }}</h6>
-                            <div class="row g-3">
+                        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                            <h5 class="fw-bold mb-3">{{ __('messages.groups_pending_requests') }} ({{ $pendingMemberships->count() }})</h5>
+                            <div class="d-grid gap-3">
                                 @foreach($pendingMemberships as $pending)
-                                    <div class="col-md-6">
-                                        <div class="card border-0 shadow-sm rounded-4 p-3 h-100">
-                                            <div class="d-flex align-items-center mb-3">
-                                                <img src="{{ $pending->user?->avatarUrl() ?? asset('upload/_avatar.png') }}" class="rounded-circle me-3 shadow-sm" width="45" height="45">
-                                                <div class="overflow-hidden">
-                                                    <h6 class="fw-bold mb-0 text-truncate text-dark">{{ $pending->user?->username ?? __('messages.unknown_user') }}</h6>
-                                                    <span class="smaller text-muted text-truncate d-block">{{ $pending->created_at->diffForHumans() }}</span>
-                                                </div>
+                                    <div class="d-flex justify-content-between align-items-center p-3 rounded-3 bg-light">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="{{ $pending->user?->avatarUrl() ?? asset('upload/_avatar.png') }}" class="rounded-circle shadow-xs" width="44" height="44" style="object-fit: cover;">
+                                            <div>
+                                                <h6 class="fw-bold mb-0 text-dark">{{ $pending->user?->username ?? __('messages.unknown_user') }}</h6>
+                                                <span class="smaller text-muted">{{ __('messages.groups_request_pending') }}</span>
                                             </div>
-                                            <div class="d-flex gap-2 mt-auto">
-                                                <form method="POST" action="{{ route('groups.members.approve', [$group, $pending]) }}" class="flex-grow-1">
-                                                    @csrf
-                                                    <button class="btn btn-success btn-sm w-100 rounded-pill fw-bold" type="submit">{{ __('messages.approve') }}</button>
-                                                </form>
-                                                <form method="POST" action="{{ route('groups.members.reject', [$group, $pending]) }}" class="flex-grow-1">
-                                                    @csrf
-                                                    <button class="btn btn-outline-danger btn-sm w-100 rounded-pill fw-bold" type="submit">{{ __('messages.reject') }}</button>
-                                                </form>
-                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <form method="POST" action="{{ route('groups.members.approve', [$group, $pending]) }}">
+                                                @csrf
+                                                <button class="btn btn-success btn-sm rounded-pill px-3 fw-bold" type="submit">{{ __('messages.approve') }}</button>
+                                            </form>
+                                            <form method="POST" action="{{ route('groups.members.reject', [$group, $pending]) }}">
+                                                @csrf
+                                                <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" type="submit">{{ __('messages.reject') }}</button>
+                                            </form>
                                         </div>
                                     </div>
                                 @endforeach
@@ -337,144 +429,41 @@
                         </div>
                     @endif
 
-                    <!-- Active Members -->
-                    <div class="mb-4">
-                        <h6 class="fw-bold mb-3 text-uppercase smaller text-muted letter-spacing-1">{{ __('messages.groups_members_title') }}</h6>
-                        <div class="row g-3">
-                            @forelse($members as $member)
-                                <div class="col-md-6">
-                                    <div class="card border-0 shadow-sm rounded-4 p-3 h-100 position-relative">
-                                        <div class="d-flex align-items-center mb-3">
-                                            <img src="{{ $member->user?->avatarUrl() ?? asset('upload/_avatar.png') }}" class="rounded-circle me-3 shadow-sm" width="50" height="50">
-                                            <div class="overflow-hidden">
-                                                <h6 class="fw-bold mb-0 text-truncate text-dark">{{ $member->user?->username ?? __('messages.unknown_user') }}</h6>
-                                                <span class="badge {{ $member->role === 'owner' ? 'bg-primary' : ($member->role === 'moderator' ? 'bg-info' : 'bg-light text-muted border') }} smaller fw-bold rounded-pill px-3 mt-1">
-                                                    {{ __('messages.groups_role_' . $member->role) }}
-                                                </span>
+                    <!-- Banned Members Section (For Moderators/Admins) -->
+                    @if($canManageGroup && $bannedMemberships->isNotEmpty())
+                        <div class="card border border-danger border-opacity-25 shadow-sm rounded-4 p-4 mb-4">
+                            <h5 class="fw-bold mb-3 text-danger">
+                                <i class="fa fa-ban me-2"></i> {{ __('messages.groups_banned_members') }} ({{ $bannedMemberships->count() }})
+                            </h5>
+                            <div class="d-grid gap-3">
+                                @foreach($bannedMemberships as $banned)
+                                    <div class="d-flex justify-content-between align-items-center p-3 rounded-3 bg-danger bg-opacity-10">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="{{ $banned->user?->avatarUrl() ?? asset('upload/_avatar.png') }}" class="rounded-circle shadow-xs" width="44" height="44" style="object-fit: cover;">
+                                            <div>
+                                                <h6 class="fw-bold mb-0 text-dark">{{ $banned->user?->username ?? __('messages.unknown_user') }}</h6>
+                                                <span class="smaller text-danger fw-bold">{{ __('messages.groups_user_is_banned') }}</span>
                                             </div>
                                         </div>
-                                        
-                                        @if($canManageGroup && $member->role !== \App\Models\GroupMembership::ROLE_OWNER)
-                                            <div class="mt-auto d-flex justify-content-between align-items-center">
-                                                <form method="POST" action="{{ route('groups.members.role', [$group, $member]) }}" class="flex-grow-1 me-2">
-                                                    @csrf
-                                                    <select name="role" onchange="this.form.submit()" class="form-select form-select-sm rounded-pill bg-light border-0">
-                                                        <option value="member" {{ $member->role === 'member' ? 'selected' : '' }}>{{ __('messages.groups_role_member') }}</option>
-                                                        <option value="moderator" {{ $member->role === 'moderator' ? 'selected' : '' }}>{{ __('messages.groups_role_moderator') }}</option>
-                                                    </select>
-                                                </form>
-                                                
-                                                @if($group->owner_id === Auth::id())
-                                                    <button class="btn btn-outline-warning btn-sm rounded-pill px-2" title="{{ __('messages.groups_transfer_ownership') }}" onclick="toggleTransferForm({{ $member->id }})">
-                                                        <i class="fa fa-crown"></i>
-                                                    </button>
-                                                @endif
-                                            </div>
-
-                                            @if($group->owner_id === Auth::id())
-                                                <div id="transfer-form-{{ $member->id }}" class="mt-3 bg-light p-3 rounded-4 border border-warning" style="display: none;">
-                                                    <form method="POST" action="{{ route('groups.transfer', [$group, $member]) }}">
-                                                        @csrf
-                                                        <p class="smaller text-dark fw-bold mb-3">{{ __('messages.groups_transfer_confirm') }} <u>{{ $member->user?->username }}</u></p>
-                                                        <input type="password" name="password" required class="form-control form-control-sm rounded-pill mb-3" placeholder="{{ __('messages.password') }}">
-                                                        <div class="d-flex gap-2">
-                                                            <button type="submit" class="btn btn-warning btn-sm rounded-pill fw-bold flex-grow-1 text-white">{{ __('messages.confirm') }}</button>
-                                                            <button type="button" class="btn btn-light btn-sm rounded-pill fw-bold border flex-grow-1" onclick="toggleTransferForm({{ $member->id }})">{{ __('messages.cancel') }}</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            @endif
-                                        @endif
+                                        <form method="POST" action="{{ route('groups.members.unban', [$group, $banned]) }}">
+                                            @csrf
+                                            <button class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold" type="submit">
+                                                <i class="fa fa-undo me-1"></i> {{ __('messages.groups_unban_member') }}
+                                            </button>
+                                        </form>
                                     </div>
-                                </div>
-                            @empty
-                                <div class="col-12">
-                                    <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
-                                        <p class="text-muted small mb-0">{{ __('messages.groups_members_empty') }}</p>
-                                    </div>
-                                </div>
-                            @endforelse
+                                @endforeach
+                            </div>
                         </div>
-                        <div class="mt-4">
-                            {{ $members->appends(['tab' => 'members'])->links() }}
-                        </div>
-                    </div>
+                    @endif
                 @endif
             @endif
         </div>
 
         <!-- Sidebar Right -->
         <div class="col-lg-3">
-            <!-- Group Stats -->
-            <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
-                <div class="card-header bg-white py-3 border-bottom">
-                    <h6 class="fw-bold mb-0 text-uppercase smaller text-muted letter-spacing-1">{{ __('messages.stats') }}</h6>
-                </div>
-                <div class="card-body p-0">
-                    <div class="d-flex align-items-center p-3 border-bottom">
-                        <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
-                            <i class="fa fa-users text-primary"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold small text-dark">{{ $group->members_count }}</div>
-                            <div class="smaller text-muted text-uppercase fw-bold">{{ __('messages.members') }}</div>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center p-3 border-bottom">
-                        <div class="bg-success bg-opacity-10 p-2 rounded-3 me-3">
-                            <i class="fa fa-rss text-success"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold small text-dark">{{ $group->posts_count }}</div>
-                            <div class="smaller text-muted text-uppercase fw-bold">{{ __('messages.posts') }}</div>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center p-3">
-                        <div class="bg-info bg-opacity-10 p-2 rounded-3 me-3">
-                            <i class="fa fa-user-shield text-info"></i>
-                        </div>
-                        <div class="overflow-hidden">
-                            <div class="fw-bold small text-dark text-truncate">{{ $group->owner?->username ?? __('messages.unknown_user') }}</div>
-                            <div class="smaller text-muted text-uppercase fw-bold">{{ __('messages.author') }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <x-widget-column side="groups_right" />
         </div>
     </div>
 </div>
-
-<style>
-    .fw-black { font-weight: 900; }
-    .letter-spacing-1 { letter-spacing: 1px; }
-    .hover-translate-y:hover { transform: translateY(-5px); }
-    .transition-all { transition: all 0.3s ease; }
-    .object-fit-cover { object-fit: cover; }
-    .text-truncate-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    .mt-n5 { margin-top: -3rem !important; }
-    .nav-pills .nav-link.active {
-        background-color: #615dfa;
-    }
-    .nav-pills .nav-link {
-        font-size: 0.85rem;
-    }
-</style>
-
-@push('scripts')
-<script>
-    function toggleTransferForm(memberId) {
-        const form = document.getElementById('transfer-form-' + memberId);
-        if (form) {
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        }
-    }
-</script>
-@endpush
 @endsection

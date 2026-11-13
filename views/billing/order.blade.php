@@ -7,6 +7,32 @@
     $user = auth()->user();
 @endphp
 
+<style>
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+    #printable-invoice-card, #printable-invoice-card * {
+        visibility: visible !important;
+    }
+    #printable-invoice-card {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 30px !important;
+        background: #fff !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+    .no-print, header, footer, nav, .navbar, .col-lg-3, .alert, .card-header button, .card-header a {
+        display: none !important;
+    }
+}
+</style>
+
 <div class="container py-4">
     <!-- Page Header -->
     <div class="card border-0 shadow-sm mb-4 bg-primary bg-gradient text-white rounded-4 overflow-hidden position-relative border border-light">
@@ -42,11 +68,14 @@
                         <h5 class="fw-black mb-1 text-dark">{{ __('messages.billing_order_summary_title') }}</h5>
                         <p class="text-muted smaller fw-black text-uppercase letter-spacing-1 mb-0">{{ $order->order_number }}</p>
                     </div>
-                    <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
                         @include('theme::billing.partials.status_badge', ['status' => $order->status])
+                        <button type="button" class="btn btn-outline-dark rounded-pill px-3 py-2 fw-black shadow-sm smaller transition-all hover-translate-y btn-print-invoice" onclick="window.print()">
+                            <i class="fa fa-print me-1"></i> {{ __('messages.billing_invoice_print_btn') }}
+                        </button>
                         @if($systemEnabled)
-                            <a href="{{ route('billing.plans') }}" class="btn btn-primary rounded-pill px-4 fw-black shadow-sm transition-all hover-translate-y">
-                                <i class="fa fa-crown me-2 text-warning"></i> {{ __('messages.billing_back_to_plans') }}
+                            <a href="{{ route('billing.plans') }}" class="btn btn-primary rounded-pill px-3 py-2 fw-black shadow-sm transition-all hover-translate-y smaller">
+                                <i class="fa fa-crown me-1 text-warning"></i> {{ __('messages.billing_back_to_plans') }}
                             </a>
                         @endif
                     </div>
@@ -78,7 +107,107 @@
                             </div>
                         </div>
                     </div>
+
+                    @if(($order->discount_amount ?? 0) > 0)
+                        <div class="mt-4 p-3 bg-light rounded-4 border border-light d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-1 fw-bold smaller">
+                                    <i class="fa fa-tag me-1"></i> {{ $order->coupon_code }}
+                                </span>
+                                <span class="small text-muted ms-2">{{ __('messages.billing_discount_type') }}: -{{ number_format((float) $order->discount_amount, 2) }} {{ $order->base_currency_code }}</span>
+                            </div>
+                            <div class="small fw-bold text-dark">
+                                {{ __('messages.billing_final_amount') }}: <span class="text-primary fs-6">{{ number_format((float) $order->display_amount, 2) }} {{ $order->currency_code }}</span>
+                            </div>
+                        </div>
+                    @endif
                 </div>
+            </div>
+
+            {{-- Printable Official Invoice Card --}}
+            <div id="printable-invoice-card" class="card border-0 shadow-sm rounded-4 mb-4 border border-light overflow-hidden" style="border-top: 6px solid #615dfa !important;">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex justify-content-between align-items-start border-bottom pb-4 mb-4 flex-wrap gap-3">
+                        <div>
+                            <h2 class="fw-black text-dark mb-1">{{ config('app.name', 'MYADS') }}</h2>
+                            <p class="text-muted small mb-0">{{ __('messages.billing_invoice_title') }}</p>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge {{ $order->status === 'paid' ? 'bg-success bg-opacity-10 text-success border border-success border-opacity-25' : 'bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25' }} rounded-pill px-3 py-2 fw-black smaller">
+                                {{ $order->status === 'paid' ? __('messages.billing_invoice_status_paid') : __('messages.billing_invoice_status_pending') }}
+                            </span>
+                            <div class="smaller text-muted mt-2">{{ __('messages.billing_invoice_number') }}: <strong>#INV-{{ $order->order_number }}</strong></div>
+                            <div class="smallest text-muted">{{ __('messages.billing_invoice_date') }}: {{ optional($order->created_at)->format('Y-m-d H:i') }}</div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-sm-6">
+                            <h6 class="fw-black text-uppercase smaller text-muted letter-spacing-1 mb-2">{{ __('messages.billing_invoice_bill_to') }}</h6>
+                            <div class="fw-bold text-dark">{{ $user->name ?: $user->username }}</div>
+                            <div class="small text-muted">{{ $user->email }}</div>
+                            <div class="smaller text-muted">@<span>{{ $user->username }}</span></div>
+                        </div>
+                        <div class="col-sm-6 text-sm-end">
+                            <h6 class="fw-black text-uppercase smaller text-muted letter-spacing-1 mb-2">{{ __('messages.billing_invoice_payment_method') }}</h6>
+                            <div class="fw-bold text-dark">{{ data_get($order->meta, 'gateway_label', $order->gatewayLabel()) }}</div>
+                            <div class="small text-muted">{{ __('messages.currency') }}: {{ $order->currency_code }}</div>
+                            @if($order->paid_at)
+                                <div class="smaller text-success fw-bold"><i class="fa fa-check-circle me-1"></i>{{ __('messages.paid') }}: {{ $order->paid_at->format('Y-m-d H:i') }}</div>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Invoice Table --}}
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="py-2 px-3 small fw-black text-dark">{{ __('messages.description') }}</th>
+                                    <th class="py-2 px-3 small fw-black text-dark text-center">{{ __('messages.billing_duration_label') }}</th>
+                                    <th class="py-2 px-3 small fw-black text-dark text-end">{{ __('messages.amount') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="py-3 px-3">
+                                        <div class="fw-bold text-dark">{{ data_get($order->plan_snapshot, 'name', __('messages.billing_subscription_plan')) }}</div>
+                                        <div class="smaller text-muted">{{ data_get($order->plan_snapshot, 'description', '') }}</div>
+                                    </td>
+                                    <td class="py-3 px-3 text-center small text-muted">
+                                        {{ data_get($order->plan_snapshot, 'is_lifetime') ? __('messages.billing_lifetime') : __('messages.billing_duration_days_value', ['days' => data_get($order->plan_snapshot, 'duration_days', 30)]) }}
+                                    </td>
+                                    <td class="py-3 px-3 text-end fw-bold text-dark">
+                                        {{ number_format((float) ($order->base_amount + ($order->discount_amount ?? 0)), 2) }} {{ $order->base_currency_code }}
+                                    </td>
+                                </tr>
+                                @if(($order->discount_amount ?? 0) > 0)
+                                    <tr>
+                                        <td colspan="2" class="py-2 px-3 text-end small text-success fw-bold">
+                                            {{ __('messages.billing_coupon_code') }} ({{ $order->coupon_code }}):
+                                        </td>
+                                        <td class="py-2 px-3 text-end small text-success fw-bold">
+                                            -{{ number_format((float) $order->discount_amount, 2) }} {{ $order->base_currency_code }}
+                                        </td>
+                                    </tr>
+                                @endif
+                                <tr class="bg-light">
+                                    <td colspan="2" class="py-3 px-3 text-end fw-black text-dark">
+                                        {{ __('messages.billing_invoice_total') }}:
+                                    </td>
+                                    <td class="py-3 px-3 text-end fw-black text-primary fs-5">
+                                        {{ number_format((float) $order->display_amount, 2) }} {{ $order->currency_code }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="border-top pt-3 text-center small text-muted">
+                        {{ __('messages.billing_invoice_thank_you', ['site' => config('app.name', 'MYADS')]) }}
+                    </div>
+                </div>
+            </div>
             </div>
 
             @if($order->gateway === 'bank_transfer')
@@ -249,5 +378,4 @@
     });
 </script>
 @endpush
-@endsection
 @endsection

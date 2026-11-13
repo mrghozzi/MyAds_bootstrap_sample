@@ -58,6 +58,31 @@
                 </div>
             @endif
 
+            {{-- 7-Day Expiry Warning Alert --}}
+            @if($currentSubscription && $currentSubscription->status === 'active' && $currentSubscription->ends_at && $currentSubscription->ends_at->isFuture() && $currentSubscription->ends_at->diffInDays(now()) <= 7)
+                <div class="alert alert-warning border-0 shadow-sm rounded-4 mb-4 p-4 d-flex align-items-center justify-content-between flex-wrap gap-3 billing-expiration-warning-banner" role="alert">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-warning bg-opacity-25 p-3 rounded-circle text-warning fs-3">
+                            <i class="fa fa-clock"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-black text-dark mb-1">{{ __('messages.billing_subscription_expiring_soon_title') }}</h5>
+                            <p class="small text-muted mb-0 fw-bold">
+                                {{ __('messages.billing_subscription_expiring_soon_text', [
+                                    'days' => max(1, (int) round($currentSubscription->ends_at->diffInDays(now()))),
+                                    'date' => $currentSubscription->ends_at->format('Y-m-d')
+                                ]) }}
+                            </p>
+                        </div>
+                    </div>
+                    @if($systemEnabled)
+                        <a href="{{ $plansUrl }}" class="btn btn-warning rounded-pill px-4 py-2 fw-black text-dark shadow-sm transition-all hover-translate-y">
+                            <i class="fa fa-sync-alt me-1"></i> {{ __('messages.billing_renew_plan_now') }}
+                        </a>
+                    @endif
+                </div>
+            @endif
+
             <!-- Dashboard Info -->
             <div class="card border-0 shadow-sm rounded-4 mb-4 border border-light overflow-hidden">
                 <div class="card-body p-4 p-md-5 d-flex justify-content-between align-items-center flex-wrap gap-4">
@@ -86,7 +111,14 @@
                                 @php($currentBenefits = $entitlementService->memberBenefitLines((array) ($currentSubscription->entitlements_snapshot ?? [])))
                                 <div class="d-flex justify-content-between align-items-center mb-4">
                                     <h3 class="fw-black text-primary mb-0">{{ $currentSubscription->plan_name }}</h3>
-                                    @include('theme::billing.partials.status_badge', ['status' => $currentSubscription->status])
+                                    <div class="d-flex align-items-center gap-2">
+                                        @include('theme::billing.partials.status_badge', ['status' => $currentSubscription->status])
+                                        @if($currentSubscription->is_trial)
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-1 fs-11 badge-sub-trial">
+                                                <i class="fa fa-gift me-1"></i> {{ __('messages.billing_trial_free_tag') }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                                 <div class="mb-5 d-grid gap-2">
                                     <div class="smaller text-muted fw-bold d-flex align-items-center"><i class="fa fa-calendar-check me-3 text-primary opacity-50" style="width: 20px;"></i>{{ __('messages.billing_starts_at_label') }}: <span class="text-dark ms-2">{{ optional($currentSubscription->starts_at)->format('Y-m-d H:i') ?: '-' }}</span></div>

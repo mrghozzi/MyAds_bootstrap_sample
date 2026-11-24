@@ -357,10 +357,35 @@
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label smaller fw-black text-muted text-uppercase mb-2">{{ __('messages.order_deliverable_attachment') }}</label>
-                                    <input type="file" name="deliverable" class="form-control rounded-3" accept=".zip,.pdf,.png,.jpg,.jpeg,.doc,.docx,.txt">
+                                    <input type="file" name="delivery_attachment" id="delivery_attachment" class="form-control rounded-3" accept=".zip,.pdf,.png,.jpg,.jpeg,.doc,.docx,.txt">
                                     <div class="form-text smaller text-muted">{{ __('messages.order_deliverable_help') }}</div>
                                 </div>
                                 <button type="submit" class="btn btn-primary rounded-pill px-5 fw-black shadow-sm transition-all hover-translate-y">{{ __('messages.order_deliver_action') }}</button>
+                            </form>
+                        </div>
+                    </div>
+                @endif
+
+                @if((int) auth()->id() === (int) $order->uid && (string) $order->workflow_status === \App\Models\OrderRequest::WORKFLOW_COMPLETED && !$order->awardedOffer?->client_rating)
+                    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden border-start border-4 border-warning">
+                        <div class="card-body p-4 p-md-5">
+                            <h4 class="fw-black mb-2 text-warning">{{ __('messages.rate_offer') }}</h4>
+                            <p class="text-muted smaller fw-bold mb-4">{{ __('messages.order_review_placeholder') ?? 'Share feedback about your experience...' }}</p>
+                            <form action="{{ route('orders.rate', $order) }}" method="POST">
+                                @csrf
+                                <div class="mb-4">
+                                    <label class="form-label smaller fw-black text-muted text-uppercase mb-2" for="post-complete-rating">{{ __('messages.rating') }}</label>
+                                    <select class="form-select rounded-3 py-2" name="rating" id="post-complete-rating" required>
+                                        @for($i = 5; $i >= 1; $i--)
+                                            <option value="{{ $i }}">{{ $i }}/5</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label smaller fw-black text-muted text-uppercase mb-2" for="post-complete-review">{{ __('messages.review') }}</label>
+                                    <textarea class="form-control bg-light border-0 rounded-4 p-3" name="review" id="post-complete-review" rows="3" placeholder="{{ __('messages.order_review_placeholder') ?? 'Share feedback about your experience...' }}"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-warning rounded-pill px-5 fw-black shadow-sm transition-all hover-translate-y">{{ __('messages.submit_rating') ?? __('messages.rate_offer') }}</button>
                             </form>
                         </div>
                     </div>

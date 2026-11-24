@@ -204,6 +204,13 @@
                                         <i class="fa fa-times me-1"></i> {{ __('messages.groups_unpin_post') }}
                                     </button>
                                 </form>
+                                <form method="POST" action="{{ route('groups.posts.delete', [$group, $pinnedPost->id]) }}" class="d-inline m-0" onsubmit="return confirm('{{ __('messages.confirm_delete') ?? 'Delete post?' }}')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-outline-danger btn-sm rounded-pill px-2 py-0 smaller fw-bold" type="submit" title="{{ __('messages.delete') }}">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </form>
                             @endif
                         </div>
                         <div class="card-body p-3">
@@ -386,6 +393,25 @@
                                                     <i class="fa fa-ban"></i>
                                                 </button>
                                             </form>
+                                            @if($isOwner && $member->role !== \App\Models\GroupMembership::ROLE_OWNER)
+                                                <button type="button" class="btn btn-outline-warning btn-sm rounded-pill px-3 ms-1" onclick="toggleTransferForm({{ $member->id }})" title="{{ __('messages.groups_transfer_ownership') }}">
+                                                    <i class="fa fa-crown me-1"></i> {{ __('messages.groups_transfer_ownership') }}
+                                                </button>
+                                                <div id="transfer-form-{{ $member->id }}" class="card bg-light border-warning border-dashed p-3 mt-2 rounded-3 text-start" style="display: none;">
+                                                    <form method="POST" action="{{ route('groups.transfer', [$group, $member]) }}">
+                                                        @csrf
+                                                        <p class="small mb-2 text-dark">
+                                                            {{ __('messages.groups_transfer_confirm') }}
+                                                            <strong>{{ $member->user?->username }}</strong>
+                                                        </p>
+                                                        <div class="input-group input-group-sm mb-2">
+                                                            <input type="password" name="password" required class="form-control rounded-start-pill" placeholder="{{ __('messages.password') }}">
+                                                            <button type="submit" class="btn btn-warning rounded-end-pill px-3 fw-bold">{{ __('messages.confirm') }}</button>
+                                                            <button type="button" class="btn btn-secondary rounded-pill ms-2" onclick="toggleTransferForm({{ $member->id }})">{{ __('messages.cancel') }}</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            @endif
                                         </div>
                                     @endif
                                 </div>

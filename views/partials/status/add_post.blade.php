@@ -57,6 +57,7 @@
 <div class="quick-post composer-refresh" id="social-composer">
     <form class="form" action="{{ route('status.create') }}" method="POST" enctype="multipart/form-data" id="social-composer-form">
         @csrf
+        <input type="hidden" name="source_page" value="{{ request()->routeIs('portal.*') ? 'portal' : '' }}">
         <input type="hidden" name="post_kind" id="composer-post-kind" value="{{ $oldPostKind }}">
         <input type="hidden" name="repost_status_id" id="composer-repost-status-id" value="{{ $oldRepostStatusId }}">
         @if($isGroupComposer)

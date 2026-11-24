@@ -47,6 +47,22 @@
                             <i class="fa fa-info-circle me-1"></i> A/B Testing: Provide a second version for optimization.
                         </div>
                     </div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">{{ __('messages.smart_form_target_countries') }}</label>
+                        <input type="text" name="countries" class="form-control form-control-lg bg-light border-0" value="{{ old('countries', $targetCountries ?? '') }}" placeholder="{{ __('messages.smart_form_countries_placeholder') }}">
+                        <div class="form-text small text-muted">{{ __('messages.smart_form_target_countries_help') }}</div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">{{ __('messages.smart_form_target_devices') }}</label>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            @foreach(($deviceOptions ?? []) as $value => $label)
+                                <label class="btn btn-outline-secondary btn-sm rounded-pill d-inline-flex align-items-center gap-2">
+                                    <input type="checkbox" name="devices[]" value="{{ $value }}" {{ in_array($value, old('devices', $selectedDevices ?? []), true) ? 'checked' : '' }}>
+                                    <span>{{ $label }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
                     <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow-sm">
                         <i class="fa fa-save me-2"></i>{{ __('messages.save') }}
                     </button>

@@ -4,7 +4,7 @@
             @php
                 $topic = $status->forumTopic;
                 $user = $status->user;
-                $watchUrl = $topic ? route('forum.topic', $topic->id) : url('/portal');
+                $watchUrl = route('video.watch', $status->id);
                 
                 // Multi-source resolved Thumbnail & Video URL & Title
                 $thumbUrl = $status->resolved_thumbnail ?: \App\Http\Controllers\VideoHubController::resolveVideoThumbnailUrl($status);

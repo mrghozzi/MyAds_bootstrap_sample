@@ -20,10 +20,17 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-black mb-0 text-dark">{{ __('messages.updates') ?? 'Updates' }}</h4>
-        <a href="{{ route('store.show', $product->name) }}" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-black shadow-sm transition-all hover-translate-y">
-            <i class="fa fa-arrow-left me-1"></i>
-            {{ __('messages.back') ?? 'Back' }}
-        </a>
+        <div class="d-flex gap-2">
+            @if(Auth::check() && Auth::id() == $product->uid)
+                <a href="{{ route('store.update', $product->name) }}" class="btn btn-primary rounded-pill px-4 py-2 fw-black shadow-sm">
+                    <i class="fa fa-upload me-1"></i> {{ __('messages.upload_update') ?? 'Upload Update' }}
+                </a>
+            @endif
+            <a href="{{ route('store.show', $product->name) }}" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-black shadow-sm transition-all hover-translate-y">
+                <i class="fa fa-arrow-left me-1"></i>
+                {{ __('messages.back') ?? 'Back' }}
+            </a>
+        </div>
     </div>
 
     <div class="row g-4">

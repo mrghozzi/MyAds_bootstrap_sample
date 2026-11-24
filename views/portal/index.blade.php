@@ -265,6 +265,38 @@
             <div id="quick-post-box">
                 @include('theme::partials.status.add_post')
             </div>
+
+        {{-- CLIPS HORIZONTAL SHELF (Shorts / Reels) --}}
+        @if(!empty($clips) && $clips->isNotEmpty())
+            <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                <div class="card-body p-3 p-md-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="rounded-circle bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                <i class="fa-solid fa-play fa-sm"></i>
+                            </span>
+                            <h5 class="fw-bold mb-0 fs-6">{{ __('messages.clips_shelf_title') ?? 'Clips' }}</h5>
+                        </div>
+                        <a href="{{ route('clips.index') }}" class="small fw-bold text-decoration-none text-primary">
+                            {{ __('messages.view_all') ?? 'View All' }} <i class="fa-solid fa-angle-right ms-1"></i>
+                        </a>
+                    </div>
+                    <div class="d-flex gap-3 overflow-x-auto pb-2" style="scrollbar-width: thin;">
+                        @foreach($clips as $clip)
+                            <a href="{{ route('clips.show', $clip->id) }}" class="flex-shrink-0 text-decoration-none position-relative rounded-4 overflow-hidden shadow-sm transition-all hover-translate-y" style="width: 120px; height: 180px; background: #1a1a2e;">
+                                @if($clip->resolved_thumbnail)
+                                    <img src="{{ $clip->resolved_thumbnail }}" class="w-100 h-100 object-fit-cover" alt="">
+                                @endif
+                                <div class="position-absolute bottom-0 start-0 end-0 p-2 text-white" style="background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.85) 100%);">
+                                    <span class="d-block small fw-bold text-truncate" style="font-size: 0.75rem;">{{ $clip->resolved_title ?: ($clip->forumTopic?->name ?? __('messages.clip')) }}</span>
+                                    <span class="smaller opacity-75" style="font-size: 0.65rem;"><i class="fa-solid fa-eye me-1"></i>{{ number_format((int)($clip->views_count ?? 0)) }}</span>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endif
             
             <!-- TABS -->
             <div class="simple-tab-items">

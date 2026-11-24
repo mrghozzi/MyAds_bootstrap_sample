@@ -58,6 +58,40 @@
             @enderror
         </div>
 
+        <div class="col-md-6">
+            <label for="app_type" class="form-label small fw-bold">{{ __('messages.app_type') ?? 'Application Type' }}</label>
+            <select id="app_type" name="app_type" class="form-select form-select-lg">
+                <option value="confidential" {{ old('app_type', $developerApp->app_type ?? 'confidential') === 'confidential' ? 'selected' : '' }}>
+                    {{ __('messages.app_type_confidential') ?? 'Confidential (Web Server with Secret)' }}
+                </option>
+                <option value="public" {{ old('app_type', $developerApp->app_type ?? '') === 'public' ? 'selected' : '' }}>
+                    {{ __('messages.app_type_public') ?? 'Public Client (SPA / Mobile with PKCE)' }}
+                </option>
+            </select>
+            <div class="form-text small">{{ __('messages.app_type_public_hint') }}</div>
+        </div>
+
+        <div class="col-md-6">
+            <label for="app_category" class="form-label small fw-bold">{{ __('messages.category') ?? 'Category' }}</label>
+            <select id="app_category" name="category" class="form-select form-select-lg">
+                <option value="">-- {{ __('messages.select_category') ?? 'Select Category' }} --</option>
+                <option value="social" {{ old('category', $developerApp->category ?? '') === 'social' ? 'selected' : '' }}>{{ __('messages.dev_cat_social') }}</option>
+                <option value="tools" {{ old('category', $developerApp->category ?? '') === 'tools' ? 'selected' : '' }}>{{ __('messages.dev_cat_tools') }}</option>
+                <option value="content" {{ old('category', $developerApp->category ?? '') === 'content' ? 'selected' : '' }}>{{ __('messages.dev_cat_content') }}</option>
+                <option value="marketplace" {{ old('category', $developerApp->category ?? '') === 'marketplace' ? 'selected' : '' }}>{{ __('messages.dev_cat_marketplace') }}</option>
+                <option value="bots" {{ old('category', $developerApp->category ?? '') === 'bots' ? 'selected' : '' }}>{{ __('messages.dev_cat_bots') }}</option>
+            </select>
+        </div>
+
+        <div class="col-12">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="public_listed" id="public_listed" value="1" {{ old('public_listed', $developerApp->public_listed ?? false) ? 'checked' : '' }}>
+                <label class="form-check-label fw-bold" for="public_listed">
+                    {{ __('messages.list_in_app_directory') ?? 'Publish this application to the Public App Directory' }}
+                </label>
+            </div>
+        </div>
+
         <div class="col-12">
             <label for="app_description" class="form-label small fw-bold">{{ __('messages.description') }} <span class="text-danger">*</span></label>
             <textarea

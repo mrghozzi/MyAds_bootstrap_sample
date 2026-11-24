@@ -21,7 +21,7 @@
             <ol class="breadcrumb bg-white p-3 px-4 rounded-pill shadow-sm border">
                 <li class="breadcrumb-item"><a href="{{ route('store.index') }}" class="text-decoration-none text-primary fw-bold"><i class="fa fa-shopping-cart"></i></a></li>
                 @if($categoryLabel)
-                    <li class="breadcrumb-item"><a href="{{ route('store.index', ['category' => $categoryName]) }}" class="text-decoration-none text-muted small">{{ $categoryLabel }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('store.script_category', ['script' => 'all', 'category' => $categoryName ?: 'all']) }}" class="text-decoration-none text-muted small">{{ $categoryLabel }}</a></li>
                 @endif
                 <li class="breadcrumb-item active text-truncate small fw-bold" aria-current="page" style="max-width: 300px;">{{ $product->name }}</li>
             </ol>

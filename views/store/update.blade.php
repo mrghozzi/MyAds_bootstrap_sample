@@ -190,23 +190,66 @@
                 </div>
 
                 <div class="card border-0 shadow-sm rounded-4 store-editor-card mb-4">
-                    <div class="card-header bg-transparent border-bottom-0 pt-4 pb-0 fw-bold fs-5">{{ __('messages.price_pts') }}</div>
+                    <div class="card-header bg-transparent border-bottom-0 pt-4 pb-0 fw-bold fs-5 d-flex justify-content-between align-items-center">
+                        <span>{{ __('messages.price_pts') }} &amp; {{ __('messages.sale_price') }}</span>
+                    </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-12">
-                                <label for="pts_update" class="form-label small fw-bold">{{ __('messages.price_pts') }} <span class="text-muted fw-normal">({{ __('messages.optional') }})</span></label>
-                                <input
-                                    type="number"
-                                    id="pts_update"
-                                    name="pts"
-                                    class="form-control form-control-lg bg-light border-0"
-                                    value="{{ old('pts') }}"
-                                    placeholder="{{ __('messages.current') }}: {{ $product->o_order }}"
-                                    min="0"
-                                    max="999999"
-                                >
+                        <form id="priceForm" method="post" action="{{ route('store.update.price', $product->name) }}">
+                            @csrf
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="pts_update" class="form-label small fw-bold">{{ __('messages.price_pts') }}</label>
+                                    <input
+                                        type="number"
+                                        id="pts_update"
+                                        name="pts"
+                                        class="form-control form-control-lg bg-light border-0"
+                                        value="{{ old('pts', $product->o_order) }}"
+                                        placeholder="{{ __('messages.current') }}: {{ $product->o_order }}"
+                                        min="0"
+                                        max="999999"
+                                    >
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="sale_price" class="form-label small fw-bold">{{ __('messages.sale_price') }} <span class="text-muted fw-normal">({{ __('messages.optional') }})</span></label>
+                                    <input
+                                        type="number"
+                                        id="sale_price"
+                                        name="sale_price"
+                                        class="form-control form-control-lg bg-light border-0"
+                                        value="{{ old('sale_price', $product->sale ? $product->sale->sale_price : '') }}"
+                                        placeholder="{{ __('messages.sale_price_hint') }}"
+                                        min="0"
+                                        max="999999"
+                                    >
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="sale_start" class="form-label small fw-bold">{{ __('messages.sale_start') }}</label>
+                                    <input
+                                        type="datetime-local"
+                                        id="sale_start"
+                                        name="sale_start"
+                                        class="form-control bg-light border-0"
+                                        value="{{ old('sale_start', $product->sale && $product->sale->start_date ? $product->sale->start_date->format('Y-m-d\TH:i') : '') }}"
+                                    >
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="sale_end" class="form-label small fw-bold">{{ __('messages.sale_end') }}</label>
+                                    <input
+                                        type="datetime-local"
+                                        id="sale_end"
+                                        name="sale_end"
+                                        class="form-control bg-light border-0"
+                                        value="{{ old('sale_end', $product->sale && $product->sale->end_date ? $product->sale->end_date->format('Y-m-d\TH:i') : '') }}"
+                                    >
+                                </div>
                             </div>
-                        </div>
+                            <div class="d-flex justify-content-end mt-3">
+                                <button type="submit" class="btn btn-outline-primary rounded-pill px-4 fw-bold">
+                                    <i class="fa fa-save me-1"></i> {{ __('messages.save') }}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

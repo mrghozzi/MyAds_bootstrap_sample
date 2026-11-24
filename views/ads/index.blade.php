@@ -54,6 +54,18 @@
             </a>
         </div>
         <div class="col-6 col-md-4 col-lg-2">
+            <a href="{{ route('ads.custom.index') }}" class="btn btn-secondary w-100 py-3 rounded-4 shadow-sm text-white fw-bold d-flex flex-column align-items-center gap-2 transition-all hover-translate-y" style="background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);">
+                <i class="fa fa-handshake fs-3"></i>
+                <span class="smaller">{{ __('messages.custom_ads') }}</span>
+            </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <a href="{{ route('youtube.exchange.index') }}" class="btn btn-danger w-100 py-3 rounded-4 shadow-sm text-white fw-bold d-flex flex-column align-items-center gap-2 transition-all hover-translate-y">
+                <i class="fa-brands fa-youtube fs-3"></i>
+                <span class="smaller">{{ __('messages.yt_exchange') }}</span>
+            </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
             <a href="{{ route('dashboard') }}" class="btn btn-light border w-100 py-3 rounded-4 shadow-sm text-dark fw-bold d-flex flex-column align-items-center gap-2 transition-all hover-translate-y">
                 <i class="fa fa-home fs-3 opacity-50"></i>
                 <span class="smaller">{{ __('messages.home') }}</span>

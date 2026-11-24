@@ -165,6 +165,8 @@
                     </div>
                 </div>
             </div>
+
+            <x-widget-column side="forum_left" />
         </aside>
 
         <!-- Right Pane: Discussion Stream & Filter Toolbar -->

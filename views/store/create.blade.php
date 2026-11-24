@@ -108,6 +108,42 @@
                             </div>
                         </div>
 
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label for="sale-price" class="form-label fw-bold">{{ __('messages.sale_price') }} <small class="text-muted fw-normal">({{ __('messages.optional') }})</small></label>
+                                <input
+                                    type="number"
+                                    id="sale-price"
+                                    name="sale_price"
+                                    class="form-control rounded-3"
+                                    value="{{ old('sale_price') }}"
+                                    placeholder="{{ __('messages.sale_price_hint') }}"
+                                    min="0"
+                                    max="999999"
+                                >
+                            </div>
+                            <div class="col-md-4">
+                                <label for="sale-start" class="form-label fw-bold">{{ __('messages.sale_start') }}</label>
+                                <input
+                                    type="datetime-local"
+                                    id="sale-start"
+                                    name="sale_start"
+                                    class="form-control rounded-3"
+                                    value="{{ old('sale_start') }}"
+                                >
+                            </div>
+                            <div class="col-md-4">
+                                <label for="sale-end" class="form-label fw-bold">{{ __('messages.sale_end') }}</label>
+                                <input
+                                    type="datetime-local"
+                                    id="sale-end"
+                                    name="sale_end"
+                                    class="form-control rounded-3"
+                                    value="{{ old('sale_end') }}"
+                                >
+                            </div>
+                        </div>
+
                         <div class="mb-4">
                             <div id="storecat">
                                 @include('theme::store.partials.category-selector')

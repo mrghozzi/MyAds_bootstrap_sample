@@ -155,7 +155,7 @@
                     @php
                         $clipTopic = $clip->forumTopic;
                         $clipUser = $clip->user;
-                        $clipUrl = route('clips.index') . '#' . $clip->id;
+                        $clipUrl = route('clips.show', $clip->id);
                         
                         $clipThumb = $clip->resolved_thumbnail ?: \App\Http\Controllers\VideoHubController::resolveVideoThumbnailUrl($clip);
                         $clipVideoUrl = $clip->resolved_video_url ?: \App\Http\Controllers\VideoHubController::resolveVideoUrl($clip);
@@ -215,7 +215,7 @@
         @php
             $spTopic = $spotlightVideo->forumTopic;
             $spUser = $spotlightVideo->user;
-            $spWatchUrl = $spTopic ? route('forum.topic', $spTopic->id) : url('/portal');
+            $spWatchUrl = route('video.watch', $spotlightVideo->id);
             
             $spThumb = $spotlightVideo->resolved_thumbnail ?: \App\Http\Controllers\VideoHubController::resolveVideoThumbnailUrl($spotlightVideo);
             $spVideoUrl = $spotlightVideo->resolved_video_url ?: \App\Http\Controllers\VideoHubController::resolveVideoUrl($spotlightVideo);

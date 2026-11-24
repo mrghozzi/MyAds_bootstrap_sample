@@ -130,5 +130,58 @@
 
     </div>
 
+    <!-- Referral Badges & Achievements Section -->
+    @if(isset($referralBadges) && $referralBadges->isNotEmpty())
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mt-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                <div>
+                    <h3 class="fw-bold mb-1 fs-5">
+                        <i class="fa-solid fa-trophy text-warning me-2"></i>
+                        {{ __('messages.referral_badges_title') }}
+                    </h3>
+                    <p class="text-muted small mb-0">{{ __('messages.referral_badges_desc') }}</p>
+                </div>
+                <a href="{{ route('badges.all') }}" class="btn btn-outline-primary btn-sm rounded-pill fw-bold px-3">
+                    <i class="fa-solid fa-medal me-1"></i> {{ __('messages.view_all_badges') }}
+                </a>
+            </div>
+
+            <div class="row g-3">
+                @foreach($referralBadges as $badge)
+                    @php
+                        $isUnlocked = $badge->is_unlocked;
+                        $pct = min(100, round(($badge->progress / max(1, $badge->criteria_target)) * 100));
+                    @endphp
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card h-100 rounded-4 p-3 border {{ $isUnlocked ? 'border-success bg-success bg-opacity-10 shadow-sm' : 'border-light bg-light' }}">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge {{ $isUnlocked ? 'bg-success' : 'bg-secondary' }} rounded-pill smaller">
+                                    @if($isUnlocked)
+                                        <i class="fa-solid fa-check-circle me-1"></i> {{ __('messages.badge_unlocked') }}
+                                    @else
+                                        <i class="fa-solid fa-lock me-1"></i> {{ $badge->progress }}/{{ $badge->criteria_target }}
+                                    @endif
+                                </span>
+                                <span class="badge bg-warning bg-opacity-25 text-dark rounded-pill smaller fw-bold">+{{ number_format($badge->points_reward) }} PTS</span>
+                            </div>
+                            <div class="text-center my-3">
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center shadow-xs" style="width: 50px; height: 50px; background: {{ $isUnlocked ? '#198754' : '#6c757d' }}; color: #fff; font-size: 22px;">
+                                    <i class="fa-solid {{ $badge->icon }}"></i>
+                                </div>
+                                <h5 class="fw-bold fs-6 mt-2 mb-1 text-dark">{{ __('messages.' . $badge->name_key) }}</h5>
+                                <p class="text-muted smaller mb-0">{{ __('messages.' . $badge->description_key) }}</p>
+                            </div>
+                            <div class="mt-auto">
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar {{ $isUnlocked ? 'bg-success' : 'bg-primary' }}" role="progressbar" style="width: {{ $pct }}%;" aria-valuenow="{{ $pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
 </div>
 @endsection

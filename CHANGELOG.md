@@ -2,6 +2,49 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.5.4] - 2026-11-24
+
+### Added & Synchronized with Core v4.7.1
+- **Web Directory 2.0 Pricing & Features:**
+  - Integrated faceted pricing model selector (`free`, `freemium`, `paid`, `open_source`, `free_trial`) and key features comma-separated input in `views/directory/create.blade.php` and `views/directory/edit.blade.php`.
+- **Store Products Sale Discounts & Price Updating:**
+  - Added promotional sale discount inputs (`sale_price`, `sale_start`, `sale_end`) in `views/store/create.blade.php`.
+  - Added dedicated price management form (`#priceForm`) targeting `store.update.price` with sale timing inputs and version upload action button in `views/store/update.blade.php` and `views/store/updates.blade.php`.
+- **OAuth 2.0 PKCE Compliance:**
+  - Added `code_challenge` and `code_challenge_method` hidden inputs in `views/oauth/authorize.blade.php` for seamless SPA and mobile authorization flows.
+- **Developer Platform Specifications:**
+  - Added `app_type` (Confidential / Public PKCE), `category` selector, and `public_listed` directory publishing controls in `views/developer/partials/form_fields.blade.php`.
+- **Two-Factor Authentication (2FA) Security Suite:**
+  - Integrated full 2FA management card, status indicators, enable/disable workflows, and recovery code grid display in `views/profile/privacy.blade.php`.
+- **Ads & Links Targeting Parity:**
+  - Fixed route action to `ads.links.store` in `views/ads/links/create.blade.php`.
+  - Added device targeting chips (`devices[]`) and country code targeting (`countries`) in link creation and editing.
+  - Added quick navigation shortcuts to Custom Ads (`ads.custom.index`) and YouTube View Exchange (`youtube.exchange.index`) in `views/ads/index.blade.php`.
+  - Added 4-tier referral milestone badges showcase with live progress bars and navigation in `views/ads/referrals_list.blade.php`.
+- **Services Marketplace Deliverables & Rating:**
+  - Fixed deliverable attachment input name to `delivery_attachment` with protected 25MB upload support.
+  - Added post-completion provider rating form (`orders.rate`) with star selection and reviews in `views/orders/show.blade.php`.
+- **Video Hub & Cinema Standalone Watch Routing:**
+  - Standardized all video cards and spotlight features to route directly to dedicated watch page `video.watch`.
+  - Added Shorts shelf horizontal carousel at top of feed in `views/portal/index.blade.php`.
+  - Added Videos (`?tab=videos`) and Clips (`?tab=clips`) tabs integration in `views/profile/show.blade.php`.
+- **Groups In-Feed Moderation & Ownership Transfer:**
+  - Added post deletion button for moderators in group feeds and pinned post hero.
+  - Added password-protected group ownership transfer workflow in `views/groups/show.blade.php`.
+- **Live Theme Customizer Head & Extensible Plugins:**
+  - Added `@includeIf('theme::partials._customizer_head')` across all standalone auth and policy views.
+  - Modernized `views/partials/widgets.blade.php` to leverage `<x-widget-column>` component.
+  - Added support forum and ticket sidebar action hooks (`support_forum_topic_sidebar`, `ticket_show_sidebar`).
+  - Added group badge headers across activity feeds.
+
+## [2.5.3] - 2026-11-12
+
+### Added
+- **Points Ledger Statement & Running Balance:**
+  - Overhauled user point transaction history and ledger statements with SQL pagination and CSV export in `views/profile/history.blade.php` and `views/profile/partials/history_list.blade.php`.
+- **Subscription Billing Enhancements:**
+  - Added promo coupons, time-limited discounts, free trial claims, landing showcase, and printable invoice support in `views/billing/*`.
+
 ## [2.5.2] - 2026-11-11
 
 ### Added

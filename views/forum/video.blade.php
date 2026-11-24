@@ -338,7 +338,7 @@
                                 <span>{{ __('messages.share_video') }}</span>
                             </button>
                             <div class="custom-v-flyout" id="flyout_share_{{ $status->id }}" style="display:none;">
-                                <div class="v-flyout-item" onclick="navigator.clipboard.writeText('{{ route('forum.topic', $topic->id) }}'); showToast('{{ __('messages.link_copied') }}'); toggleCustomFlyout(null, 'flyout_share_{{ $status->id }}');">
+                                <div class="v-flyout-item" onclick="navigator.clipboard.writeText('{{ route('video.watch', $status->id) }}'); showToast('{{ __('messages.link_copied') }}'); toggleCustomFlyout(null, 'flyout_share_{{ $status->id }}');">
                                     <i class="fa fa-link text-primary me-2"></i> {{ __('messages.copy_video_link') }}
                                 </div>
                                 <div style="height:1px; background:var(--border-color, #eee); margin:6px 0;"></div>
@@ -456,7 +456,7 @@
                             $sViews = $sTopic ? (int) ($sTopic->vu ?? 0) : (int) ($sVideo->views_count ?? 0);
                         @endphp
                         @if($sTopic && (int) $sVideo->s_type !== 4 && (int) $sVideo->s_type !== 14)
-                            <a href="{{ route('forum.topic', $sTopic->id) }}" class="suggested-video-item text-decoration-none d-flex gap-2 mb-3 pb-2 border-bottom">
+                            <a href="{{ route('video.watch', $sVideo->id) }}" class="suggested-video-item text-decoration-none d-flex gap-2 mb-3 pb-2 border-bottom">
                                 <!-- THUMBNAIL BOX (16:9) -->
                                 <div class="suggested-thumb-box flex-shrink-0 ratio ratio-16x9 rounded-3 overflow-hidden bg-dark position-relative" style="width: 120px;">
                                     <img src="{{ $sThumb }}" alt="{{ $sTitle }}" class="suggested-thumb-img w-100 h-100 object-fit-cover lazyload" onError="this.onerror=null;this.src='{{ theme_asset('img/video-placeholder.svg') }}';">

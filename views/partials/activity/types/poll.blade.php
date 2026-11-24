@@ -179,7 +179,14 @@
 
     <!-- Footer -->
     <div class="card-footer bg-white border-top py-3">
-        @include('theme::partials.activity.post_footer_shared', ['activity' => $activity, 'repostAuthorName' => $repostAuthorName, 'repostExcerpt' => $repostExcerpt])
+        
+    @if(!empty($activity->group))
+        <div class="mt-2 mb-2">
+            @include('theme::partials.groups.badge', ['groupBadge' => $activity->group])
+        </div>
+    @endif
+
+    @include('theme::partials.activity.post_footer_shared', ['activity' => $activity, 'repostAuthorName' => $repostAuthorName, 'repostExcerpt' => $repostExcerpt])
     </div>
 </div>
 

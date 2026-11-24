@@ -78,7 +78,7 @@
                             <textarea id="description" name="txt" class="form-control rounded-4 py-3" rows="5" placeholder="{{ __('messages.text_p') }}...">{{ old('txt') }}</textarea>
                         </div>
 
-                        <div class="row g-4 mb-5">
+                        <div class="row g-4 mb-4">
                             <div class="col-md-6">
                                 <label for="categ" class="form-label fw-bold text-muted small text-uppercase">{{ __('messages.cat') }}</label>
                                 <select id="categ" name="categ" class="form-select rounded-3 py-2">
@@ -93,6 +93,35 @@
                             <div class="col-md-6">
                                 <label for="tag" class="form-label fw-bold text-muted small text-uppercase">{{ __('messages.tag') }}</label>
                                 <input type="text" id="tag" name="tag" class="form-control rounded-3 py-2" value="{{ old('tag') }}" placeholder="tag1, tag2...">
+                            </div>
+                        </div>
+
+                        <!-- Pricing Model & Features -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label for="pricing_type" class="form-label fw-bold text-muted small text-uppercase">
+                                    <i class="fa fa-dollar-sign me-1"></i> {{ __('messages.pricing') ?? 'Pricing Model' }}
+                                </label>
+                                <select id="pricing_type" name="pricing_type" class="form-select rounded-3 py-2">
+                                    <option value="free" {{ old('pricing_type') == 'free' ? 'selected' : '' }}>
+                                        {{ __('messages.pricing_free') ?? 'Free' }}</option>
+                                    <option value="freemium" {{ old('pricing_type') == 'freemium' ? 'selected' : '' }}>
+                                        {{ __('messages.pricing_freemium') ?? 'Freemium' }}</option>
+                                    <option value="paid" {{ old('pricing_type') == 'paid' ? 'selected' : '' }}>
+                                        {{ __('messages.pricing_paid') ?? 'Paid' }}</option>
+                                    <option value="open_source" {{ old('pricing_type') == 'open_source' ? 'selected' : '' }}>
+                                        {{ __('messages.pricing_open_source') ?? 'Open Source' }}</option>
+                                    <option value="free_trial" {{ old('pricing_type') == 'free_trial' ? 'selected' : '' }}>
+                                        {{ __('messages.pricing_free_trial') ?? 'Free Trial' }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="features" class="form-label fw-bold text-muted small text-uppercase">
+                                    <i class="fa fa-list-check me-1"></i> {{ __('messages.key_features') ?? 'Key Features (comma-separated)' }}
+                                </label>
+                                <input type="text" id="features" name="features" class="form-control rounded-3 py-2"
+                                    value="{{ old('features') }}"
+                                    placeholder="AI Support, Fast UI, Free to use...">
                             </div>
                         </div>
 

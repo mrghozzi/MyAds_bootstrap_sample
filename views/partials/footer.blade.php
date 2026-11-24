@@ -22,7 +22,7 @@
         </div>
         <p class="text-muted small mb-1">&copy; {{ date('Y') }} {{ $site_settings->titer ?? 'MyAds' }}. {{ __('messages.all_rights_reserved') }}</p>
         <p class="text-muted small">
-            Powered by <strong>MyAds</strong> | {{ \App\Support\SystemVersion::tag() }}
+            Powered by <a href="https://github.com/mrghozzi/myads" target="_blank" rel="noopener noreferrer" class="text-decoration-none text-muted"><strong>MyAds</strong></a> (<a href="https://github.com/mrghozzi" target="_blank" rel="noopener noreferrer" class="text-decoration-none text-muted">MrGhozzi</a>) | {{ \App\Support\SystemVersion::tag() }}
         </p>
     </div>
 </footer>

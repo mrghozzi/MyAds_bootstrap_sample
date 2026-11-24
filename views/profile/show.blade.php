@@ -224,7 +224,11 @@
 
             <div id="infinite-scroll-container">
                 <div id="timeline-content" class="d-grid gap-4">
-                    @if($selectedTab === 'about')
+                    @if($selectedTab === 'videos')
+                        @include('theme::profile.partials.videos_tab', ['activities' => $activities, 'user' => $user, 'isOwnProfile' => $isOwnProfile])
+                    @elseif($selectedTab === 'clips')
+                        @include('theme::profile.partials.clips_tab', ['activities' => $activities, 'user' => $user, 'isOwnProfile' => $isOwnProfile])
+                    @elseif($selectedTab === 'about')
                         @include('theme::profile.partials.about_tab')
                     @elseif($selectedTab === 'photos')
                         <div class="row g-4">

@@ -79,6 +79,30 @@
                         </div>
                     </div>
 
+                    <!-- Pricing Model & Features -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label for="pricing_type" class="form-label small fw-bold">
+                                <i class="fa fa-dollar-sign me-1"></i> {{ __('messages.pricing') ?? 'Pricing Model' }}
+                            </label>
+                            <select id="pricing_type" name="pricing_type" class="form-select form-select-lg">
+                                <option value="free" {{ old('pricing_type', $listing->pricing_type) == 'free' ? 'selected' : '' }}>{{ __('messages.pricing_free') ?? 'Free' }}</option>
+                                <option value="freemium" {{ old('pricing_type', $listing->pricing_type) == 'freemium' ? 'selected' : '' }}>{{ __('messages.pricing_freemium') ?? 'Freemium' }}</option>
+                                <option value="paid" {{ old('pricing_type', $listing->pricing_type) == 'paid' ? 'selected' : '' }}>{{ __('messages.pricing_paid') ?? 'Paid' }}</option>
+                                <option value="open_source" {{ old('pricing_type', $listing->pricing_type) == 'open_source' ? 'selected' : '' }}>{{ __('messages.pricing_open_source') ?? 'Open Source' }}</option>
+                                <option value="free_trial" {{ old('pricing_type', $listing->pricing_type) == 'free_trial' ? 'selected' : '' }}>{{ __('messages.pricing_free_trial') ?? 'Free Trial' }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="features" class="form-label small fw-bold">
+                                <i class="fa fa-list-check me-1"></i> {{ __('messages.key_features') ?? 'Key Features (comma-separated)' }}
+                            </label>
+                            <input type="text" id="features" name="features" class="form-control form-control-lg"
+                                value="{{ old('features', $listing->features) }}"
+                                placeholder="AI Support, Fast UI, Free to use...">
+                        </div>
+                    </div>
+
                     <div class="d-flex justify-content-end mt-4 pt-3 border-top">
                         <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-bold d-flex align-items-center gap-2">
                             <i class="fa fa-save"></i>

@@ -375,11 +375,18 @@
         {{-- Badges Showcase --}}
         @if($badgeShowcase->isNotEmpty())
             <div class="card border-0 shadow-sm rounded-4 border border-light overflow-hidden">
-                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-                    <h6 class="fw-black mb-0 text-uppercase smaller text-muted letter-spacing-1 d-flex align-items-center">
-                        <i class="fa fa-trophy text-warning me-2"></i> {{ __('messages.badges') }}
-                    </h6>
-                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill fw-black smallest">{{ $badgeShowcase->count() }}</span>
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <h6 class="fw-black mb-0 text-uppercase smaller text-muted letter-spacing-1 d-flex align-items-center">
+                            <i class="fa fa-trophy text-warning me-2"></i> {{ __('messages.badges') }}
+                        </h6>
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill fw-black smallest">{{ $badgeShowcase->count() }}</span>
+                    </div>
+                    @if($isOwnProfile)
+                        <a href="{{ route('profile.badges') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold">
+                            <i class="fa fa-gear me-1"></i> {{ __('messages.manage') ?? 'Manage' }}
+                        </a>
+                    @endif
                 </div>
                 <div class="card-body p-4">
                     <div class="row g-3">

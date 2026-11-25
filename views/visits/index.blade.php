@@ -65,7 +65,7 @@
                                 <tr>
                                     <td class="px-4 small text-muted">#{{ $site->id }}</td>
                                     <td class="px-4">
-                                        <div class="fw-bold text-dark">{!! $bnname !!}</div>
+                                        <div class="fw-bold text-dark">{{ $bnname }}</div>
                                         <div class="smaller text-muted text-truncate" style="max-width: 250px;">{{ $site->url }}</div>
                                     </td>
                                     <td class="px-4">

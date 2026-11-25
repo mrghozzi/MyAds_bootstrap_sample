@@ -54,7 +54,8 @@
              <tbody>
               @foreach($links as $link)
               @php
-                  $bnname = mb_strlen($link->name, 'utf8') > 25 ? mb_substr($link->name, 0, 25) . "&nbsp;..." : $link->name;
+                  $isLongName = mb_strlen($link->name, 'utf8') > 25;
+                  $bnname = $isLongName ? mb_substr($link->name, 0, 25) : $link->name;
                   $fgft = $link->statu == 1 ? "ON" : "OFF";
                   // Calculate Vu count (visits where pid=link_id and t_name='link')
                   $vuCount = \App\Models\State::where('pid', $link->id)->where('t_name', 'link')->count();
@@ -62,7 +63,7 @@
               <tr>
                 <td><span class="badge bg-light text-dark border">#{{ $link->id }}</span></td>
                 <td>
-                  <div class="fw-bold text-dark mb-2">{!! $bnname !!}</div>
+                  <div class="fw-bold text-dark mb-2">{{ $bnname }}@if($isLongName)&nbsp;...@endif</div>
                   <div class="d-flex align-items-center gap-2">
                       <a href="{{ route('ads.links.edit', $link->id) }}" class="btn btn-sm btn-outline-success rounded-pill px-3"><i class="fa fa-edit"></i></a>
                       <form action="{{ route('ads.links.destroy', $link->id) }}" method="POST" onsubmit="return confirm('{{ __('messages.confirm_delete_link') }}');" style="margin: 0;">

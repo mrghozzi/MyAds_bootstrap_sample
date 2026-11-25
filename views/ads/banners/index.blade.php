@@ -55,13 +55,14 @@
             <tbody>
             @foreach($banners as $banner)
             @php
-                $bnname = mb_strlen($banner->name, 'utf8') > 25 ? mb_substr($banner->name, 0, 25) . "&nbsp;..." : $banner->name;
+                $isLongName = mb_strlen($banner->name, 'utf8') > 25;
+                $bnname = $isLongName ? mb_substr($banner->name, 0, 25) : $banner->name;
                 $fgft = $banner->statu == 1 ? "ON" : "OFF";
             @endphp
             <tr>
               <td><span class="badge bg-light text-dark border">#{{ $banner->id }}</span></td>
               <td>
-                <div class="fw-bold text-dark mb-2">{!! $bnname !!}</div>
+                <div class="fw-bold text-dark mb-2">{{ $bnname }}@if($isLongName)&nbsp;...@endif</div>
                <div class="d-flex align-items-center gap-2">
                    <a href="{{ route('ads.banners.edit', $banner->id) }}" class="btn btn-sm btn-outline-success rounded-pill px-3"><i class="fa fa-edit"></i></a>
                    <form action="{{ route('ads.banners.destroy', $banner->id) }}" method="POST" onsubmit="return confirm('{{ __('messages.confirm_delete_banner') }}');" style="margin: 0;">

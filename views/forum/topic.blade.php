@@ -135,12 +135,7 @@
                         <!-- Main Content Body -->
                         <div class="col-md-9">
                             <div class="topic-text-content fs-5 text-dark" style="line-height: 1.8;">
-                                @php
-                                    $content = $topic->txt;
-                                    $content = preg_replace('/#(\w+)/', '<a href="'.url('/tag').'/$1" class="text-primary text-decoration-none fw-bold">#$1</a>', $content);
-                                    $content = strip_tags($content, '<p><a><b><br><li><ul><font><span><pre><u><s><img><iframe>');
-                                @endphp
-                                {!! nl2br($content) !!}
+                                {!! \App\Support\ContentFormatter::formatForum($topic->txt) !!}
 
                                 @if($topic->imageOption)
                                     <div class="mt-4 text-center">

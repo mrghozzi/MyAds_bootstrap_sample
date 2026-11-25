@@ -283,7 +283,7 @@
                                     <button class="btn btn-sm btn-light border rounded-pill px-4 fw-bold d-none" id="store-topic-cancel-btn">{{ __('messages.cancel') }}</button>
                                 </div>
                             @endif
-                            <div id="store-topic-display" class="markdown-content lh-lg fs-5 text-dark" data-rendered="true" itemprop="description">{!! \Illuminate\Support\Str::markdown($topic?->txt ?? $product->o_valuer ?? '') !!}</div>
+                            <div id="store-topic-display" class="markdown-content lh-lg fs-5 text-dark" data-rendered="true" itemprop="description">{!! \Illuminate\Support\Str::markdown($topic?->txt ?? $product->o_valuer ?? '', ['html_input' => 'strip', 'allow_unsafe_links' => false]) !!}</div>
                             @if($canManageProduct)
                                 <div id="store-topic-editor" class="d-none">
                                     <div class="mb-2">

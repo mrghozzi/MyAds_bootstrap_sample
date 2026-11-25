@@ -2,6 +2,14 @@
 
 All notable changes to the MyAds Bootstrap Sample theme will be documented in this file.
 
+## [2.5.5] - 2026-11-26
+
+### Security
+- **Stored XSS Remediation Across Forum, Store & Ad Listings**:
+  - Replaced unsafe `strip_tags($content, '<p>...<img><iframe>')` rendering in `views/forum/topic.blade.php` and `views/forum/post.blade.php` with `ContentFormatter::formatForum()` (protected by `HtmlSanitizer`).
+  - Hardened Store product Markdown rendering in `views/store/show.blade.php` using `['html_input' => 'strip', 'allow_unsafe_links' => false]`.
+  - HTML-escaped ad and site titles (`$bnname`) across `views/ads/banners/index.blade.php`, `views/ads/links/index.blade.php`, and `views/visits/index.blade.php`.
+
 ## [2.5.4] - 2026-11-24
 
 ### Added & Synchronized with Core v4.7.1

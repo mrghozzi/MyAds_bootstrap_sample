@@ -122,12 +122,7 @@
                     @endif
 
                     <div class="post-text-content lh-lg text-dark fs-5 mb-4">
-                        @php
-                            $content = $topic->txt;
-                            $content = preg_replace('/#(\w+)/', '<a href="'.url('/tag/$1').'" class="text-primary text-decoration-none fw-bold">#$1</a>', $content);
-                            $content = strip_tags($content, '<p><a><b><br><li><ul><font><span><pre><u><s><img><iframe>');
-                        @endphp
-                        {!! nl2br($content) !!}
+                        {!! \App\Support\ContentFormatter::formatForum($topic->txt) !!}
                     </div>
 
                     @if($status->linkPreviewRecord)
